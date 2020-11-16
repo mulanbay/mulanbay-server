@@ -143,4 +143,36 @@ mulanbay-server
 </table>
 
 ### 基于Jquery的PC端
+<table>
+    <tr>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153740_6c3633bb_352331.png"/></td>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153808_a7fbf93b_352331.png"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153830_c0f8f54b_352331.png"/></td>
+    </tr>
+
+</table>
+
 ### 基于Jquery的移动端
+<table>
+    <tr>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153907_ea38db55_352331.png"/></td>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153922_e20703e7_352331.png"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153938_ef5926c7_352331.png"/></td>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/154010_29a804cb_352331.png"/></td>
+    </tr>
+
+</table>
+
+### 微信公众号消息推送
+
+<table>
+    <tr>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/154050_af85354a_352331.jpeg "Screenshot_20201015_150843_com.tencent.mm.jpg"/></td>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/154104_31b29a07_352331.jpeg "Screenshot_20201015_150911_com.tencent.mm.jpg"/></td>
+    </tr>
+
+</table>
