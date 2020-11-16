@@ -15,6 +15,8 @@
 * 基于Jquery的前端(PC端)[mulanbay-ui-jquery](https://gitee.com/mulanbay/mulanbay-ui-jquery)
 * 基于Jquery的前端(移动端)[mulanbay-mobile-jquery](https://gitee.com/mulanbay/mulanbay-mobile-jquery)
 
+[木兰湾项目说明](https://gitee.com/mulanbay)
+
 ### 功能简介
 
 * 基于RBAC的用户权限管理
@@ -71,9 +73,16 @@ mulanbay-server
 ## 系统架构
 
 ### 系统模块
-### 系统架构
-### 业务流程
+![系统模块](https://images.gitee.com/uploads/images/2020/1116/153208_763552c9_352331.png "系统模块.png")
 
+### 系统结构
+![系统结构](https://images.gitee.com/uploads/images/2020/1116/153229_0e719916_352331.png "系统结构.png")
+
+### 业务流程
+![业务流程](https://images.gitee.com/uploads/images/2020/1116/153249_202177a7_352331.png "业务流程.png")
+
+### 图表分类
+![图表分类](https://images.gitee.com/uploads/images/2020/1116/153330_e6cdf020_352331.png "图表统计.png")
 
 ### 文档地址
 
@@ -118,5 +127,20 @@ mulanbay-server
 ## 项目截图
 
 ### 基于Vue的PC端
+<table>
+    <tr>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153409_2b13c53b_352331.png"/></td>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153455_ed3c4b64_352331.png"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153513_6448ba23_352331.png"/></td>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153529_a818b611_352331.png"/></td>
+    </tr>
+    <tr>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153547_c18e229c_352331.png"/></td>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/153603_da9a31f2_352331.png"/></td>
+    </tr>
+</table>
+
 ### 基于Jquery的PC端
 ### 基于Jquery的移动端
