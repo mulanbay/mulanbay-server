@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>cn.mulanbay</groupId>
+    <artifactId>mulanbay</artifactId>
+    <packaging>pom</packaging>
+    <version>3.0</version>
+    <modules>
+        <module>mulanbay-business</module>
+        <module>mulanbay-persistent</module>
+        <module>mulanbay-web</module>
+        <module>mulanbay-pms</module>
+        <module>mulanbay-common</module>
+        <module>mulanbay-schedule</module>
+    </modules>
+
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.3.4.RELEASE</version>
+        <relativePath/>
+    </parent>
+
+    <properties>
+        <mulanbay.version>3.0</mulanbay.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <hibernate.version>5.4.21.Final</hibernate.version>
+        <spring.version>5.2.9.RELEASE</spring.version>
+        <jackson.version>2.11.2</jackson.version>
+        <c3p0.version>0.9.1.2</c3p0.version>
+        <ehcache-core.version>2.4.3</ehcache-core.version>
+        <mysql-connector-java.version>8.0.20</mysql-connector-java.version>
+        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <commons-beanutils.version>1.9.2</commons-beanutils.version>
+        <junit.version>4.11</junit.version>
+        <slf4j-log4j12.version>1.7.30</slf4j-log4j12.version>
+        <commons-pool.version>1.5.6</commons-pool.version>
+        <commons-fileupload.version>1.3.1</commons-fileupload.version>
+        <commons-lang3.version>3.3.2</commons-lang3.version>
+        <commons-io.version>2.4</commons-io.version>
+        <log4j-core.version>2.13.3</log4j-core.version>
+        <hibernate-validator.version>6.1.5.Final</hibernate-validator.version>
+        <quartz.version>2.3.2</quartz.version>
+        <javax.servlet.jsp.jstl-api.version>1.2.1</javax.servlet.jsp.jstl-api.version>
+        <hamcrest-core.version>1.3</hamcrest-core.version>
+        <validation-api.version>2.0.1.Final</validation-api.version>
+        <poi.version>3.13</poi.version>
+        <ECharts.version>3.0.0.2</ECharts.version>
+        <slf4j-api.version>1.7.30</slf4j-api.version>
+        <javax.servlet.version>4.0.1</javax.servlet.version>
+        <javax.mail.version>1.5.2</javax.mail.version>
+        <spymemcached.version>2.11.4</spymemcached.version>
+        <jedis.version>3.3.0</jedis.version>
+        <fst.version>1.58</fst.version>
+        <kryo-shaded.version>3.0.0</kryo-shaded.version>
+        <jgroups.version>3.4.6.Final</jgroups.version>
+        <slf4j-jdk14.version>1.6.6</slf4j-jdk14.version>
+        <hibernate-ehcache.version>5.4.21.Final</hibernate-ehcache.version>
+        <spring-session.version>2.3.1.RELEASE</spring-session.version>
+        <spring-data-redis.version>2.3.4.RELEASE</spring-data-redis.version>
+        <httpclient.version>4.5.12</httpclient.version>
+        <mail.version>1.4.7</mail.version>
+        <commons-net.version>3.6</commons-net.version>
+        <druid.version>1.1.8</druid.version>
+        <oshi-core.version>4.2.1</oshi-core.version>
+        <jna.version>5.4.0</jna.version>
+        <HikariCP.version>3.4.5</HikariCP.version>
+        <xstream.version>1.4.7</xstream.version>
+        <kaptcha.version>2.3.2</kaptcha.version>
+        <jwt.version>0.9.1</jwt.version>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>public</id>
+            <name>aliyun nexus</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

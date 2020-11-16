@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <artifactId>mulanbay</artifactId>
+        <groupId>cn.mulanbay</groupId>
+        <version>3.0</version>
+    </parent>
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>mulanbay-schedule</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>cn.mulanbay</groupId>
+            <artifactId>mulanbay-common</artifactId>
+            <version>${mulanbay.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.mulanbay</groupId>
+            <artifactId>mulanbay-persistent</artifactId>
+            <version>${mulanbay.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.mulanbay</groupId>
+            <artifactId>mulanbay-business</artifactId>
+            <version>${mulanbay.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz</artifactId>
+            <version>${quartz.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.quartz-scheduler</groupId>
+            <artifactId>quartz-jobs</artifactId>
+            <version>${quartz.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session-data-redis</artifactId>
+            <version>${spring-session.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>
