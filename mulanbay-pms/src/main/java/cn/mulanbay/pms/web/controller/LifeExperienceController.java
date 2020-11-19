@@ -206,10 +206,11 @@ public class LifeExperienceController extends BaseController {
      */
     @RequestMapping(value = "/mapStat", method = RequestMethod.GET)
     public ResultBean mapStat(LifeExperienceMapStatSearch sf) {
-        sf.setIntTypes(sf.getTypes());
-        List<LifeExperienceMapStat> list = lifeExperienceService.getLifeExperienceMapStat(sf);
         if (sf.getMapType() == MapType.LOCATION) {
+            List<LifeExperienceMapStat> list = lifeExperienceService.getLifeExperienceMapStat(sf);
             return this.callback(createLocationMapStat(list, sf.getStatType(), sf.getUserId(), sf.getStartDate(), sf.getEndDate()));
+        }else if (sf.getMapType() == MapType.LC_NAME) {
+            return this.callback(createLcNameMapStat(sf));
         }
         String mapType = "china";
         // 是否需要显示地图上的地点名称
@@ -220,6 +221,7 @@ public class LifeExperienceController extends BaseController {
         }
         Option option = new Option();
         option.title("人生去过的地方统计", this.getDateTitle(sf));
+        List<LifeExperienceMapStat> list = lifeExperienceService.getLifeExperienceMapStat(sf);
         int ps = list.size();
         String subText = "一共去过" + ps + "个省或直辖市";
         subText += "(占比:" + (int) NumberUtil.getPercentValue(ps, 34, 0) + "%)";
@@ -285,30 +287,106 @@ public class LifeExperienceController extends BaseController {
         chartData.setTitle("人生去过的地方统计");
         if (statType == LifeExperienceMapStatSearch.StatType.COUNT){
             chartData.setName("旅行次数");
-        }else{
+            chartData.setUnit("次");
+        }else if (statType == LifeExperienceMapStatSearch.StatType.DAYS){
             chartData.setName("旅行天数");
+            chartData.setUnit("天");
+        }else{
+            chartData.setName("旅行花费");
+            chartData.setUnit("元");
         }
         List<MapData> dataList = new ArrayList<>();
         List<LifeExperienceMapStat> newList = convertMapStatLocation(list);
         int maxValue = 0;
         for (LifeExperienceMapStat dd : newList) {
             if (statType == LifeExperienceMapStatSearch.StatType.COUNT) {
-                MapData c = new MapData(dd.getName(), dd.getTotalCount().intValue());
+                int count = dd.getTotalCount().intValue();
+                MapData c = new MapData(dd.getName(), count);
                 dataList.add(c);
-                if (dd.getTotalCount().intValue() > maxValue) {
-                    maxValue = dd.getTotalCount().intValue();
+                if (count > maxValue) {
+                    maxValue = count;
+                }
+            }else if (statType == LifeExperienceMapStatSearch.StatType.DAYS) {
+                int days = dd.getTotalDays().intValue();
+                MapData c = new MapData(dd.getName(), days );
+                dataList.add(c);
+                if (days > maxValue) {
+                    maxValue = days;
                 }
             } else {
-                MapData c = new MapData(dd.getName(), dd.getTotalDays().longValue());
+                double money = dd.getTotalCost()==null ? 0:dd.getTotalCost().doubleValue();
+                MapData c = new MapData(dd.getName(), money);
                 dataList.add(c);
-                if (dd.getTotalDays().intValue() > maxValue) {
-                    maxValue = dd.getTotalDays().intValue();
+                if (money > maxValue) {
+                    maxValue = (int) money;
                 }
             }
         }
         chartData.setDataList(dataList);
         chartData.setMax(maxValue);
         chartData.setGeoCoordMapData(getGeoMapData(userId, startDate, endDate));
+        return chartData;
+
+    }
+
+    /**
+     * 基于经历的统计(即采用LifeExperience表数据)
+     *
+     * @param sf
+     * @return
+     */
+    private LocationMapStatChartData createLcNameMapStat(LifeExperienceMapStatSearch sf) {
+        LocationMapStatChartData chartData = new LocationMapStatChartData();
+        chartData.setTitle("人生去过的地方统计");
+        if (sf.getStatType() == LifeExperienceMapStatSearch.StatType.COUNT){
+            chartData.setName("旅行次数");
+            chartData.setUnit("次");
+        }else if (sf.getStatType() == LifeExperienceMapStatSearch.StatType.DAYS){
+            chartData.setName("旅行天数");
+            chartData.setUnit("天");
+        }else{
+            chartData.setName("旅行花费");
+            chartData.setUnit("元");
+        }
+        List<MapData> dataList = new ArrayList<>();
+        //获取经历列表
+        LifeExperienceSearch les = new LifeExperienceSearch();
+        BeanCopy.copyProperties(sf,les);
+        les.setPage(PageRequest.NO_PAGE);
+        PageRequest pr = les.buildQuery();
+        pr.setBeanClass(beanClass);
+        List<LifeExperience> list = baseService.getBeanList(pr);
+        java.util.Map<String, double[]> geoMap = new HashMap<>();
+        int maxValue = 0;
+        for (LifeExperience dd : list) {
+            if(StringUtil.isEmpty(dd.getLocation())){
+                continue;
+            }
+            String name = dd.getName();
+            if (sf.getStatType() == LifeExperienceMapStatSearch.StatType.COUNT) {
+                MapData c = new MapData(name, 1);
+                dataList.add(c);
+            }else if (sf.getStatType() == LifeExperienceMapStatSearch.StatType.DAYS) {
+                int days = dd.getDays();
+                MapData c = new MapData(name, days);
+                dataList.add(c);
+                if (days > maxValue) {
+                    maxValue = days;
+                }
+            }else {
+                double m = dd.getCost()==null ? 0 : dd.getCost();
+                MapData c = new MapData(name, m);
+                dataList.add(c);
+                if (m > maxValue) {
+                    maxValue = (int) m;
+                }
+            }
+            String[] geo = dd.getLocation().split(",");
+            geoMap.put(name,new double[]{Double.valueOf(geo[0]), Double.valueOf(geo[1])});
+        }
+        chartData.setDataList(dataList);
+        chartData.setMax(maxValue);
+        chartData.setGeoCoordMapData(geoMap);
         return chartData;
 
     }

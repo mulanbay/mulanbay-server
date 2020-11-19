@@ -34,6 +34,10 @@ public class LifeExperienceFormRequest implements BindUser {
 
     private String tags;
 
+    private String lcName;
+
+    private String location;
+
     private String remark;
 
     public Long getId() {
@@ -108,6 +112,22 @@ public class LifeExperienceFormRequest implements BindUser {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    public String getLcName() {
+        return lcName;
+    }
+
+    public void setLcName(String lcName) {
+        this.lcName = lcName;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     public String getRemark() {

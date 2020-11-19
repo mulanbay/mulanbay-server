@@ -35,8 +35,6 @@ public class LifeExperienceMapStatSearch extends QueryBuilder implements DateSta
     @Query(fieldName = "start_city", op = Parameter.Operator.EQ)
     private String startCity;
 
-    private List<ExperienceType> types;
-
     private MapType mapType;
 
     private StatType statType;
@@ -103,14 +101,6 @@ public class LifeExperienceMapStatSearch extends QueryBuilder implements DateSta
         this.inTypes = inTypes;
     }
 
-    public List<ExperienceType> getTypes() {
-        return types;
-    }
-
-    public void setTypes(List<ExperienceType> types) {
-        this.types = types;
-    }
-
     public MapType getMapType() {
         return mapType;
     }
@@ -133,20 +123,6 @@ public class LifeExperienceMapStatSearch extends QueryBuilder implements DateSta
 
     public void setStartCity(String startCity) {
         this.startCity = startCity;
-    }
-
-    public void setIntTypes(List<ExperienceType> types) {
-        if (types != null && !types.isEmpty()) {
-            int n = types.size();
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < n; i++) {
-                sb.append(types.get(i).getValue());
-                if (i < n - 1) {
-                    sb.append(",");
-                }
-            }
-            this.inTypes = sb.toString();
-        }
     }
 
     public enum StatType {

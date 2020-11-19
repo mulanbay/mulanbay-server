@@ -26,6 +26,8 @@ public class LifeExperience implements java.io.Serializable {
     private Date endDate;
     private Double cost;
     private String tags;
+    private String lcName;
+    private String location;
     private String remark;
     private Date createdTime;
     private Date lastModifyTime;
@@ -119,6 +121,26 @@ public class LifeExperience implements java.io.Serializable {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    @Basic
+    @Column(name = "lc_name")
+    public String getLcName() {
+        return lcName;
+    }
+
+    public void setLcName(String lcName) {
+        this.lcName = lcName;
+    }
+
+    @Basic
+    @Column(name = "location")
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     @Basic

@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.web.bean.request.dict;
 
+import cn.mulanbay.persistent.query.CrossType;
 import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
@@ -7,7 +8,7 @@ import cn.mulanbay.web.bean.request.PageSearch;
 
 public class DictGroupSearch extends PageSearch {
 
-    @Query(fieldName = "name", op = Parameter.Operator.LIKE)
+    @Query(fieldName = "name,code", op = Parameter.Operator.LIKE, crossType = CrossType.OR)
     private String name;
 
     @Query(fieldName = "code", op = Parameter.Operator.EQ)
