@@ -36,6 +36,10 @@
 * 提供多角度的用户行为分析
 * 提供词云、相似度、智能问答等分析功能 
 
+### 文档地址
+
+木兰湾文档[https://www.yuque.com/mulanbay/rgvt6k/uy08n4](https://www.yuque.com/mulanbay/rgvt6k/uy08n4)
+
 ### 所用技术
 
 * 前端：Vue、Jquery、Element UI、Echarts
@@ -83,10 +87,6 @@ mulanbay-server
 
 ### 图表分类
 ![图表分类](https://images.gitee.com/uploads/images/2020/1116/153330_e6cdf020_352331.png "图表统计.png")
-
-### 文档地址
-
-木兰湾文档[https://www.yuque.com/mulanbay/rgvt6k/uy08n4](https://www.yuque.com/mulanbay/rgvt6k/uy08n4)
 
 ## 在线演示
 暂未提供
