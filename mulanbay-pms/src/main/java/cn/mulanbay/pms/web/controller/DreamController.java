@@ -80,7 +80,7 @@ public class DreamController extends BaseController {
         Dream bean = new Dream();
         BeanCopy.copyProperties(formRequest, bean);
         if (formRequest.getUserPlanId() != null) {
-            UserPlan userPlan = this.getUserEntity(UserPlan.class, formRequest.getId(), formRequest.getUserId());
+            UserPlan userPlan = this.getUserEntity(UserPlan.class, formRequest.getUserPlanId(), formRequest.getUserId());
             bean.setUserPlan(userPlan);
             if (bean.getPlanValue() == null) {
                 throw new ApplicationException(PmsErrorCode.DREAM_PLAN_VALUE_NULL);
