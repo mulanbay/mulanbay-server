@@ -1,9 +1,6 @@
 package cn.mulanbay.pms.web.controller;
 
-import cn.mulanbay.common.util.BeanCopy;
-import cn.mulanbay.common.util.DateUtil;
-import cn.mulanbay.common.util.PriceUtil;
-import cn.mulanbay.common.util.StringUtil;
+import cn.mulanbay.common.util.*;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
@@ -173,10 +170,11 @@ public class BudgetLogController extends BaseController {
                     sf.getUserId(), bp);
             ChartData chartData = new ChartData();
             chartData.setTitle(bp.getName() + "预算统计");
-            chartData.setLegendData(new String[]{"预算", "实际花费", "收入"});
+            chartData.setLegendData(new String[]{"预算", "实际花费", "收入","花费/预算百分率"});
             ChartYData budgetData = new ChartYData("预算");
             ChartYData consumeData = new ChartYData("实际花费");
             ChartYData incomeData = new ChartYData("收入");
+            ChartYData rateData = new ChartYData("花费/预算百分率");
 
             for (UserBudgetAndIncomeStat bean : list) {
                 String xformat = DateUtil.FormatDay1;
@@ -191,12 +189,15 @@ public class BudgetLogController extends BaseController {
                 if (sf.getNeedOutBurst() != null && sf.getNeedOutBurst() == true) {
                     consume = consume.add(bean.getBcAmount());
                 }
-                consumeData.getData().add(PriceUtil.changeToString(2, consume));
+                consumeData.getData().add(PriceUtil.changeToString(0, consume));
+                double rate = NumberUtil.getPercentValue(consume.doubleValue(),bean.getBudgetAmount().doubleValue(),0);
+                rateData.getData().add(rate);
                 incomeData.getData().add(bean.getTotalIncome() == null ? 0 : bean.getTotalIncome());
             }
             chartData.getYdata().add(budgetData);
             chartData.getYdata().add(consumeData);
             chartData.getYdata().add(incomeData);
+            chartData.getYdata().add(rateData);
 
             //String subTitle = this.getDateTitle(sf, totalCount.longValue()+"次");
             //chartData.setSubTitle(subTitle);
