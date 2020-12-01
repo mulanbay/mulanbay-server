@@ -619,14 +619,14 @@ public class TreatService extends BaseHibernateDao {
         try {
             PageRequest pr = sf.buildQuery();
             StringBuffer sb = new StringBuffer();
-            sb.append("select tdd.id ,td.name,td.treat_date as treatDate, ");
+            sb.append("select td.id ,td.name,td.treat_date as treatDate, ");
             sb.append("min(tdd.occur_time) as minTime,max(tdd.occur_time) as maxTime,count(0) as totalCount,datediff(max(tdd.occur_time) ,min(tdd.occur_time)) as days ");
             sb.append("from treat_drug_detail tdd,treat_drug td ");
             sb.append("where tdd.treat_drug_id = td.id ");
             pr.setNeedWhere(false);
             sb.append(pr.getParameterString());
-            sb.append("group by tdd.id ,td.name,td.treat_date ");
-            sb.append("order by tdd.occur_time desc ");
+            sb.append("group by td.id ,td.name ");
+            sb.append("order by td.name ");
             String sql = sb.toString();
             if (sf.isMergeSameName()) {
                 StringBuffer nn = new StringBuffer();
