@@ -15,6 +15,11 @@ public class TreatDrugDetailCalendarStat implements BindUser {
 
     private Long userId;
 
+    /**
+     * 是否合并相同的药名
+     */
+    private boolean mergeSameName;
+
     public Long getTreatDrugId() {
         return treatDrugId;
     }
@@ -57,4 +62,11 @@ public class TreatDrugDetailCalendarStat implements BindUser {
         this.userId = userId;
     }
 
+    public boolean isMergeSameName() {
+        return mergeSameName;
+    }
+
+    public void setMergeSameName(boolean mergeSameName) {
+        this.mergeSameName = mergeSameName;
+    }
 }

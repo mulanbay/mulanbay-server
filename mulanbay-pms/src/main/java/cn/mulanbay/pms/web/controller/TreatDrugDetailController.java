@@ -184,21 +184,16 @@ public class TreatDrugDetailController extends BaseController {
             search.setEndDate(endDate);
         }
         search.setUserId(sf.getUserId());
-        search.setTreatDrugId(sf.getTreatDrugId());
-        PageRequest pr = search.buildQuery();
-        pr.setPage(-1);
-        pr.setBeanClass(beanClass);
-        Sort s = new Sort("createdTime", Sort.ASC);
-        pr.addSort(s);
-        List<TreatDrugDetail> list = baseService.getBeanList(pr);
+
+        List<TreatDrugDetail> list = treatService.getTreatDrugDetailCalendarStatList(search,sf.getTreatDrugId(),sf.isMergeSameName());
         if (sf.getDateGroupType() == null || sf.getDateGroupType() == DateGroupType.YEAR) {
             return callback(this.createYearCalandarData(list, sf, treatDrug));
         } else {
-            return callback(this.createMonthCalandarData(list, sf.getYear(), sf.getMonth(), treatDrug));
+            return callback(this.createMonthCalendarData(list, sf.getYear(), sf.getMonth(), treatDrug));
         }
     }
 
-    private ChartCalendarPieData createMonthCalandarData(List<TreatDrugDetail> list, int year, String month, TreatDrug treatDrug) {
+    private ChartCalendarPieData createMonthCalendarData(List<TreatDrugDetail> list, int year, String month, TreatDrug treatDrug) {
         ChartCalendarPieData pieData = new ChartCalendarPieData(UserBehaviorType.HEALTH);
         pieData.setTitle(year + "-" + month + "用药分析");
         pieData.setStartDate(DateUtil.getDate(year + "-" + month + "-01", DateUtil.FormatDay1));

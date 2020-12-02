@@ -749,4 +749,35 @@ public class TreatService extends BaseHibernateDao {
         }
     }
 
+    /**
+     * 获取用药明细列表日历统计
+     *
+     * @param sf
+     * @return
+     */
+    public List<TreatDrugDetail> getTreatDrugDetailCalendarStatList(TreatDrugDetailSearch sf,Long treatDrugId,boolean mergeSameName) {
+        try {
+            PageRequest pr = sf.buildQuery();
+            StringBuffer sb = new StringBuffer();
+            sb.append("from TreatDrugDetail ");
+            sb.append(pr.getParameterString());
+            List paras = pr.getParameterValueList();
+            if(mergeSameName){
+                TreatDrug tt = (TreatDrug) this.getEntityById(TreatDrug.class,treatDrugId);
+                int nextIndex = pr.getFirstIndex();
+                sb.append(" and treatDrug.id in (select id from TreatDrug where name=?"+(nextIndex++)+" and userId=?"+(nextIndex++)+")");
+                paras.add(tt.getName());
+                paras.add(sf.getUserId());
+            }else{
+                sb.append(" and treatDrug.id=?"+pr.getFirstIndex());
+                paras.add(treatDrugId);
+            }
+            List<TreatDrugDetail> list = this.getEntityListNoPageHQL(sb.toString(), paras.toArray());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取用药明细列表日历统计异常", e);
+        }
+    }
+
 }
