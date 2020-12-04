@@ -305,10 +305,10 @@ public class PlanService extends BaseHibernateDao {
      * @param bussDay
      * @param userId
      * @param userPlanConfigValue
-     * @param currentCaldate
+     * @param currentCalDate
      * @return
      */
-    public PlanReport statPlanReport(UserPlan userPlan, int bussDay, Long userId, UserPlanConfigValue userPlanConfigValue, Date currentCaldate, PlanReportDataStatFilterType filterType) {
+    public PlanReport statPlanReport(UserPlan userPlan, int bussDay, Long userId, UserPlanConfigValue userPlanConfigValue, Date currentCalDate, PlanReportDataStatFilterType filterType) {
         try {
             List<Object[]> rr = null;
             PlanConfig planConfig = userPlan.getPlanConfig();
@@ -323,7 +323,8 @@ public class PlanService extends BaseHibernateDao {
                 Object[] oo = rr.get(0);
                 if (oo[0] == null && oo[1] == null) {
                     //可能出现全部没有数据
-                    return null;
+                    PlanReport pr = this.createEmptyPlanReport(userPlan,bussDay,userPlanConfigValue,currentCalDate);
+                    return pr;
                 }
                 PlanReport pr = new PlanReport();
                 pr.setUserId(userId);
@@ -337,7 +338,7 @@ public class PlanService extends BaseHibernateDao {
                     pr.setPlanValue(userPlanConfigValue.getPlanValue());
                     pr.setPlanConfigYear(userPlanConfigValue.getYear());
                 }
-                pr.setBussStatDate(currentCaldate);
+                pr.setBussStatDate(currentCalDate);
                 if (oo.length > 1) {
                     if (oo[1] == null) {
                         pr.setReportValue(0L);
@@ -377,12 +378,49 @@ public class PlanService extends BaseHibernateDao {
                 }
                 return pr;
             } else {
-                return null;
+                //空报告
+                PlanReport pr = this.createEmptyPlanReport(userPlan,bussDay,userPlanConfigValue,currentCalDate);
+                return pr;
             }
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "统计出计划报表异常", e);
         }
+    }
+
+    /**
+     * 创建空报告
+     * @param userPlan
+     * @param bussDay
+     * @param userPlanConfigValue
+     * @param currentCalDate
+     * @return
+     */
+    private PlanReport createEmptyPlanReport(UserPlan userPlan,Integer bussDay,UserPlanConfigValue userPlanConfigValue,Date currentCalDate){
+        PlanReport pr = new PlanReport();
+        pr.setUserId(userPlan.getUserId());
+        pr.setBussDay(bussDay);
+        pr.setCreatedTime(new Date());
+        pr.setName(userPlan.getTitle() + "(" + bussDay + ")");
+        pr.setUserPlan(userPlan);
+        pr.setReportCountValue(0L);
+        if (userPlanConfigValue != null) {
+            pr.setPlanCountValue(userPlanConfigValue.getPlanCountValue());
+            pr.setPlanValue(userPlanConfigValue.getPlanValue());
+            pr.setPlanConfigYear(userPlanConfigValue.getYear());
+        }
+        pr.setBussStatDate(currentCalDate);
+        pr.setReportValue(0L);
+        //设置统计结果
+        PlanConfig planConfig = userPlan.getPlanConfig();
+        if (planConfig.getCompareType() == CompareType.MORE) {
+            pr.setCountValueStatResult(PlanStatResultType.UN_ACHIEVED);
+            pr.setValueStatResult(PlanStatResultType.UN_ACHIEVED);
+        } else {
+            pr.setCountValueStatResult(PlanStatResultType.ACHIEVED);
+            pr.setValueStatResult(PlanStatResultType.ACHIEVED);
+        }
+        return pr;
     }
 
     /**
