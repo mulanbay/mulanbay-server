@@ -68,7 +68,10 @@ public class PlanConfigFormRequest implements BindUser {
     private Integer rewardPoint;
 
     private String bussKey;
+
     private String defaultCalendarTitle;
+
+    private String url;
 
     private String remark;
 
@@ -240,6 +243,14 @@ public class PlanConfigFormRequest implements BindUser {
 
     public void setDefaultCalendarTitle(String defaultCalendarTitle) {
         this.defaultCalendarTitle = defaultCalendarTitle;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     public String getRemark() {

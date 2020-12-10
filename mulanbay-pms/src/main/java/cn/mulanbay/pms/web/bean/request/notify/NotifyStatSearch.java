@@ -17,6 +17,9 @@ public class NotifyStatSearch extends PageSearch implements BindUser {
     @Query(fieldName = "status", op = Parameter.Operator.EQ)
     private CommonStatus status;
 
+    @Query(fieldName = "title", op = Parameter.Operator.LIKE)
+    private String name;
+
     @Override
     public Long getUserId() {
         return userId;
@@ -41,5 +44,13 @@ public class NotifyStatSearch extends PageSearch implements BindUser {
 
     public void setStatus(CommonStatus status) {
         this.status = status;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }

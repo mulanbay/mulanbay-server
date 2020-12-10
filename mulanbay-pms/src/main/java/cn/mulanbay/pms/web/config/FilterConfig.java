@@ -35,8 +35,7 @@ public class FilterConfig
      * @return
      */
     @Bean
-    public FilterRegistrationBean xssFilterRegistration()
-    {
+    public FilterRegistrationBean xssFilterRegistration() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setDispatcherTypes(DispatcherType.REQUEST);
         registration.setFilter(new XssFilter());
@@ -56,8 +55,7 @@ public class FilterConfig
      * @return
      */
     @Bean
-    public FilterRegistrationBean multipleRequestFilterRegistration()
-    {
+    public FilterRegistrationBean multipleRequestFilterRegistration() {
         FilterRegistrationBean registration = new FilterRegistrationBean();
         registration.setFilter(new MultipleRequestFilter());
         registration.addUrlPatterns("/*");

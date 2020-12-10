@@ -21,7 +21,6 @@ import static javax.persistence.GenerationType.IDENTITY;
 public class PlanConfig implements java.io.Serializable {
     private static final long serialVersionUID = 3222686239313264692L;
     private Long id;
-    private Long userId;
     private String name;
     private String title;
     private PlanType planType;
@@ -51,6 +50,7 @@ public class PlanConfig implements java.io.Serializable {
     private Integer rewardPoint;
     private String bussKey;
     private String defaultCalendarTitle;
+    private String url;
     private String remark;
     private Date createdTime;
     private Date lastModifyTime;
@@ -273,6 +273,16 @@ public class PlanConfig implements java.io.Serializable {
 
     public void setDefaultCalendarTitle(String defaultCalendarTitle) {
         this.defaultCalendarTitle = defaultCalendarTitle;
+    }
+
+    @Basic
+    @Column(name = "url")
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
     }
 
     @Transient
