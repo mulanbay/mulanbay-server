@@ -106,7 +106,14 @@ public class AccountFlowController extends BaseController {
             BigDecimal before = list.get(0).getAfterAmount();
             for (int i = 0; i < n; i++) {
                 AccountFlowSnapshotStat bean = list.get(i);
-                chartData.getXdata().add(bean.getBussKey().substring(0, 8));
+                String xs=null;
+                int l = bean.getBussKey().length();
+                if(l<=8){
+                    xs =bean.getBussKey();
+                }else{
+                    xs = bean.getBussKey().substring(0, 8);
+                }
+                chartData.getXdata().add(xs);
                 yData.getData().add(bean.getAfterAmount().doubleValue());
                 String s = PriceUtil.changeToString(2, bean.getAfterAmount().subtract(before));
                 y2Data.getData().add(s);

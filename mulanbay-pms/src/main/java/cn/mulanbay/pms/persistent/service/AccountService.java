@@ -8,11 +8,9 @@ import cn.mulanbay.persistent.dao.BaseHibernateDao;
 import cn.mulanbay.pms.persistent.domain.Account;
 import cn.mulanbay.pms.persistent.domain.AccountFlow;
 import cn.mulanbay.pms.persistent.domain.AccountSnapshotInfo;
+import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.dto.AccountStat;
-import cn.mulanbay.pms.persistent.enums.AccountAdjustType;
-import cn.mulanbay.pms.persistent.enums.AccountAnalyseType;
-import cn.mulanbay.pms.persistent.enums.AccountStatus;
-import cn.mulanbay.pms.persistent.enums.AccountType;
+import cn.mulanbay.pms.persistent.enums.*;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -208,20 +206,33 @@ public class AccountService extends BaseHibernateDao {
 
     /**
      * 生成快照
-     *
+     * @param name
      * @param bussKey
+     * @param remark
+     * @param userId
+     * @param period
      */
-    public void createSnapshot(String name, String bussKey, String remark, Long userId) {
+    public void createSnapshot(String name, String bussKey, String remark, Long userId,PeriodType period) {
         try {
-            //step 1: 新增napshotInfo
-            //this.execSqlUpdate("delete from account_flow where buss_key=?",bussKey);
-            AccountSnapshotInfo asi = new AccountSnapshotInfo();
-            asi.setBussKey(bussKey);
-            asi.setCreatedTime(new Date());
-            asi.setName(name);
-            asi.setRemark(remark);
-            asi.setUserId(userId);
-            this.saveEntity(asi);
+            //step 1: 删除旧的
+            String hql = "from AccountSnapshotInfo where userId=?0 and bussKey=?1 ";
+            AccountSnapshotInfo asi = (AccountSnapshotInfo) this.getEntityForOne(hql,userId,bussKey);
+            if(asi==null){
+                asi = new AccountSnapshotInfo();
+                asi.setBussKey(bussKey);
+                asi.setCreatedTime(new Date());
+                asi.setName(name);
+                asi.setRemark(remark);
+                asi.setUserId(userId);
+                this.saveEntity(asi);
+            }else{
+                this.execSqlUpdate("delete from account_flow where snapshot_id=?0 ",bussKey);
+                asi.setBussKey(bussKey);
+                asi.setLastModifyTime(new Date());
+                asi.setName(name);
+                asi.setRemark(remark);
+                this.updateEntity(asi);
+            }
 
             //step 2: 插入新的
             StringBuffer sb = new StringBuffer();
@@ -232,6 +243,7 @@ public class AccountService extends BaseHibernateDao {
                 sb.append("where user_id=" + userId);
             }
             this.execSqlUpdate(sb.toString());
+
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_UPDATE_ERROR,
                     "生成快照异常", e);

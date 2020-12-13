@@ -56,7 +56,7 @@ public class BudgetExecStatJob extends AbstractBaseJob {
             return tr;
         }
         Date bussDay = this.getBussDay();
-        String bussKey = "MS" + budgetHandler.createBussKey(para.getPeriod(), bussDay);
+        String bussKey = budgetHandler.createBussKey(para.getPeriod(), bussDay);
         boolean isRedo = this.isRedo();
         List<Budget> usList = new ArrayList<>();
         long cuserId = list.get(0).getUserId();

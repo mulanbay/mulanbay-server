@@ -93,6 +93,7 @@ CREATE TABLE `account_snapshot_info` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `user_id` bigint NOT NULL,
   `name` varchar(45) NOT NULL,
+  `period` smallint DEFAULT NULL,
   `buss_key` varchar(45) NOT NULL,
   `remark` varchar(200) DEFAULT NULL,
   `created_time` datetime NOT NULL,
@@ -221,9 +222,11 @@ CREATE TABLE `budget` (
   `last_paid_time` datetime DEFAULT NULL,
   `amount` decimal(9,2) NOT NULL,
   `remind` tinyint(1) NOT NULL DEFAULT '1',
-  `bind_flow` tinyint(1) NOT NULL DEFAULT '1',
   `status` smallint NOT NULL,
   `keywords` varchar(45) DEFAULT NULL,
+  `fee_type` smallint DEFAULT NULL,
+  `goods_type_id` int DEFAULT NULL,
+  `sub_goods_type_id` int DEFAULT NULL,
   `remark` varchar(200) DEFAULT NULL,
   `created_time` datetime NOT NULL,
   `last_modify_time` datetime DEFAULT NULL,
@@ -259,7 +262,8 @@ CREATE TABLE `budget_log` (
   `bc_amount` decimal(9,2) NOT NULL DEFAULT '0.00',
   `tr_amount` decimal(9,2) NOT NULL DEFAULT '0.00',
   `income_amount` decimal(9,2) DEFAULT '0.00',
-  `buy_record_id` bigint DEFAULT NULL,
+  `account_change_amount` decimal(9,2) DEFAULT NULL,
+  `source` smallint DEFAULT NULL,
   `remark` varchar(200) DEFAULT NULL,
   `created_time` datetime NOT NULL,
   `last_modify_time` datetime DEFAULT NULL,
@@ -297,9 +301,11 @@ CREATE TABLE `budget_snapshot` (
   `last_paid_time` datetime DEFAULT NULL,
   `amount` decimal(9,2) NOT NULL,
   `remind` tinyint(1) NOT NULL DEFAULT '1',
-  `bind_flow` tinyint(1) NOT NULL DEFAULT '1',
   `status` smallint NOT NULL,
   `keywords` varchar(45) DEFAULT NULL,
+  `fee_type` smallint DEFAULT NULL,
+  `goods_type_id` int DEFAULT NULL,
+  `sub_goods_type_id` int DEFAULT NULL,
   `remark` varchar(200) DEFAULT NULL,
   `created_time` datetime NOT NULL,
   `last_modify_time` datetime DEFAULT NULL,
@@ -3929,4 +3935,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-12-10 11:36:40
+-- Dump completed on 2020-12-13 16:06:58

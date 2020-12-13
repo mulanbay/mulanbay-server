@@ -8,9 +8,7 @@ import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.dto.BuyRecordConsumeTypeStat;
 import cn.mulanbay.pms.persistent.dto.IncomeSummaryStat;
 import cn.mulanbay.pms.persistent.dto.TreatRecordSummaryStat;
-import cn.mulanbay.pms.persistent.enums.CommonStatus;
-import cn.mulanbay.pms.persistent.enums.GoodsConsumeType;
-import cn.mulanbay.pms.persistent.enums.PeriodType;
+import cn.mulanbay.pms.persistent.enums.*;
 import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.BuyRecordService;
 import cn.mulanbay.pms.persistent.service.IncomeService;
@@ -75,6 +73,28 @@ public class BudgetHandler extends BaseHandler {
     }
 
     /**
+     * 实际支付金额
+     * @param budget
+     * @return
+     */
+    public Double getActualAmount(Budget budget,Date bussDay) {
+        BudgetFeeType feeType = budget.getFeeType();
+        //没有绑定类型
+        if(feeType==null){
+            return null;
+        }
+        Double v =null;
+        Date[] ds = this.getDateRange(budget.getPeriod(), bussDay, true);
+        if(feeType==BudgetFeeType.BUY_RECORD){
+            v = buyRecordService.statBuyAmount(ds[0],ds[1],budget.getUserId(),budget.getGoodsTypeId(),budget.getSubGoodsTypeId(),budget.getKeywords());
+        }else if(feeType==BudgetFeeType.TREAT_RECORD){
+            TreatRecordSummaryStat data = this.statTreatRecord(ds[0],ds[1],budget.getUserId());
+            v = data.getTotalPersonalPaidFee();
+        }
+        return v;
+    }
+
+    /**
      * 获取看病消费
      *
      * @param startTime
@@ -83,14 +103,19 @@ public class BudgetHandler extends BaseHandler {
      * @return
      */
     public double getTreadConsume(Date startTime, Date endTime, Long userId) {
+        TreatRecordSummaryStat data = this.statTreatRecord(startTime,endTime,userId);
+        double treatAmount = data.getTotalPersonalPaidFee() == null ? 0.0 : data.getTotalPersonalPaidFee();
+        return treatAmount;
+    }
+
+    private TreatRecordSummaryStat statTreatRecord(Date startTime, Date endTime, Long userId){
         //看病消费
         TreatRecordSearch trs = new TreatRecordSearch();
         trs.setStartDate(startTime);
         trs.setEndDate(endTime);
         trs.setUserId(userId);
         TreatRecordSummaryStat data = treatService.statTreatRecord(trs);
-        double treatAmount = data.getTotalPersonalPaidFee() == null ? 0.0 : data.getTotalPersonalPaidFee();
-        return treatAmount;
+        return data;
     }
 
     public String createBussKey(PeriodType period, Date date) {
@@ -184,6 +209,8 @@ public class BudgetHandler extends BaseHandler {
             }
 
         }
+        //去掉时分秒
+        startTime = DateUtil.getFromMiddleNightDate(startTime);
         return new Date[]{startTime, endTime};
     }
 
@@ -213,6 +240,8 @@ public class BudgetHandler extends BaseHandler {
         Date[] ds = this.getDateRange(period, bussDay, useLastDay);
 
         BudgetLog bl = this.statBudget(userId, budgetAmount, ds[0], ds[1], bussKey, isRedo, period);
+        //自动计算
+        bl.setSource(BudgetLogSource.AUTO);
         //计算收入
         IncomeSummaryStat iss = incomeService.incomeSummaryStat(userId, ds[0], ds[1]);
         BigDecimal totalAmount = iss.getTotalAmount();

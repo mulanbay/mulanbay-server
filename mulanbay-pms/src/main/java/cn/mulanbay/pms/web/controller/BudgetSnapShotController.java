@@ -6,6 +6,7 @@ import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.BudgetHandler;
+import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.domain.BudgetSnapshot;
 import cn.mulanbay.pms.persistent.service.BudgetService;
@@ -66,17 +67,18 @@ public class BudgetSnapShotController extends BaseController {
         BudgetLog budgetLog = this.getUserEntity(BudgetLog.class, sf.getBudgetLogId(), sf.getUserId());
         PageResult<BudgetDetailVo> res = new PageResult<>(qr);
         List<BudgetDetailVo> list = new ArrayList<>();
-        //删除统计的前缀
-        String bussKey = budgetLog.getBussKey().replace("MS", "");
+        Date bussDay = budgetLog.getOccurDate();
         for (BudgetSnapshot bg : qr.getBeanList()) {
             BudgetDetailVo bdb = new BudgetDetailVo();
             BeanCopy.copyProperties(bg, bdb);
-            if (bg.getBindFlow()) {
+            if (bg.getFeeType()!=null) {
                 //查询预算实际支付
-                BudgetLog bl = budgetService.selectBudgetLog(bussKey, sf.getUserId(), null, bg.getFromId());
-                if (bl != null) {
-                    bdb.setCpPaidTime(bl.getOccurDate());
-                    bdb.setCpPaidAmount(bl.getBcAmount() + bl.getNcAmount() + bl.getTrAmount());
+                Budget budget = new Budget();
+                BeanCopy.copyProperties(bg,budget);
+                Double paidAmount= budgetHandler.getActualAmount(budget,bussDay);
+                if (paidAmount != null) {
+                    bdb.setCpPaidTime(bussDay);
+                    bdb.setCpPaidAmount(paidAmount);
                 }
             }
             list.add(bdb);

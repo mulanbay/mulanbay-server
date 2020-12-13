@@ -128,7 +128,7 @@ public class BudgetCheckJob extends AbstractBaseJob {
             timeline.setBussDay(bussDay);
             timeline.setTotalDays(tds);
             timeline.setPassDays(pds);
-            String bussKey = "MS" + budgetHandler.createBussKey(period, bussDay);
+            String bussKey = budgetHandler.createBussKey(period, bussDay);
             timeline.setBussKey(bussKey);
             timeline.setId(null);
             budgetService.saveBudgetTimeline(timeline, this.isRedo());
@@ -174,7 +174,7 @@ public class BudgetCheckJob extends AbstractBaseJob {
             timeline.setBussDay(bussDay);
             timeline.setTotalDays(tds);
             timeline.setPassDays(pds);
-            String bussKey = "MS" + budgetHandler.createBussKey(period, bussDay);
+            String bussKey = budgetHandler.createBussKey(period, bussDay);
             timeline.setBussKey(bussKey);
             timeline.setId(null);
             budgetService.saveBudgetTimeline(timeline, this.isRedo());

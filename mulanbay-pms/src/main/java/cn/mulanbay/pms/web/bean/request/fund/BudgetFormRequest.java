@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.web.bean.request.fund;
 
 import cn.mulanbay.common.aop.BindUser;
+import cn.mulanbay.pms.persistent.enums.BudgetFeeType;
 import cn.mulanbay.pms.persistent.enums.BudgetType;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
@@ -35,13 +36,17 @@ public class BudgetFormRequest implements BindUser {
 
     private String keywords;
 
+    //资金类型
+    private BudgetFeeType feeType;
+    //消费大类（feeType为BUY_RECORD有效）
+    private Integer goodsTypeId;
+    //消费大类（feeType为BUY_RECORD有效）
+    private Integer subGoodsTypeId;
+
     private String remark;
 
     @NotNull(message = "{validate.budget.remind.notNull}")
     private Boolean remind;
-
-    @NotNull(message = "{validate.budget.bindFlow.notNull}")
-    private Boolean bindFlow;
 
     @NotNull(message = "{validate.budget.status.notNull}")
     private CommonStatus status;
@@ -128,19 +133,35 @@ public class BudgetFormRequest implements BindUser {
         this.remind = remind;
     }
 
-    public Boolean getBindFlow() {
-        return bindFlow;
-    }
-
-    public void setBindFlow(Boolean bindFlow) {
-        this.bindFlow = bindFlow;
-    }
-
     public String getRemark() {
         return remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public BudgetFeeType getFeeType() {
+        return feeType;
+    }
+
+    public void setFeeType(BudgetFeeType feeType) {
+        this.feeType = feeType;
+    }
+
+    public Integer getGoodsTypeId() {
+        return goodsTypeId;
+    }
+
+    public void setGoodsTypeId(Integer goodsTypeId) {
+        this.goodsTypeId = goodsTypeId;
+    }
+
+    public Integer getSubGoodsTypeId() {
+        return subGoodsTypeId;
+    }
+
+    public void setSubGoodsTypeId(Integer subGoodsTypeId) {
+        this.subGoodsTypeId = subGoodsTypeId;
     }
 }

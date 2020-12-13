@@ -3,6 +3,7 @@ package cn.mulanbay.pms.persistent.service;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.exception.PersistentException;
 import cn.mulanbay.common.util.PriceUtil;
+import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.common.BaseException;
 import cn.mulanbay.persistent.dao.BaseHibernateDao;
 import cn.mulanbay.persistent.query.PageRequest;
@@ -316,6 +317,50 @@ public class BuyRecordService extends BaseHibernateDao {
                     "获取消费总值异常", e);
         }
     }
+
+    /**
+     * 获取消费总值
+     * @param startTime
+     * @param endTime
+     * @param userId
+     * @param goodsTypeId
+     * @param subGoodsTypeId
+     * @return
+     */
+    public Double statBuyAmount(Date startTime, Date endTime, Long userId, Integer goodsTypeId,Integer subGoodsTypeId,String keywords) {
+        try {
+            StringBuffer sb = new StringBuffer();
+            sb.append("select sum(total_price) from buy_record where buy_date>=?0 and buy_date<=?1 and user_id=?2");
+            List args = new ArrayList();
+            args.add(startTime);
+            args.add(endTime);
+            args.add(userId);
+            int index =3;
+            if(goodsTypeId!=null){
+                sb.append(" and goods_type_id=?"+(index++));
+                args.add(goodsTypeId);
+            }
+            if(subGoodsTypeId!=null){
+                sb.append(" and sub_goods_type_id=?"+(index++));
+                args.add(subGoodsTypeId);
+            }
+            if(StringUtil.isNotEmpty(keywords)){
+                sb.append(" and (goods_name like?"+(index++)+" or keywords like?"+(index++)+")");
+                args.add("%"+keywords+"%");
+                args.add("%"+keywords+"%");
+            }
+            List list = this.getEntityListNoPageSQL(sb.toString(), args.toArray());
+            if (list.isEmpty() || list.get(0) == null) {
+                return null;
+            } else {
+                return Double.valueOf(list.get(0).toString());
+            }
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取消费总值异常", e);
+        }
+    }
+
 
 
     /**

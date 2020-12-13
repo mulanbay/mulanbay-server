@@ -9,6 +9,7 @@ import cn.mulanbay.pms.handler.BudgetHandler;
 import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.dto.UserBudgetAndIncomeStat;
+import cn.mulanbay.pms.persistent.enums.BudgetLogSource;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
@@ -99,6 +100,7 @@ public class BudgetLogController extends BaseController {
         budgetLog.setBcAmount(0.0);
         budgetLog.setTrAmount(0.0);
         budgetLog.setIncomeAmount(0.0);
+        budgetLog.setSource(BudgetLogSource.MANUAL);
         budgetLog.setCreatedTime(new Date());
         budgetService.saveBudgetLog(budgetLog, false);
         return callback(null);

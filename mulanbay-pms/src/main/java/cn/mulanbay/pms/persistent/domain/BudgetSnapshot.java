@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.persistent.domain;
 
+import cn.mulanbay.pms.persistent.enums.BudgetFeeType;
 import cn.mulanbay.pms.persistent.enums.BudgetType;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
@@ -43,11 +44,15 @@ public class BudgetSnapshot implements java.io.Serializable {
     //金额
     private Double amount;
     private Boolean remind;
-    //绑定流水
-    private Boolean bindFlow;
     //账户状态
     private CommonStatus status;
     private String keywords;
+    //资金类型
+    private BudgetFeeType feeType;
+    //消费大类（feeType为BUY_RECORD有效）
+    private Integer goodsTypeId;
+    //消费大类（feeType为BUY_RECORD有效）
+    private Integer subGoodsTypeId;
     private String remark;
     private Date createdTime;
     private Date lastModifyTime;
@@ -174,16 +179,6 @@ public class BudgetSnapshot implements java.io.Serializable {
     }
 
     @Basic
-    @Column(name = "bind_flow")
-    public Boolean getBindFlow() {
-        return bindFlow;
-    }
-
-    public void setBindFlow(Boolean bindFlow) {
-        this.bindFlow = bindFlow;
-    }
-
-    @Basic
     @Column(name = "status")
     public CommonStatus getStatus() {
         return status;
@@ -201,6 +196,36 @@ public class BudgetSnapshot implements java.io.Serializable {
 
     public void setKeywords(String keywords) {
         this.keywords = keywords;
+    }
+
+    @Basic
+    @Column(name = "fee_type")
+    public BudgetFeeType getFeeType() {
+        return feeType;
+    }
+
+    public void setFeeType(BudgetFeeType feeType) {
+        this.feeType = feeType;
+    }
+
+    @Basic
+    @Column(name = "goods_type_id")
+    public Integer getGoodsTypeId() {
+        return goodsTypeId;
+    }
+
+    public void setGoodsTypeId(Integer goodsTypeId) {
+        this.goodsTypeId = goodsTypeId;
+    }
+
+    @Basic
+    @Column(name = "sub_goods_type_id")
+    public Integer getSubGoodsTypeId() {
+        return subGoodsTypeId;
+    }
+
+    public void setSubGoodsTypeId(Integer subGoodsTypeId) {
+        this.subGoodsTypeId = subGoodsTypeId;
     }
 
     @Basic

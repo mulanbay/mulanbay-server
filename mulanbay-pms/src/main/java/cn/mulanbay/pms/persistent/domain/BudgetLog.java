@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.persistent.domain;
 
+import cn.mulanbay.pms.persistent.enums.BudgetLogSource;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
 
 import javax.persistence.*;
@@ -38,8 +39,9 @@ public class BudgetLog implements java.io.Serializable {
     private Double trAmount;
     //收入
     private Double incomeAmount;
-    //有些花费可以直接与消费记录挂钩
-    private Long buyRecordId;
+    //账户变化值
+    private Double accountChangeAmount;
+    private BudgetLogSource source;
     private String remark;
     private Date createdTime;
     private Date lastModifyTime;
@@ -156,13 +158,23 @@ public class BudgetLog implements java.io.Serializable {
     }
 
     @Basic
-    @Column(name = "buy_record_id")
-    public Long getBuyRecordId() {
-        return buyRecordId;
+    @Column(name = "account_change_amount")
+    public Double getAccountChangeAmount() {
+        return accountChangeAmount;
     }
 
-    public void setBuyRecordId(Long buyRecordId) {
-        this.buyRecordId = buyRecordId;
+    public void setAccountChangeAmount(Double accountChangeAmount) {
+        this.accountChangeAmount = accountChangeAmount;
+    }
+
+    @Basic
+    @Column(name = "source")
+    public BudgetLogSource getSource() {
+        return source;
+    }
+
+    public void setSource(BudgetLogSource source) {
+        this.source = source;
     }
 
     @Basic
@@ -198,5 +210,10 @@ public class BudgetLog implements java.io.Serializable {
     @Transient
     public String getPeriodName() {
         return period.getName();
+    }
+
+    @Transient
+    public String getSourceName() {
+        return source ==null ? null : source.getName();
     }
 }

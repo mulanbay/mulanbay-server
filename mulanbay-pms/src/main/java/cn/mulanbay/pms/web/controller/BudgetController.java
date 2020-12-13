@@ -68,11 +68,12 @@ public class BudgetController extends BaseController {
 
     /**
      * 预算树
-     *
+     * @param needRoot
+     * @param filterEmpty 过滤空树
      * @return
      */
     @RequestMapping(value = "/getBudgetTree")
-    public ResultBean getBudgetTree(Boolean needRoot) {
+    public ResultBean getBudgetTree(Boolean needRoot,Boolean filterEmpty) {
         try {
             BudgetSearch sf = new BudgetSearch();
             PageRequest pr = sf.buildQuery();
@@ -95,9 +96,9 @@ public class BudgetController extends BaseController {
                     }
                 }
                 //去掉空列表
-                //if(tb.hasChildren()){
-                list.add(tb);
-                //}
+                if((filterEmpty==null||!filterEmpty)|| (filterEmpty&&tb.hasChildren())){
+                    list.add(tb);
+                }
             }
             return callback(TreeBeanUtil.addRoot(list, needRoot));
         } catch (Exception e) {
@@ -134,13 +135,12 @@ public class BudgetController extends BaseController {
                     Integer ld = DateUtil.getIntervalDays(now, nextPayTime);
                     bdb.setLeftDays(ld);
                 }
-                //查询是否在当前周期是否已经支付过
-                if (bg.getBindFlow()) {
-                    String bussKey = budgetHandler.createBussKey(bg.getPeriod(), now);
-                    BudgetLog bl = budgetService.selectBudgetLog(bussKey, bg.getUserId().longValue(), null, bg.getId());
-                    if (bl != null) {
-                        bdb.setCpPaidTime(bl.getOccurDate());
-                        bdb.setCpPaidAmount(bl.getBcAmount() + bl.getNcAmount() + bl.getTrAmount());
+                //直接根据实际花费实时查询
+                if (bg.getFeeType()!=null) {
+                    Double paidAmount= budgetHandler.getActualAmount(bg,now);
+                    if (paidAmount != null) {
+                        bdb.setCpPaidTime(now);
+                        bdb.setCpPaidAmount(paidAmount);
                     }
                 }
             }
@@ -403,7 +403,7 @@ public class BudgetController extends BaseController {
      */
     @RequestMapping(value = "/timelineStat")
     public ResultBean timelineStat(@Valid BudgetTimelineStatSearch sf) {
-        String bussKey = "MS" + budgetHandler.createBussKey(sf.getPeriod(), sf.getBussDay());
+        String bussKey = budgetHandler.createBussKey(sf.getPeriod(), sf.getBussDay());
         List<BudgetTimeline> list = budgetService.selectBudgetTimelineList(bussKey, sf.getUserId());
         String dateFormat = "yyyy-MM";
         if (PeriodType.YEARLY == sf.getPeriod()) {
@@ -484,7 +484,7 @@ public class BudgetController extends BaseController {
             lastDay = max;
         }
         List<BudgetTimeline> datas = new ArrayList<>();
-        String bussKey = "MS" + budgetHandler.createBussKey(re.getPeriod(), re.getBussDay());
+        String bussKey = budgetHandler.createBussKey(re.getPeriod(), re.getBussDay());
         Date cc = firstDay;
         //总天数
         int tds;

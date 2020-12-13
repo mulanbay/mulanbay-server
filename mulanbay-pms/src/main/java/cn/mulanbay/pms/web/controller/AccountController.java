@@ -8,6 +8,7 @@ import cn.mulanbay.common.util.PriceUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
+import cn.mulanbay.pms.handler.BudgetHandler;
 import cn.mulanbay.pms.persistent.domain.Account;
 import cn.mulanbay.pms.persistent.domain.AccountSnapshotInfo;
 import cn.mulanbay.pms.persistent.domain.Budget;
@@ -51,6 +52,8 @@ public class AccountController extends BaseController {
     @Autowired
     UserPlanService userPlanService;
 
+    @Autowired
+    BudgetHandler budgetHandler;
     /**
      * 获取账户树
      *
@@ -242,8 +245,23 @@ public class AccountController extends BaseController {
     @RequestMapping(value = "/createSnapshot", method = RequestMethod.POST)
     public ResultBean createSnapshot(@RequestBody @Valid CreateAccountSnapshotRequest bean) {
         Date bussDay = new Date();
-        String bussKey = DateUtil.getFormatDate(bussDay, DateUtil.Format24Datetime2);
-        accountService.createSnapshot(bean.getName(), bussKey, bean.getRemark(), bean.getUserId());
+        String bussKey = null;
+        if(bean.getPeriod()==null){
+            //普通快照
+            bussKey = DateUtil.getFormatDate(bussDay, DateUtil.Format24Datetime2);
+        }else{
+            //上个月或者去年
+            Date date = null;
+            if(bean.getPeriod()==PeriodType.MONTHLY){
+                date = DateUtil.getDateMonth(-1,bussDay);
+            }else if(bean.getPeriod()==PeriodType.YEARLY){
+                date = DateUtil.getDateYear(-1,bussDay);
+            }
+            bussKey = budgetHandler.createBussKey(bean.getPeriod(), date);
+        }
+        accountService.createSnapshot(bean.getName(), bussKey, bean.getRemark(), bean.getUserId(),bean.getPeriod());
+        //更新预算日志
+
         return callback(null);
     }
 

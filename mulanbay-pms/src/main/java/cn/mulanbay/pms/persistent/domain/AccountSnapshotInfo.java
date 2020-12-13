@@ -1,5 +1,7 @@
 package cn.mulanbay.pms.persistent.domain;
 
+import cn.mulanbay.pms.persistent.enums.PeriodType;
+
 import javax.persistence.*;
 import java.util.Date;
 
@@ -21,7 +23,8 @@ public class AccountSnapshotInfo implements java.io.Serializable {
     private Long userId;
     //账户名称
     private String name;
-    //账户卡号
+    //周期
+    private PeriodType period;
     private String bussKey;
     private String remark;
     private Date createdTime;
@@ -56,6 +59,16 @@ public class AccountSnapshotInfo implements java.io.Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Basic
+    @Column(name = "period")
+    public PeriodType getPeriod() {
+        return period;
+    }
+
+    public void setPeriod(PeriodType period) {
+        this.period = period;
     }
 
     @Basic

@@ -51,14 +51,13 @@ public class BudgetRemindJob extends AbstractBaseJob {
         pr.setBeanClass(Budget.class);
         List<Budget> list = baseService.getBeanList(pr);
         BudgetHandler budgetHandler = BeanFactoryUtil.getBean(BudgetHandler.class);
-        BudgetService budgetService = BeanFactoryUtil.getBean(BudgetService.class);
         //step 2:根据日志查询是否已经完成
         Date bussDay = this.getBussDay();
         for (Budget bd : list) {
-            String bussKey = budgetHandler.createBussKey(bd.getPeriod(), bussDay);
-            boolean b = budgetService.isBudgetLogExit(bussKey, bd.getUserId().longValue(), null, bd.getId());
-            if (!b) {
+            Double paidAmount= budgetHandler.getActualAmount(bd,bussDay);
+            if (paidAmount==null) {
                 //step 3:发送提醒信息
+                String bussKey = budgetHandler.createBussKey(bd.getPeriod(), bussDay);
                 handleNotifyBudget(bd, bussKey);
             }
         }
