@@ -261,7 +261,7 @@ public class BudgetLogController extends BaseController {
             //账户变化
             double ev = bean.getAccountChangeAmount();
             double e = ev-mv;
-            yData1.getData().add(e);
+            yData1.getData().add(PriceUtil.changeToString(2,e));
             double pp = NumberUtil.getPercentValue(e,Math.abs(mv),0);
             yData2.getData().add(pp);
         }
