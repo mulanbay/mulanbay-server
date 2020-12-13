@@ -11,6 +11,7 @@ import cn.mulanbay.pms.handler.PmsNotifyHandler;
 import cn.mulanbay.pms.handler.RewardPointsHandler;
 import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.UserCalendar;
+import cn.mulanbay.pms.persistent.dto.BuyRecordBudgetStat;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.RewardSource;
 import cn.mulanbay.pms.persistent.enums.UserCalendarSource;
@@ -54,8 +55,8 @@ public class BudgetRemindJob extends AbstractBaseJob {
         //step 2:根据日志查询是否已经完成
         Date bussDay = this.getBussDay();
         for (Budget bd : list) {
-            Double paidAmount= budgetHandler.getActualAmount(bd,bussDay);
-            if (paidAmount==null) {
+            BuyRecordBudgetStat bs= budgetHandler.getActualAmount(bd,bussDay);
+            if (bs.getTotalPrice() == null) {
                 //step 3:发送提醒信息
                 String bussKey = budgetHandler.createBussKey(bd.getPeriod(), bussDay);
                 handleNotifyBudget(bd, bussKey);

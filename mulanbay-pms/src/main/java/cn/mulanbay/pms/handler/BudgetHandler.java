@@ -5,6 +5,7 @@ import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.pms.handler.bean.BudgetAmountBean;
 import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
+import cn.mulanbay.pms.persistent.dto.BuyRecordBudgetStat;
 import cn.mulanbay.pms.persistent.dto.BuyRecordConsumeTypeStat;
 import cn.mulanbay.pms.persistent.dto.IncomeSummaryStat;
 import cn.mulanbay.pms.persistent.dto.TreatRecordSummaryStat;
@@ -77,19 +78,21 @@ public class BudgetHandler extends BaseHandler {
      * @param budget
      * @return
      */
-    public Double getActualAmount(Budget budget,Date bussDay) {
+    public BuyRecordBudgetStat getActualAmount(Budget budget,Date bussDay) {
         BudgetFeeType feeType = budget.getFeeType();
         //没有绑定类型
         if(feeType==null){
             return null;
         }
-        Double v =null;
+        BuyRecordBudgetStat v =null;
         Date[] ds = this.getDateRange(budget.getPeriod(), bussDay, true);
         if(feeType==BudgetFeeType.BUY_RECORD){
             v = buyRecordService.statBuyAmount(ds[0],ds[1],budget.getUserId(),budget.getGoodsTypeId(),budget.getSubGoodsTypeId(),budget.getKeywords());
         }else if(feeType==BudgetFeeType.TREAT_RECORD){
             TreatRecordSummaryStat data = this.statTreatRecord(ds[0],ds[1],budget.getUserId());
-            v = data.getTotalPersonalPaidFee();
+            v = new BuyRecordBudgetStat();
+            v.setTotalPrice(new BigDecimal(data.getTotalPersonalPaidFee()));
+            v.setMaxBuyDate(data.getMaxTreatDate());
         }
         return v;
     }

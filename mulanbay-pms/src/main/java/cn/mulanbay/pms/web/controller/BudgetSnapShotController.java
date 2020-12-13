@@ -9,6 +9,7 @@ import cn.mulanbay.pms.handler.BudgetHandler;
 import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.domain.BudgetSnapshot;
+import cn.mulanbay.pms.persistent.dto.BuyRecordBudgetStat;
 import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.DietService;
 import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotSearch;
@@ -75,10 +76,10 @@ public class BudgetSnapShotController extends BaseController {
                 //查询预算实际支付
                 Budget budget = new Budget();
                 BeanCopy.copyProperties(bg,budget);
-                Double paidAmount= budgetHandler.getActualAmount(budget,bussDay);
-                if (paidAmount != null) {
-                    bdb.setCpPaidTime(bussDay);
-                    bdb.setCpPaidAmount(paidAmount);
+                BuyRecordBudgetStat bs= budgetHandler.getActualAmount(budget,bussDay);
+                if (bs.getTotalPrice() != null) {
+                    bdb.setCpPaidTime(bs.getMaxBuyDate());
+                    bdb.setCpPaidAmount(bs.getTotalPrice().doubleValue());
                 }
             }
             list.add(bdb);

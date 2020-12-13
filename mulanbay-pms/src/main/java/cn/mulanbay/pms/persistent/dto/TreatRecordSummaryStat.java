@@ -2,6 +2,8 @@ package cn.mulanbay.pms.persistent.dto;
 
 import cn.mulanbay.pms.web.bean.response.chart.ChartPieData;
 
+import java.util.Date;
+
 public class TreatRecordSummaryStat {
 
     private Long totalCount;
@@ -17,6 +19,8 @@ public class TreatRecordSummaryStat {
     private Double totalMedicalInsurancePaidFee;
 
     private Double totalPersonalPaidFee;
+
+    private Date maxTreatDate;
 
     //统计分析图：医保和个人支付比例
     private ChartPieData pieData;
@@ -75,6 +79,14 @@ public class TreatRecordSummaryStat {
 
     public void setTotalPersonalPaidFee(Double totalPersonalPaidFee) {
         this.totalPersonalPaidFee = totalPersonalPaidFee;
+    }
+
+    public Date getMaxTreatDate() {
+        return maxTreatDate;
+    }
+
+    public void setMaxTreatDate(Date maxTreatDate) {
+        this.maxTreatDate = maxTreatDate;
     }
 
     public ChartPieData getPieData() {

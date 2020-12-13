@@ -160,7 +160,8 @@ public class TreatService extends BaseHibernateDao {
             sb.append("sum(operationFee) as totalOperationFee,");
             sb.append("sum(totalFee) as totalTotalFee,");
             sb.append("sum(medicalInsurancePaidFee) as totalMedicalInsurancePaidFee,");
-            sb.append("sum(personalPaidFee) as totalPersonalPaidFee");
+            sb.append("sum(personalPaidFee) as totalPersonalPaidFee,");
+            sb.append("max(treatDate) as maxTreatDate");
             sb.append(" from TreatRecord ");
             sb.append(pr.getParameterString());
             List<TreatRecordSummaryStat> list = this.getEntityListWithClassHQL(sb.toString(), pr.getPage(), pr.getPageSize(), TreatRecordSummaryStat.class, pr.getParameterValue());

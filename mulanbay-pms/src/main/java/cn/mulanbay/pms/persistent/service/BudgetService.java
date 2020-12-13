@@ -292,7 +292,7 @@ public class BudgetService extends BaseHibernateDao {
     public void saveBudgetLog(BudgetLog budgetLog, boolean isRedo) {
         try {
             if (isRedo) {
-                String hql = "delete from BudgetLog where bussKey=?0 and userId=?1 ";
+                String hql = "delete from BudgetLog where bussKey=?0 and userId=?1 and budget is null";
                 this.updateEntities(hql, budgetLog.getBussKey(), budgetLog.getUserId());
             }
             this.saveEntity(budgetLog);
@@ -363,7 +363,7 @@ public class BudgetService extends BaseHibernateDao {
      */
     public BudgetLog selectBudgetLog(String bussKey, Long userId) {
         try {
-            String hql = "from BudgetLog where bussKey=?0 and userId=?1";
+            String hql = "from BudgetLog where bussKey=?0 and userId=?1 and budget is null";
             return (BudgetLog) this.getEntityForOne(hql, bussKey, userId);
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,

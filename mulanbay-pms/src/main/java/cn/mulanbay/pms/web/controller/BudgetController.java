@@ -15,6 +15,7 @@ import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.domain.BudgetTimeline;
 import cn.mulanbay.pms.persistent.dto.BudgetStat;
+import cn.mulanbay.pms.persistent.dto.BuyRecordBudgetStat;
 import cn.mulanbay.pms.persistent.dto.BuyRecordRealTimeStat;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.GoodsConsumeType;
@@ -137,10 +138,10 @@ public class BudgetController extends BaseController {
                 }
                 //直接根据实际花费实时查询
                 if (bg.getFeeType()!=null) {
-                    Double paidAmount= budgetHandler.getActualAmount(bg,now);
-                    if (paidAmount != null) {
-                        bdb.setCpPaidTime(now);
-                        bdb.setCpPaidAmount(paidAmount);
+                    BuyRecordBudgetStat bs= budgetHandler.getActualAmount(bg,now);
+                    if (bs.getTotalPrice() != null) {
+                        bdb.setCpPaidTime(bs.getMaxBuyDate());
+                        bdb.setCpPaidAmount(bs.getTotalPrice().doubleValue());
                     }
                 }
             }

@@ -109,7 +109,6 @@ public class BuyRecordService extends BaseHibernateDao {
      * @param sf
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<BuyRecordRadarStat> getRadarStat(BuyRecordAnalyseStatSearch sf) {
         try {
             PageRequest pr = sf.buildQuery();
@@ -327,10 +326,10 @@ public class BuyRecordService extends BaseHibernateDao {
      * @param subGoodsTypeId
      * @return
      */
-    public Double statBuyAmount(Date startTime, Date endTime, Long userId, Integer goodsTypeId,Integer subGoodsTypeId,String keywords) {
+    public BuyRecordBudgetStat statBuyAmount(Date startTime, Date endTime, Long userId, Integer goodsTypeId,Integer subGoodsTypeId,String keywords) {
         try {
             StringBuffer sb = new StringBuffer();
-            sb.append("select sum(total_price) from buy_record where buy_date>=?0 and buy_date<=?1 and user_id=?2");
+            sb.append("select sum(total_price) as totalPrice,max(buy_date) as maxBuyDate from buy_record where buy_date>=?0 and buy_date<=?1 and user_id=?2");
             List args = new ArrayList();
             args.add(startTime);
             args.add(endTime);
@@ -349,11 +348,11 @@ public class BuyRecordService extends BaseHibernateDao {
                 args.add("%"+keywords+"%");
                 args.add("%"+keywords+"%");
             }
-            List list = this.getEntityListNoPageSQL(sb.toString(), args.toArray());
+            List list = this.getEntityListWithClassSQL(sb.toString(),-1,1,BuyRecordBudgetStat.class, args.toArray());
             if (list.isEmpty() || list.get(0) == null) {
-                return null;
+                return new BuyRecordBudgetStat();
             } else {
-                return Double.valueOf(list.get(0).toString());
+                return (BuyRecordBudgetStat) list.get(0);
             }
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
