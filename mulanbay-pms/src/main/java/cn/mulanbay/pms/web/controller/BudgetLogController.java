@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.web.controller;
 
 import cn.mulanbay.common.util.*;
+import cn.mulanbay.persistent.query.NullType;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
@@ -14,10 +15,7 @@ import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
-import cn.mulanbay.pms.web.bean.request.fund.BudgetLogFormRequest;
-import cn.mulanbay.pms.web.bean.request.fund.BudgetLogPeriodStatSearch;
-import cn.mulanbay.pms.web.bean.request.fund.BudgetLogSearch;
-import cn.mulanbay.pms.web.bean.request.fund.BudgetLogStatSearch;
+import cn.mulanbay.pms.web.bean.request.fund.*;
 import cn.mulanbay.pms.web.bean.response.chart.ChartData;
 import cn.mulanbay.pms.web.bean.response.chart.ChartYData;
 import cn.mulanbay.web.bean.response.ResultBean;
@@ -233,6 +231,43 @@ public class BudgetLogController extends BaseController {
             //chartData.setSubTitle(subTitle);
             return callback(chartData);
         }
+    }
+
+    /**
+     * 实际的账户变化与系统计算的存款变化
+     *
+     * @return
+     */
+    @RequestMapping(value = "/valueErrorStat", method = RequestMethod.GET)
+    public ResultBean valueErrorStat(@Valid BudgetLogValueErrorStatSearch sf) {
+        sf.setAccountChangeAmount(NullType.NOT_NULL);
+        PageRequest pr = sf.buildQuery();
+        pr.setBeanClass(beanClass);
+        Sort s1 = new Sort("bussKey", Sort.ASC);
+        pr.addSort(s1);
+        List<BudgetLog> list = baseService.getBeanList(pr);
+        ChartData chartData = new ChartData();
+        chartData.setTitle("账户变化与系统计算误差统计");
+        chartData.setLegendData(new String[]{"误差值(元)","误差率(%)"});
+        ChartYData yData1 = new ChartYData();
+        yData1.setName("误差值(元)");
+        ChartYData yData2 = new ChartYData();
+        yData2.setName("误差率(%)");
+        for (BudgetLog bean : list) {
+            chartData.getIntXData().add(Integer.valueOf(bean.getBussKey()));
+            chartData.getXdata().add(bean.getBussKey());
+            //存款变化
+            double mv = bean.getIncomeAmount()-(bean.getBcAmount()+bean.getNcAmount()+bean.getTrAmount());
+            //账户变化
+            double ev = bean.getAccountChangeAmount();
+            double e = ev-mv;
+            yData1.getData().add(e);
+            double pp = NumberUtil.getPercentValue(e,Math.abs(mv),0);
+            yData2.getData().add(pp);
+        }
+        chartData.getYdata().add(yData1);
+        chartData.getYdata().add(yData2);
+        return callback(chartData);
     }
 
     /**
