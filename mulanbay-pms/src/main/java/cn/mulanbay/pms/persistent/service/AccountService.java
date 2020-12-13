@@ -133,7 +133,6 @@ public class AccountService extends BaseHibernateDao {
      * @param userId
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<AccountStat> statAccount(Long userId, AccountAnalyseType groupType, AccountType type, AccountStatus status, Long snapshotId) {
         try {
             StringBuffer sql = new StringBuffer();
@@ -226,7 +225,7 @@ public class AccountService extends BaseHibernateDao {
                 asi.setUserId(userId);
                 this.saveEntity(asi);
             }else{
-                this.execSqlUpdate("delete from account_flow where snapshot_id=?0 ",bussKey);
+                this.execSqlUpdate("delete from account_flow where snapshot_id=? ",bussKey);
                 asi.setBussKey(bussKey);
                 asi.setLastModifyTime(new Date());
                 asi.setName(name);

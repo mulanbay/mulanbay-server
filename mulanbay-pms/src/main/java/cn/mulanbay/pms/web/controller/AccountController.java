@@ -12,10 +12,13 @@ import cn.mulanbay.pms.handler.BudgetHandler;
 import cn.mulanbay.pms.persistent.domain.Account;
 import cn.mulanbay.pms.persistent.domain.AccountSnapshotInfo;
 import cn.mulanbay.pms.persistent.domain.Budget;
+import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.dto.AccountStat;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
+import cn.mulanbay.pms.persistent.service.AccountFlowService;
 import cn.mulanbay.pms.persistent.service.AccountService;
+import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.UserPlanService;
 import cn.mulanbay.pms.util.TreeBeanUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
@@ -54,6 +57,12 @@ public class AccountController extends BaseController {
 
     @Autowired
     BudgetHandler budgetHandler;
+
+    @Autowired
+    AccountFlowService accountFlowService;
+
+    @Autowired
+    BudgetService budgetService;
     /**
      * 获取账户树
      *
@@ -261,8 +270,60 @@ public class AccountController extends BaseController {
         }
         accountService.createSnapshot(bean.getName(), bussKey, bean.getRemark(), bean.getUserId(),bean.getPeriod());
         //更新预算日志
-
+        this.updateBudgetLogAccountChange(bussKey , bean.getUserId());
         return callback(null);
+    }
+
+    /**
+     * 更新预算日志中的账户变化
+     * @param bussKey
+     */
+    private boolean updateBudgetLogAccountChange(String bussKey,Long userId){
+        BudgetLog bl = budgetService.selectBudgetLog(bussKey,userId);
+        if(bl==null){
+            //没有预算记录
+            return false;
+        }
+        BigDecimal afterAmount = accountFlowService.statAccountAmount(bussKey,userId);
+        if(afterAmount==null){
+            return false;
+        }
+        //往前
+        Date date =null;
+        String bussKey2=null;
+        if(bussKey.length()==4){
+            //年
+            date = DateUtil.getDate(bussKey,BudgetHandler.YEARLY_DATE_FORMAT);
+            date = DateUtil.getDateYear(-1,date);
+            bussKey2 = DateUtil.getFormatDate(date, BudgetHandler.YEARLY_DATE_FORMAT);
+        }else if(bussKey.length()==6){
+            //年
+            date = DateUtil.getDate(bussKey,BudgetHandler.MONTHLY_DATE_FORMAT);
+            date = DateUtil.getDateMonth(-1,date);
+            bussKey2 = DateUtil.getFormatDate(date, BudgetHandler.MONTHLY_DATE_FORMAT);
+        }
+        BigDecimal beforeAmount = accountFlowService.statAccountAmount(bussKey2,userId);
+        if(beforeAmount==null){
+            return false;
+        }
+        //差值
+        BigDecimal v = afterAmount.subtract(beforeAmount);
+        //更新
+        bl.setAccountChangeAmount(v.doubleValue());
+        baseService.updateObject(bl);
+        return true;
+    }
+
+    /**
+     * 更新账户改变
+     *
+     * @return
+     */
+    @RequestMapping(value = "/updateBudgetLogAccountChange", method = RequestMethod.POST)
+    public ResultBean updateBudgetLogAccountChange(@RequestBody @Valid AccountUpdateBudgetLogRequest bean) {
+        //更新预算日志
+        boolean b = this.updateBudgetLogAccountChange(bean.getBussKey() , bean.getUserId());
+        return callback(b);
     }
 
     /**

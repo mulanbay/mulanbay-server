@@ -229,6 +229,8 @@ public class BudgetService extends BaseHibernateDao {
             }
             if (budgetId != null) {
                 hql += " and budget.id=" + budgetId;
+            }else{
+                hql += " and budget.id is null";
             }
             BudgetLog budgetLog = (BudgetLog) this.getEntityForOne(hql, bussKey, userId);
             return budgetLog;
@@ -320,7 +322,7 @@ public class BudgetService extends BaseHibernateDao {
     public void saveBudgetTimeline(BudgetTimeline timeline, boolean isRedo) {
         try {
             if (isRedo) {
-                String hql = "delete from BudgetTimeline where bussKey=?0 and userId=? and bussDay=?1 ";
+                String hql = "delete from BudgetTimeline where bussKey=?0 and userId=?1 and bussDay=?2 ";
                 this.updateEntities(hql, timeline.getBussKey(), timeline.getUserId(), timeline.getBussDay());
             }
             this.saveEntity(timeline);

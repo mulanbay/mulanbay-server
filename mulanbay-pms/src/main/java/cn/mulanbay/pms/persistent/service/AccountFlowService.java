@@ -8,6 +8,7 @@ import cn.mulanbay.pms.persistent.dto.AccountFlowSnapshotStat;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +52,27 @@ public class AccountFlowService extends BaseHibernateDao {
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "获取账户流水的快照统计异常", e);
+        }
+    }
+
+    /**
+     * 统计账户值
+     * @param bussKey
+     * @param userId
+     * @return
+     */
+    public BigDecimal statAccountAmount(String bussKey, Long userId) {
+        try {
+            String sql = "select sum(after_amount) from account_flow where snapshot_id =(select id from account_snapshot_info where user_id =?0 and buss_key =?1 ) and status=1 ";
+            List list = this.getEntityListNoPageSQL(sql, userId, bussKey);
+            if (list.isEmpty() || list.get(0) == null) {
+                return null;
+            } else {
+                return (BigDecimal) list.get(0);
+            }
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_UPDATE_ERROR,
+                    "统计账户值异常", e);
         }
     }
 }

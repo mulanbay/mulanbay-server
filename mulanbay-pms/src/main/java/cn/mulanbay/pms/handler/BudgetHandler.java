@@ -31,6 +31,12 @@ import java.util.List;
 @Component
 public class BudgetHandler extends BaseHandler {
 
+    //年的时间格式化
+    public static final String YEARLY_DATE_FORMAT="yyyy";
+
+    //月的时间格式化
+    public static final String MONTHLY_DATE_FORMAT="yyyyMM";
+
     @Autowired
     BuyRecordService buyRecordService;
 
@@ -91,7 +97,9 @@ public class BudgetHandler extends BaseHandler {
         }else if(feeType==BudgetFeeType.TREAT_RECORD){
             TreatRecordSummaryStat data = this.statTreatRecord(ds[0],ds[1],budget.getUserId());
             v = new BuyRecordBudgetStat();
-            v.setTotalPrice(new BigDecimal(data.getTotalPersonalPaidFee()));
+            if(data.getTotalPersonalPaidFee()!=null){
+                v.setTotalPrice(new BigDecimal(data.getTotalPersonalPaidFee()));
+            }
             v.setMaxBuyDate(data.getMaxTreatDate());
         }
         return v;
@@ -151,7 +159,6 @@ public class BudgetHandler extends BaseHandler {
      */
     public BudgetLog statBudget(Long userId, double budgetAmount, Date startTime, Date endTime, String bussKey, boolean isRedo, PeriodType period) {
         //step 2:查询实际的消费情况
-        //Date[] dr = this.getDateRange(period,bussDay);
         double[] dd = this.getBuyRecordConsume(startTime, endTime, userId);
         double treatAmount = this.getTreadConsume(startTime, endTime, userId);
         //step 3:保存记录
@@ -294,16 +301,16 @@ public class BudgetHandler extends BaseHandler {
                 Date date = b.getExpectPaidTime();
                 if (date != null) {
                     //年度预算
-                    String y1 = DateUtil.getFormatDate(now, "yyyy");
-                    String y2 = DateUtil.getFormatDate(date, "yyyy");
+                    String y1 = DateUtil.getFormatDate(now, YEARLY_DATE_FORMAT);
+                    String y2 = DateUtil.getFormatDate(date, YEARLY_DATE_FORMAT);
                     if (y1.equals(y2)) {
                         //同一年
                         bab.addYearBudget(b.getAmount());
                         bab.addYearBudget(b);
                     }
                     //月度预算
-                    String m1 = DateUtil.getFormatDate(now, "yyyyMM");
-                    String m2 = DateUtil.getFormatDate(date, "yyyyMM");
+                    String m1 = DateUtil.getFormatDate(now, MONTHLY_DATE_FORMAT);
+                    String m2 = DateUtil.getFormatDate(date, MONTHLY_DATE_FORMAT);
                     if (m1.equals(m2)) {
                         //同一个月
                         bab.addMonthBudget(b.getAmount());
@@ -312,7 +319,7 @@ public class BudgetHandler extends BaseHandler {
                 }
 
             } else if (b.getPeriod() == PeriodType.DAILY) {
-                int ydays = DateUtil.getDays(Integer.valueOf(DateUtil.getFormatDate(now, "yyyy")));
+                int ydays = DateUtil.getDays(Integer.valueOf(DateUtil.getFormatDate(now, YEARLY_DATE_FORMAT)));
                 bab.addYearBudget(b.getAmount() * ydays);
                 bab.addYearBudget(b);
                 int mdays = DateUtil.getMonthDays(now);
