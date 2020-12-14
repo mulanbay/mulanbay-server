@@ -110,34 +110,6 @@ public class BudgetService extends BaseHibernateDao {
         }
     }
 
-    /**
-     * 获取用户预算分析
-     *
-     * @param period
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    public List<UserBudgetStat> statActiveUserBudget(PeriodType period, Long userId, Boolean bindFlow) {
-        try {
-            String sql = "select user_id as userId,sum(amount) as amount from budget where status=1 ";
-            if (period != null) {
-                sql += " and period=" + period.getValue();
-            }
-            if (userId != null) {
-                sql += " and user_id=" + userId;
-            }
-            if (bindFlow != null) {
-                sql += " and bind_flow=" + (bindFlow == true ? 1 : 0);
-            }
-            sql += " group by user_id";
-            List<UserBudgetStat> list = this.getEntityListWithClassSQL(sql, 0, 0,
-                    UserBudgetStat.class);
-            return list;
-        } catch (BaseException e) {
-            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
-                    "获取预算分析异常", e);
-        }
-    }
 
     /**
      * 获取用户预算列表
@@ -156,9 +128,8 @@ public class BudgetService extends BaseHibernateDao {
                 hql += " and userId=?" + (index++) + " ";
                 args.add(userId);
             }
-            if (bindFlow != null) {
-                hql += " and bindFlow=?" + (index++) + " ";
-                args.add(bindFlow);
+            if (true == bindFlow) {
+                hql += " and feeType is not null" ;
             }
             hql += " order by userId";
             List<Budget> list = this.getEntityListNoPageHQL(hql, args.toArray());
@@ -185,9 +156,8 @@ public class BudgetService extends BaseHibernateDao {
                 hql += " and userId=?" + (index++) + " ";
                 args.add(userId);
             }
-            if (bindFlow != null) {
-                hql += " and bindFlow=?" + (index++) + " ";
-                args.add(bindFlow);
+            if (true == bindFlow) {
+                hql += " and feeType is not null" ;
             }
             if (StringUtil.isNotEmpty(name)) {
                 hql += " and name like '%" + name + "%' ";
@@ -237,22 +207,6 @@ public class BudgetService extends BaseHibernateDao {
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "根据bussKey查询预算日志异常", e);
-        }
-    }
-
-    /**
-     * 根据bussKey查询未实现的预算
-     */
-    public List<Budget> selectUnCompletedBudget(String bussKey, Long userId, PeriodType period) {
-        try {
-            StringBuffer hql = new StringBuffer();
-            hql.append("from Budget where id not in ");
-            hql.append("(select budget.id from BudgetLog where bussKey=?0 and userId=?1 and period=?2 )");
-            hql.append(" and userId=?3 and period=?4 and bindFlow=1 and status=1 ");
-            return this.getEntityListNoPageHQL(hql.toString(), bussKey, userId, period, userId, period);
-        } catch (BaseException e) {
-            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
-                    "根据bussKey查询未实现的预算异常", e);
         }
     }
 
