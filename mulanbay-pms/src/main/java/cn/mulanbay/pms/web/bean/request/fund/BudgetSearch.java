@@ -30,9 +30,6 @@ public class BudgetSearch extends PageSearch implements BindUser {
     @Query(fieldName = "remind", op = Parameter.Operator.EQ)
     private Boolean remind;
 
-    @Query(fieldName = "bindFlow", op = Parameter.Operator.EQ)
-    private Boolean bindFlow;
-
     @Override
     public Long getUserId() {
         return userId;
@@ -83,11 +80,4 @@ public class BudgetSearch extends PageSearch implements BindUser {
         this.remind = remind;
     }
 
-    public Boolean getBindFlow() {
-        return bindFlow;
-    }
-
-    public void setBindFlow(Boolean bindFlow) {
-        this.bindFlow = bindFlow;
-    }
 }
