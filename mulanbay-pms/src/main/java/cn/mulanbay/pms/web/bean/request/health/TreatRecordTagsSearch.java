@@ -21,7 +21,6 @@ public class TreatRecordTagsSearch extends PageSearch implements BindUser, FullE
 
     private Boolean needRoot;
 
-    //默认只查询最新的一周内
     private Integer days;
 
     @Override

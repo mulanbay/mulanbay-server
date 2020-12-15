@@ -109,10 +109,7 @@ public class BuyRecordController extends BaseController {
      * @return
      */
     private Date[] getTagsDateRange(){
-        int days = systemConfigHandler.getIntegerConfig("tags.history.days");
-        Date[] ds = new Date[2];
-        ds[1] = new Date();
-        ds[0] = DateUtil.getDate(0-days,ds[1]);
+        Date[] ds = systemConfigHandler.getDateRange(null,"buyRecord.tags.days");
         return ds;
     }
 

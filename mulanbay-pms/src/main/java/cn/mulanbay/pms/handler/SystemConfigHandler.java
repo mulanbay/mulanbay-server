@@ -4,6 +4,7 @@ import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.business.handler.HandlerCmd;
 import cn.mulanbay.business.handler.HandlerInfo;
 import cn.mulanbay.business.handler.HandlerResult;
+import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.common.util.IPAddressUtil;
 import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.service.BaseService;
@@ -18,10 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 系统配置
@@ -267,6 +265,22 @@ public class SystemConfigHandler extends BaseHandler {
             return null;
         }
         return Integer.valueOf(s);
+    }
+
+    /**
+     * 获取时间区间
+     * @param days 指定的天数
+     * @param code 系统默认的天数
+     * @return
+     */
+    public Date[] getDateRange(Integer days,String code){
+        if(days==null){
+            //采用默认配置
+            days = this.getIntegerConfig(code);
+        }
+        Date endDate = new Date();
+        Date startDate = DateUtil.getDate(0-days,endDate);
+        return new Date[]{startDate,endDate};
     }
 
     /**

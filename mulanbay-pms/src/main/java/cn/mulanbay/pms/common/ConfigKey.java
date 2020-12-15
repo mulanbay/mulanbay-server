@@ -38,7 +38,6 @@ public class ConfigKey {
      */
     public static final String ID_FIELD_NAME = "id";
 
-
     /**
      * 默认管理员用户
      */

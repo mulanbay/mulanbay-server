@@ -20,6 +20,9 @@ public class TreatCategorySearch extends PageSearch implements DateStatSearch, B
     @Query(fieldName = "userId", op = Parameter.Operator.EQ)
     private Long userId;
 
+    //距离现在的天数
+    private Integer days;
+
     //分组的字段，对应数据库中的字段名
     private String groupField;
 
@@ -61,6 +64,14 @@ public class TreatCategorySearch extends PageSearch implements DateStatSearch, B
     @Override
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public Integer getDays() {
+        return days;
+    }
+
+    public void setDays(Integer days) {
+        this.days = days;
     }
 
     public String getGroupField() {

@@ -9,6 +9,7 @@ import cn.mulanbay.persistent.query.NullType;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
+import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.persistent.domain.TreatRecord;
 import cn.mulanbay.pms.persistent.dto.TreatRecordAnalyseStat;
 import cn.mulanbay.pms.persistent.dto.TreatRecordDateStat;
@@ -51,6 +52,9 @@ public class TreatRecordController extends BaseController {
     @Autowired
     TreatService treatService;
 
+    @Autowired
+    SystemConfigHandler systemConfigHandler;
+
     /**
      * 获取看病或者器官的各种分类归类
      *
@@ -58,8 +62,11 @@ public class TreatRecordController extends BaseController {
      */
     @RequestMapping(value = "/getTreatCategoryTree")
     public ResultBean getTreatCategoryTree(TreatCategorySearch sf) {
-
         try {
+            Date[] ds = systemConfigHandler.getDateRange(sf.getDays(),"treat.category.days");
+            sf.setStartDate(ds[0]);
+            sf.setEndDate(ds[1]);
+
             List<String> categoryList = treatService.getTreatCategoryList(sf);
             List<TreeBean> list = new ArrayList<TreeBean>();
             int i = 0;
@@ -446,10 +453,9 @@ public class TreatRecordController extends BaseController {
     @RequestMapping(value = "/getTagsTree")
     public ResultBean getTagsTree(TreatRecordTagsSearch sf) {
         List<TreeBean> list = new ArrayList<TreeBean>();
-        if (sf.getDays() != null) {
-            Date start = DateUtil.getDate(0 - sf.getDays());
-            sf.setStartDate(start);
-        }
+        Date[] ds = systemConfigHandler.getDateRange(sf.getDays(),"treat.tags.days");
+        sf.setStartDate(ds[0]);
+        sf.setEndDate(ds[1]);
         List<String> tagsList = treatService.getTagsList(sf);
         //去重,不需要，实际上每次看病只会是一个病，如果是两种病，肯定也是两个科室去看，会有两条看病记录
         //Set<String> tagsSet = deleteDuplicate(tagsList);
