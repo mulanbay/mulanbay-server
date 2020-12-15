@@ -128,7 +128,7 @@ public class BudgetService extends BaseHibernateDao {
                 hql += " and userId=?" + (index++) + " ";
                 args.add(userId);
             }
-            if (true == bindFlow) {
+            if (bindFlow!=null&&true == bindFlow) {
                 hql += " and feeType is not null" ;
             }
             hql += " order by userId";
@@ -156,7 +156,7 @@ public class BudgetService extends BaseHibernateDao {
                 hql += " and userId=?" + (index++) + " ";
                 args.add(userId);
             }
-            if (true == bindFlow) {
+            if (bindFlow!=null&&true == bindFlow) {
                 hql += " and feeType is not null" ;
             }
             if (StringUtil.isNotEmpty(name)) {
