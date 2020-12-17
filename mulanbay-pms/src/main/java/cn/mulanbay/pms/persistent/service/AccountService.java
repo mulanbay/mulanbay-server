@@ -209,9 +209,8 @@ public class AccountService extends BaseHibernateDao {
      * @param bussKey
      * @param remark
      * @param userId
-     * @param period
      */
-    public void createSnapshot(String name, String bussKey, String remark, Long userId,PeriodType period) {
+    public void createSnapshot(String name, String bussKey, String remark, Long userId) {
         try {
             //step 1: 删除旧的
             String hql = "from AccountSnapshotInfo where userId=?0 and bussKey=?1 ";
