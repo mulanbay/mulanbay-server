@@ -89,9 +89,11 @@ public class BuyRecordController extends BaseController {
     @RequestMapping(value = "/getKeywordsTree")
     public ResultBean getKeywordsTree(BuyRecordKeywordsSearch sf) {
         List<TreeBean> list = new ArrayList<TreeBean>();
-        Date[] range = this.getTagsDateRange();
-        sf.setStartDate(range[0]);
-        sf.setEndDate(range[1]);
+        if(sf.getStartDate()==null&&sf.getEndDate()==null){
+            Date[] range = this.getTagsDateRange();
+            sf.setStartDate(range[0]);
+            sf.setEndDate(range[1]);
+        }
         List<String> keywordsList = buyRecordService.getKeywordsList(sf);
         //去重
         Set<String> keywordsSet = TreeBeanUtil.deleteDuplicate(keywordsList);
