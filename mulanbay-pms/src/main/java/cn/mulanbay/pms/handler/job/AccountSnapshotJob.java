@@ -2,8 +2,10 @@ package cn.mulanbay.pms.handler.job;
 
 import cn.mulanbay.common.util.BeanFactoryUtil;
 import cn.mulanbay.common.util.DateUtil;
+import cn.mulanbay.pms.handler.BudgetHandler;
 import cn.mulanbay.pms.persistent.service.AccountService;
 import cn.mulanbay.schedule.ParaCheckResult;
+import cn.mulanbay.schedule.ScheduleErrorCode;
 import cn.mulanbay.schedule.TaskResult;
 import cn.mulanbay.schedule.enums.JobExecuteResult;
 import cn.mulanbay.schedule.job.AbstractBaseJob;
@@ -20,13 +22,17 @@ import java.util.Date;
  */
 public class AccountSnapshotJob extends AbstractBaseJob {
 
+    private AccountSnapshotJobPara para;
+
     @Override
     public TaskResult doTask() {
         TaskResult tr = new TaskResult();
         AccountService accountService = BeanFactoryUtil.getBean(AccountService.class);
-        //快照是当前的时间,key为当前日期
-        Date bussDay = new Date();
-        String bussKey = DateUtil.getFormatDate(bussDay, DateUtil.Format24Datetime2);
+        //快照是当前的时间,key为运营日期
+        Date bussDay = this.getBussDay();
+        BudgetHandler budgetHandler = BeanFactoryUtil.getBean(BudgetHandler.class);
+        String bussKey = budgetHandler.createBussKey(para.getPeriod(), bussDay);
+        //获取用户列表
         //accountService.createSnapshot(bussKey,null);
         tr.setExecuteResult(JobExecuteResult.SUCCESS);
         return tr;
@@ -34,11 +40,17 @@ public class AccountSnapshotJob extends AbstractBaseJob {
 
     @Override
     public ParaCheckResult checkTriggerPara() {
-        return DEFAULT_SUCCESS_PARA_CHECK;
+        ParaCheckResult result = new ParaCheckResult();
+        para = this.getTriggerParaBean();
+        if (para == null) {
+            result.setErrorCode(ScheduleErrorCode.TRIGGER_PARA_NULL);
+            result.setMessage("调度参数检查失败，参数为空");
+        }
+        return result;
     }
 
     @Override
     public Class getParaDefine() {
-        return null;
+        return AccountSnapshotJobPara.class;
     }
 }

@@ -268,7 +268,7 @@ public class AccountController extends BaseController {
             }
             bussKey = budgetHandler.createBussKey(bean.getPeriod(), date);
         }
-        accountService.createSnapshot(bean.getName(), bussKey, bean.getRemark(), bean.getUserId(),bean.getPeriod());
+        accountService.createSnapshot(bean.getName(), bussKey, bean.getRemark(), bean.getUserId());
         //更新预算日志
         this.updateBudgetLogAccountChange(bussKey , bean.getUserId());
         return callback(null);
