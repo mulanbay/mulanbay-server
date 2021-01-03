@@ -210,7 +210,7 @@ public class AccountService extends BaseHibernateDao {
      * @param remark
      * @param userId
      */
-    public void createSnapshot(String name, String bussKey, String remark, Long userId) {
+    public void createSnapshot(String name, String bussKey,PeriodType period, String remark, Long userId) {
         try {
             //step 1: 删除旧的
             String hql = "from AccountSnapshotInfo where userId=?0 and bussKey=?1 ";
@@ -218,6 +218,7 @@ public class AccountService extends BaseHibernateDao {
             if(asi==null){
                 asi = new AccountSnapshotInfo();
                 asi.setBussKey(bussKey);
+                asi.setPeriod(period);
                 asi.setCreatedTime(new Date());
                 asi.setName(name);
                 asi.setRemark(remark);
@@ -226,6 +227,7 @@ public class AccountService extends BaseHibernateDao {
             }else{
                 this.execSqlUpdate("delete from account_flow where snapshot_id=? ",bussKey);
                 asi.setBussKey(bussKey);
+                asi.setPeriod(period);
                 asi.setLastModifyTime(new Date());
                 asi.setName(name);
                 asi.setRemark(remark);
