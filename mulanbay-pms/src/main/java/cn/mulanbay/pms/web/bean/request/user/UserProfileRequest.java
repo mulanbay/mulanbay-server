@@ -2,6 +2,7 @@ package cn.mulanbay.pms.web.bean.request.user;
 
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.pms.persistent.enums.AuthType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
@@ -12,7 +13,9 @@ public class UserProfileRequest implements BindUser {
     private String phone;
     //邮件发送
     private String email;
+
     //生日（计算最大心率使用到）
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date birthday;
     private Boolean sendEmail;
     private Boolean sendWxMessage;

@@ -64,6 +64,9 @@ public class WxpayHandler extends BaseHandler {
     @Value("${wx.oaUrl}")
     private String oaUrl;
 
+    @Value("${wx.oa.qrUrl}")
+    private String qrUrl;
+
     @Autowired
     CacheHandler cacheHandler;
 
@@ -88,6 +91,10 @@ public class WxpayHandler extends BaseHandler {
 
     public String getOaUrl() {
         return oaUrl;
+    }
+
+    public String getQrUrl() {
+        return systemConfigHandler.getPictureFullUrl(qrUrl);
     }
 
     /**

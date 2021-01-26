@@ -25,7 +25,7 @@ public class ReadingRecord implements java.io.Serializable {
     private String bookName;
     private String author;
     private String isbn;
-    //初步日期
+    //出版日期
     private Integer publishedYear;
     //出版社
     private String press;
@@ -33,7 +33,7 @@ public class ReadingRecord implements java.io.Serializable {
     private String nation;
     private BookType bookType;
     private BookLanguage language;
-    // 评分(0-10)
+    // 评分(0-5)
     private Double score;
     private Date proposedDate;
     private Date beginDate;

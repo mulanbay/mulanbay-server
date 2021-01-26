@@ -140,6 +140,8 @@ public class WechatController extends BaseController {
         res.put("appId", wxpayHandler.getAppId());
         //公众号地址
         res.put("oaUrl", wxpayHandler.getOaUrl());
+        //公众号二维码地址
+        res.put("qrUrl", wxpayHandler.getQrUrl());
         return callback(res);
     }
 

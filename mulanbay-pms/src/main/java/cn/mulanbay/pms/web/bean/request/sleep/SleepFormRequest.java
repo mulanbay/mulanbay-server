@@ -10,15 +10,11 @@ public class SleepFormRequest implements BindUser {
 
     private Long userId;
 
-    private Date sleepDate;
-
     //睡觉时间
     private Date sleepTime;
 
     //起床时间
     private Date getUpTime;
-
-    private Integer totalMinutes;
 
     //浅睡时长（分钟）
     private Integer lightSleep;
@@ -48,14 +44,6 @@ public class SleepFormRequest implements BindUser {
         this.userId = userId;
     }
 
-    public Date getSleepDate() {
-        return sleepDate;
-    }
-
-    public void setSleepDate(Date sleepDate) {
-        this.sleepDate = sleepDate;
-    }
-
     public Date getSleepTime() {
         return sleepTime;
     }
@@ -70,14 +58,6 @@ public class SleepFormRequest implements BindUser {
 
     public void setGetUpTime(Date getUpTime) {
         this.getUpTime = getUpTime;
-    }
-
-    public Integer getTotalMinutes() {
-        return totalMinutes;
-    }
-
-    public void setTotalMinutes(Integer totalMinutes) {
-        this.totalMinutes = totalMinutes;
     }
 
     public Integer getLightSleep() {

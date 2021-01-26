@@ -39,6 +39,9 @@ public class DateUtil {
 	 * @return Date:距离现在之后的若干天的日期;
 	 */
 	public static int getIntervalDays(Date startday, Date endday) {
+		if(startday==null||endday==null){
+			return 0;
+		}
 		long sl = startday.getTime();
 		long el = endday.getTime();
 		long ei = el - sl;

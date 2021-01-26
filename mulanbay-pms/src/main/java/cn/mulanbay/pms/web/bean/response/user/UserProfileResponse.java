@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.web.bean.response.user;
 
 import cn.mulanbay.pms.persistent.enums.AuthType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.util.Date;
 
@@ -12,6 +13,7 @@ public class UserProfileResponse {
     //邮件发送
     private String email;
     //生日（计算最大心率使用到）
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date birthday;
     private Boolean sendEmail;
     private Boolean sendWxMessage;
@@ -161,5 +163,9 @@ public class UserProfileResponse {
 
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
+    }
+
+    public String getSecAuthTypeName(){
+        return secAuthType==null ? null : secAuthType.getName();
     }
 }

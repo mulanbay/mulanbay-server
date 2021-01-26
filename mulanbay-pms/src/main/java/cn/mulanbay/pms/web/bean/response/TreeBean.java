@@ -103,6 +103,15 @@ public class TreeBean {
         return text;
     }
 
+    /**
+     * 支持 vant
+     *
+     * @return
+     */
+    public String getName() {
+        return text;
+    }
+
     public boolean hasChildren() {
         return StringUtil.isEmpty(this.children) ? false : true;
     }

@@ -37,6 +37,9 @@ public class SystemConfigHandler extends BaseHandler {
     @Value("${system.nodeId}")
     private String nodeId;
 
+    @Value("${picture.baseUrl}")
+    private String pictureBaseUrl;
+
     /**
      * 是否采用内存缓存
      */
@@ -296,6 +299,19 @@ public class SystemConfigHandler extends BaseHandler {
             return "true".equals(s) || "1".equals(s);
         } else {
             return null;
+        }
+    }
+
+    /**
+     * 图片的全路径
+     * @param url
+     * @return
+     */
+    public String getPictureFullUrl(String url){
+        if(StringUtil.isEmpty(url)){
+            return null;
+        }else{
+            return pictureBaseUrl+url;
         }
     }
 

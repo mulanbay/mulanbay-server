@@ -239,6 +239,11 @@ public class UserMessage implements java.io.Serializable {
         return messageType == null ? null : messageType.getName();
     }
 
+    @Transient
+    public String getBussTypeName() {
+        return bussType == null ? null : bussType.getName();
+    }
+
     @Override
     public int hashCode() {
         return super.hashCode();

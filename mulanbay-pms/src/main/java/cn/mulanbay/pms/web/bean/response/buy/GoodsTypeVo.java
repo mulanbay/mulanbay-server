@@ -79,4 +79,12 @@ public class GoodsTypeVo {
     public void setChildren(List<GoodsTypeVo> children) {
         this.children = children;
     }
+
+    /**
+     * 支持vant的treeSelect
+     * @return
+     */
+    public String getText(){
+        return name;
+    }
 }

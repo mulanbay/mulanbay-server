@@ -126,31 +126,40 @@ public class BudgetController extends BaseController {
         List<BudgetDetailVo> list = new ArrayList<>();
         Date now = new Date();
         for (Budget bg : qr.getBeanList()) {
-            BudgetDetailVo bdb = new BudgetDetailVo();
-            BeanCopy.copyProperties(bg, bdb);
-            if (bg.getStatus() == CommonStatus.ENABLE) {
-                //计算下一次支付时间
-                Date nextPayTime = budgetHandler.getNextPayTime(bg, now);
-                if (nextPayTime != null) {
-                    bdb.setNextPaytime(nextPayTime);
-                    Integer ld = DateUtil.getIntervalDays(now, nextPayTime);
-                    bdb.setLeftDays(ld);
-                }
-                //直接根据实际花费实时查询
-                if (bg.getFeeType()!=null) {
-                    BuyRecordBudgetStat bs= budgetHandler.getActualAmount(bg,now);
-                    if (bs.getTotalPrice() != null) {
-                        bdb.setCpPaidTime(bs.getMaxBuyDate());
-                        bdb.setCpPaidAmount(bs.getTotalPrice().doubleValue());
-                    }
-                }
-            }
+            BudgetDetailVo bdb = this.getDetail(bg,now);
             list.add(bdb);
         }
         res.setBeanList(list);
         return callbackDataGrid(res);
     }
 
+    /**
+     * 获取详情
+     * @param bg
+     * @param now
+     * @return
+     */
+    private BudgetDetailVo getDetail(Budget bg,Date now){
+        BudgetDetailVo bdb = new BudgetDetailVo();
+        BeanCopy.copyProperties(bg, bdb);
+        if (bg.getStatus() == CommonStatus.ENABLE) {
+            //直接根据实际花费实时查询
+            if (bg.getFeeType()!=null) {
+                BuyRecordBudgetStat bs= budgetHandler.getActualAmount(bg,now);
+                if (bs.getTotalPrice() != null) {
+                    bdb.setCpPaidTime(bs.getMaxBuyDate());
+                    bdb.setCpPaidAmount(bs.getTotalPrice().doubleValue());
+                }else{
+                    //计算下一次支付时间
+                    Date nextPayTime = budgetHandler.getNextPayTime(bg, now);
+                    bdb.setNextPaytime(nextPayTime);
+                    Integer ld = DateUtil.getIntervalDays(now, nextPayTime);
+                    bdb.setLeftDays(ld);
+                }
+            }
+        }
+        return bdb;
+    }
     /**
      * 创建
      *
@@ -220,20 +229,11 @@ public class BudgetController extends BaseController {
         } else {
             return callbackErrorInfo("不支持的周期查询类型:" + sf.getPeriod());
         }
-        List<BudgetInfoVo> res = new ArrayList<>();
+        List<BudgetDetailVo> res = new ArrayList<>();
         Date now = new Date();
         for (Budget bg : newList) {
-            BudgetInfoVo bib = new BudgetInfoVo();
-            BeanCopy.copyProperties(bg, bib);
-            BudgetLog bl = budgetService.selectBudgetLog(bussKey, sf.getUserId(), null, bg.getId());
-            if (bl != null) {
-                BeanCopy.copyProperties(bl, bib);
-            }
-            if (bg.getExpectPaidTime() != null) {
-                Integer n = budgetHandler.getLeftDays(bg, now);
-                bib.setLeftDays(n);
-            }
-            res.add(bib);
+            BudgetDetailVo bdb = this.getDetail(bg,now);
+            res.add(bdb);
         }
         return callback(res);
     }
