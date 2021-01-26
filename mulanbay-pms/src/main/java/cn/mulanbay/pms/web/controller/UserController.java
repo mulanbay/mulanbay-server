@@ -7,10 +7,7 @@ import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.PmsErrorCode;
-import cn.mulanbay.pms.handler.ThreadPoolHandler;
-import cn.mulanbay.pms.handler.TokenHandler;
-import cn.mulanbay.pms.handler.UserScoreHandler;
-import cn.mulanbay.pms.handler.WxpayHandler;
+import cn.mulanbay.pms.handler.*;
 import cn.mulanbay.pms.persistent.domain.*;
 import cn.mulanbay.pms.persistent.dto.UserRoleDto;
 import cn.mulanbay.pms.persistent.enums.AuthType;
@@ -85,6 +82,8 @@ public class UserController extends BaseController {
     @Autowired
     ThreadPoolHandler threadPoolHandler;
 
+    @Autowired
+    SystemConfigHandler systemConfigHandler;
     /**
      * 用户树
      * @return
@@ -387,6 +386,7 @@ public class UserController extends BaseController {
             ups.setRoleName(role.getName());
         }
         LevelConfig lc = levelService.getLevelConfig(user.getLevel());
+        ups.setAvatar(systemConfigHandler.getPictureFullUrl(ups.getAvatar()));
         ups.setLevelName(lc.getName());
         return callback(ups);
     }
