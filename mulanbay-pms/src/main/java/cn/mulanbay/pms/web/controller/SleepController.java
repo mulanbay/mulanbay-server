@@ -13,9 +13,7 @@ import cn.mulanbay.pms.persistent.enums.SleepStatType;
 import cn.mulanbay.pms.persistent.service.SleepService;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
-import cn.mulanbay.pms.web.bean.request.sleep.SleepAnalyseStatSearch;
-import cn.mulanbay.pms.web.bean.request.sleep.SleepFormRequest;
-import cn.mulanbay.pms.web.bean.request.sleep.SleepSearch;
+import cn.mulanbay.pms.web.bean.request.sleep.*;
 import cn.mulanbay.pms.web.bean.response.chart.ScatterChartData;
 import cn.mulanbay.pms.web.bean.response.chart.ScatterChartDetailData;
 import cn.mulanbay.web.bean.response.ResultBean;
@@ -91,6 +89,46 @@ public class SleepController extends BaseController {
             throw new ApplicationException(ErrorCode.DO_BUSS_ERROR,
                     "睡眠日[" + DateUtil.getFormatDate(sleepDate, DateUtil.FormatDay1) + "]已经存在");
         }
+    }
+
+    /**
+     * 快速增加睡眠
+     *
+     * @return
+     */
+    @RequestMapping(value = "/sleep", method = RequestMethod.POST)
+    public ResultBean sleep(@RequestBody @Valid SleepRequest formRequest) {
+        Sleep bean = new Sleep();
+        BeanCopy.copyProperties(formRequest, bean);
+        Date sleepDate = calSleepDate(bean.getSleepTime());
+        checkSleepDate(sleepDate);
+        bean.setSleepDate(sleepDate);
+        bean.setCreatedTime(new Date());
+        bean.setRemark("快速新增");
+        baseService.saveObject(bean);
+        return callback(bean);
+    }
+
+    /**
+     * 快速增加睡眠
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getUp", method = RequestMethod.POST)
+    public ResultBean getUp(@RequestBody @Valid SleepGetUpRequest formRequest) {
+        //12个小时内的没有起床信息的睡觉记录
+        int hours = 12;
+        Date fromTime = new Date(System.currentTimeMillis()-hours*3600*1000);
+        Sleep bean = sleepService.getNearUnGetUp(fromTime,formRequest.getUserId());
+        if(bean==null){
+            return callbackErrorInfo("最近"+hours+"小时内没有未起床记录，请手动完整新增");
+        }
+        bean.setGetUpTime(formRequest.getGetUpTime());
+        long n = bean.getGetUpTime().getTime() - bean.getSleepTime().getTime();
+        bean.setTotalMinutes((int) (n / (1000 * 60)));
+        bean.setLastModifyTime(new Date());
+        baseService.updateObject(bean);
+        return callback(bean);
     }
 
     /**

@@ -56,6 +56,22 @@ public class SleepService extends BaseHibernateDao {
     }
 
     /**
+     * 获取最近的没有起床信息的睡眠
+     *
+     * @param fromTime
+     * @return
+     */
+    public Sleep getNearUnGetUp(Date fromTime,Long userId) {
+        try {
+            String hql = "from Sleep where userId=?0 and getUpTime is null and sleepTime>=?1 ";
+            return (Sleep) this.getEntityForOne(hql, userId,fromTime);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_ERROR,
+                    "获取最近的没有起床信息的睡眠异常", e);
+        }
+    }
+
+    /**
      * 睡眠分析统计
      *
      * @param sf
