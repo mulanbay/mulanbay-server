@@ -312,7 +312,10 @@ public class TreatRecordController extends BaseController {
         List<TreatRecordDateStat> list = treatService.statDateTreatRecord(sf);
         ChartData chartData = new ChartData();
         chartData.setTitle("看病统计");
-        chartData.setLegendData(new String[]{"次数", "费用"});
+        chartData.setLegendData(new String[]{"费用","次数"});
+        //混合图形下使用
+        chartData.addYAxis("费用","元");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -328,8 +331,8 @@ public class TreatRecordController extends BaseController {
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount()));
             totalValue = totalValue.add(bean.getTotalFee());
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData1);
         String subTitle = this.getDateTitle(sf, totalCount.longValue() + "次，" + totalValue.doubleValue() + "元");
         chartData.setSubTitle(subTitle);
         chartData = ChartUtil.completeDate(chartData, sf);

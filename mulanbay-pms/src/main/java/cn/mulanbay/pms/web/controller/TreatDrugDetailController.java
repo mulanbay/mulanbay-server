@@ -72,7 +72,7 @@ public class TreatDrugDetailController extends BaseController {
         TreatDrug treatDrug = this.getUserEntity(TreatDrug.class, formRequest.getTreatDrugId(), formRequest.getUserId());
         bean.setTreatDrug(treatDrug);
         bean.setCreatedTime(new Date());
-        checkTreatDrugDetail(bean);
+        //checkTreatDrugDetail(bean);
         treatService.saveOrUpdateTreatDrugDetail(bean);
         return callback(bean);
     }

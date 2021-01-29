@@ -363,6 +363,7 @@ public class OperationLogController extends BaseController {
         List<OperationLogDateStat> list = logService.statDateOperationLog(sf);
         ChartData chartData = new ChartData();
         chartData.setTitle("操作日志统计");
+        chartData.setUnit("次");
         chartData.setLegendData(new String[]{"次数"});
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");

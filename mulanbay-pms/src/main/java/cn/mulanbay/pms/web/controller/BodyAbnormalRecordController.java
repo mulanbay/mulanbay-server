@@ -193,6 +193,7 @@ public class BodyAbnormalRecordController extends BaseController {
     private ChartPieData createStatPieData(List<BodyAbnormalRecordStat> list, BodyAbnormalRecordStatSearch sf) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("身体不适统计");
+        chartPieData.setUnit("次");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("次数");
         //总的值
@@ -221,6 +222,7 @@ public class BodyAbnormalRecordController extends BaseController {
     private ChartData createStatBarData(List<BodyAbnormalRecordStat> list, BodyAbnormalRecordStatSearch sf) {
         ChartData chartData = new ChartData();
         chartData.setTitle("身体不适统计");
+        chartData.setUnit("次");
         chartData.setLegendData(new String[]{"次数"});
         ChartYData yData = new ChartYData("次数");
         //总的值
@@ -250,7 +252,10 @@ public class BodyAbnormalRecordController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("身体不适统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"次数", "持续天数"});
+        chartData.setLegendData(new String[]{"持续天数","次数"});
+        //混合图形下使用
+        chartData.addYAxis("持续天数","天");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -263,8 +268,8 @@ public class BodyAbnormalRecordController extends BaseController {
             yData2.getData().add(bean.getTotalLastDays());
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount()));
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData1);
         String subTitle = this.getDateTitle(sf, totalCount.longValue() + "次");
         chartData.setSubTitle(subTitle);
         chartData = ChartUtil.completeDate(chartData, sf);

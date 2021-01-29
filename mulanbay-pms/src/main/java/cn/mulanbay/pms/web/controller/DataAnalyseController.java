@@ -1,6 +1,9 @@
 package cn.mulanbay.pms.web.controller;
 
 import cn.mulanbay.common.util.DateUtil;
+import cn.mulanbay.common.util.NumberUtil;
+import cn.mulanbay.common.util.PriceUtil;
+import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.pms.persistent.dto.AfterEightHourStat;
 import cn.mulanbay.pms.persistent.enums.ChartType;
 import cn.mulanbay.pms.persistent.service.DataService;
@@ -39,7 +42,7 @@ public class DataAnalyseController extends BaseController {
         List<AfterEightHourStat> list = dataService.statAfterEightHour(sf);
         if (sf.getChartType() == ChartType.PIE) {
             return callback(this.createAfterEightHourAnalyseStatPieData(list, sf));
-        } else if (sf.getChartType() == ChartType.BAR) {
+        } else if (sf.getChartType() == ChartType.MIX_LINE_BAR) {
             return callback(this.createAfterEightHourAnalyseStatBarData(list, sf));
         } else {
             return callback(this.createAfterEightHourAnalyseStatScatterData(list, sf));
@@ -58,11 +61,14 @@ public class DataAnalyseController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("八小时之外统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"次数", "花费时间(分钟)"});
+        chartData.setLegendData(new String[]{"花费时间(小时)","次数"});
+        //混合图形下使用
+        chartData.addYAxis("花费时间","小时");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
-        yData2.setName("花费时间(分钟)");
+        yData2.setName("花费时间(小时)");
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         //总的值
@@ -101,12 +107,12 @@ public class DataAnalyseController extends BaseController {
             String key = mapping.getKey();
             chartData.getXdata().add(key);
             yData1.getData().add(countMap.get(key));
-            yData2.getData().add(minutesMap.get(key).doubleValue());
+            yData2.getData().add(PriceUtil.changeToString(0,minutesMap.get(key).doubleValue()/60));
             totalCount = totalCount.add(new BigDecimal(countMap.get(key)));
             totalValue = totalValue.add(minutesMap.get(key));
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData1);
         String subTitle = this.getDateTitle(sf, totalCount.longValue() + "次，" + totalValue.doubleValue() + "分钟");
         chartData.setSubTitle(subTitle);
         chartData = ChartUtil.completeDate(chartData, sf);
@@ -156,8 +162,10 @@ public class DataAnalyseController extends BaseController {
         ChartPieSerieData serieData = new ChartPieSerieData();
         if (sf.getType() == GroupType.COUNT) {
             serieData.setName("次数(次)");
+            chartPieData.setUnit("次");
         } else {
             serieData.setName("花费时间(小时)");
+            chartPieData.setUnit("小时");
         }
         for (AfterEightHourStat mp : list) {
             chartPieData.getXdata().add(mp.getName());
@@ -170,7 +178,7 @@ public class DataAnalyseController extends BaseController {
             if (sf.getType() == GroupType.COUNT) {
                 cp.setValue(mp.getTotalCountValue());
             } else {
-                cp.setValue(DateUtil.minutesToHours(mp.getTotalTime().doubleValue()));
+                cp.setValue(mp.getTotalTime()==null ? 0: DateUtil.minutesToHours(mp.getTotalTime().doubleValue()));
             }
             serieData.getData().add(cp);
         }

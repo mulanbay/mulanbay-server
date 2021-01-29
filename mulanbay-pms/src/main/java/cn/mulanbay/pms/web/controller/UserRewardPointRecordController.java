@@ -247,7 +247,10 @@ public class UserRewardPointRecordController extends BaseController {
         } else {
             chartData.setTitle("用户积分统计");
         }
-        chartData.setLegendData(new String[]{"次数", "总积分", "平均积分"});
+        chartData.setLegendData(new String[]{"总积分", "平均积分","次数"});
+        //混合图形下使用
+        chartData.addYAxis("积分值","分");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -260,9 +263,10 @@ public class UserRewardPointRecordController extends BaseController {
             yData2.getData().add(bean.getTotalRewardPoints().longValue());
             yData3.getData().add(NumberUtil.getAverageValue(bean.getTotalRewardPoints().longValue(), bean.getTotalCount().intValue(), 2));
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
         chartData.getYdata().add(yData3);
+
+        chartData.getYdata().add(yData1);
         String subTitle = this.getDateTitle(tlSf);
         chartData.setSubTitle(subTitle);
         return chartData;

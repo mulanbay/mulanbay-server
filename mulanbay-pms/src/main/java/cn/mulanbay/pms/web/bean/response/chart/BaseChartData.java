@@ -14,6 +14,9 @@ public class BaseChartData {
     //子标题
     private String subTitle;
 
+    //单位
+    private String unit;
+
     public String getTitle() {
         return title;
     }
@@ -28,5 +31,13 @@ public class BaseChartData {
 
     public void setSubTitle(String subTitle) {
         this.subTitle = subTitle;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 }

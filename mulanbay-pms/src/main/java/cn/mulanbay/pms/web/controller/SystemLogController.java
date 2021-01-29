@@ -129,6 +129,7 @@ public class SystemLogController extends BaseController {
     public ResultBean analyseStat(SystemLogAnalyseStatSearch sf) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("系统日志分析");
+        chartPieData.setUnit("次");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("次数");
         List<SystemLogAnalyseStat> list = logService.analyseStatDateOperationLog(sf);

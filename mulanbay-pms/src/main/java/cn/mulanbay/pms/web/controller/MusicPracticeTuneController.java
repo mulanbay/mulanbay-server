@@ -146,11 +146,10 @@ public class MusicPracticeTuneController extends BaseController {
      */
     @RequestMapping(value = "/stat", method = RequestMethod.GET)
     public ResultBean stat(MusicPracticeTuneSearch sf) {
-        //sf.setUserId(this.getCurrentUserId());
         List<MusicPracticeTuneStat> list = musicPracticeService.statTune(sf);
         ChartData chartData = new ChartData();
         chartData.setTitle(musicPracticeService.getMusicInstrumentName(sf.getMusicInstrumentId()) + "练习曲子统计");
-
+        chartData.setUnit("次");
         chartData.setLegendData(new String[]{"次数"});
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");

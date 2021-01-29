@@ -130,7 +130,10 @@ public class ReadingRecordDetailController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("阅读统计");
         //chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"次数", "小时"});
+        chartData.setLegendData(new String[]{"小时","次数"});
+        //混合图形下使用
+        chartData.addYAxis("时长","小时");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -146,8 +149,8 @@ public class ReadingRecordDetailController extends BaseController {
             totalCounts = totalCounts.add(new BigDecimal(bean.getTotalCount()));
             totalMinutes = totalMinutes.add(bean.getTotalMinutes());
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData1);
         String total = totalCounts.longValue() + "次," + NumberUtil.getAverageValue(totalMinutes, BigInteger.valueOf(60L), 1) + "小时";
         String subTitle = this.getDateTitle(sf, total);
         chartData.setSubTitle(subTitle);

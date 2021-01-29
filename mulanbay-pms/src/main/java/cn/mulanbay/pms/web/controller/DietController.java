@@ -386,7 +386,10 @@ public class DietController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("饮食价格统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"次数", "消费(元)"});
+        chartData.setLegendData(new String[]{"消费(元)","次数"});
+        //混合图形下使用
+        chartData.addYAxis("消费","元");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -402,8 +405,8 @@ public class DietController extends BaseController {
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount().longValue()));
             totalValue = totalValue.add(bean.getTotalPrice());
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData1);
         String subTitle = this.getDateTitle(sf, totalCount.longValue() + "次，" + totalValue.doubleValue() + "元");
         chartData.setSubTitle(subTitle);
         chartData = ChartUtil.completeDate(chartData, sf);
@@ -412,6 +415,7 @@ public class DietController extends BaseController {
 
     private ChartPieData createAnalyseStatPieData(List<DietPriceAnalyseStat> list, DietPriceAnalyseSearch sf) {
         ChartPieData chartPieData = new ChartPieData();
+        chartPieData.setUnit("元");
         chartPieData.setTitle("饮食价格区间分析");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("价格区间");
@@ -452,6 +456,7 @@ public class DietController extends BaseController {
     private ChartPieData createAnalyseStatPieData2(DietPriceAnalyseSearch sf) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("饮食分析");
+        chartPieData.setUnit("元");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("价格");
         //总的值
@@ -510,6 +515,7 @@ public class DietController extends BaseController {
         List<DietCompareStat> list = dietService.statDietCompare(sf);
         ChartData chartData = new ChartData();
         chartData.setTitle("饮食比对");
+        chartData.setUnit("次");
         List dietTypeVs = new ArrayList<>();
         for (DietType dt : DietType.values()) {
             dietTypeVs.add(0);
@@ -593,6 +599,7 @@ public class DietController extends BaseController {
     private ChartPieData createAnalyseStatPieData(DietAnalyseSearch sf) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("饮食分析");
+        chartPieData.setUnit("次");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("食物");
         Map<String, DietAnalyseStat> map = this.getDietAnalyseStat(sf);
@@ -618,6 +625,7 @@ public class DietController extends BaseController {
     private ChartData createAnalyseStatBarData(DietAnalyseSearch sf) {
         ChartData chartData = new ChartData();
         chartData.setTitle("饮食分析");
+        chartData.setUnit("次");
         chartData.setLegendData(new String[]{"食物"});
         ChartYData yData = new ChartYData();
         yData.setName("食物");

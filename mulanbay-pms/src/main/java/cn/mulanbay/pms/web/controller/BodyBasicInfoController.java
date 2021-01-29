@@ -141,6 +141,9 @@ public class BodyBasicInfoController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("身体基本情况统计");
         chartData.setLegendData(new String[]{"身高", "体重", "BMI"});
+        //混合图形下使用
+        chartData.addYAxis("身高/体重","");
+        chartData.addYAxis("BMI指数","");
         ChartYData yData1 = new ChartYData();
         yData1.setName("身高");
         ChartYData yData2 = new ChartYData();
@@ -209,6 +212,7 @@ public class BodyBasicInfoController extends BaseController {
             chartData.getYdata().add(temp.getYdata().get(0));
         }
         chartData.setLegendData(legendData);
+        chartData.setUnit(sf.getGroupType().getUnit());
 
         return callback(chartData);
     }

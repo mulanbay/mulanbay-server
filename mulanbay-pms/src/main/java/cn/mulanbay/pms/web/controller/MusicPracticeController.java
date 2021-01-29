@@ -257,7 +257,10 @@ public class MusicPracticeController extends BaseController {
         List<MusicPracticeDateStat> list = musicPracticeService.statDateMusicPractice(sf);
         ChartData chartData = new ChartData();
         chartData.setTitle(getChartTitle(sf.getMusicInstrumentId()));
-        chartData.setLegendData(new String[]{"次数", "总时长(小时)"});
+        chartData.setLegendData(new String[]{ "总时长(小时)","次数"});
+        //混合图形下使用
+        chartData.addYAxis("时长","小时");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -290,14 +293,15 @@ public class MusicPracticeController extends BaseController {
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount()));
             totalValue = totalValue.add(bean.getTotalMinutes());
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
         if (sf.getDateGroupType() == DateGroupType.WEEK || sf.getDateGroupType() == DateGroupType.MONTH || sf.getDateGroupType() == DateGroupType.YEAR) {
             //如果是周，计算每天锻炼值
-            chartData.setLegendData(new String[]{"次数", "总时长(小时)", "平均每天(小时)", "平均每次(小时)"});
+            chartData.setLegendData(new String[]{ "总时长(小时)", "平均每天(小时)", "平均每次(小时)","次数"});
             chartData.getYdata().add(yData3);
             chartData.getYdata().add(yData4);
         }
+        //次数放最后
+        chartData.getYdata().add(yData1);
         String totalString = totalCount.longValue() + "(次)," + minutesToHours(totalValue.doubleValue()) + "(小时)";
         chartData.setSubTitle(this.getDateTitle(sf, totalString));
         chartData = ChartUtil.completeDate(chartData, sf);
@@ -331,6 +335,7 @@ public class MusicPracticeController extends BaseController {
     @RequestMapping(value = "/yoyStat")
     public ResultBean yoyStat(@Valid MusicPracticeYoyStatSearch sf) {
         ChartData chartData = initYoyCharData(sf, musicPracticeService.getMusicInstrumentName(sf.getMusicInstrumentId()) + "练习统计同期对比", null);
+        chartData.setUnit(sf.getGroupType().getUnit());
         String[] legendData = new String[sf.getYears().size()];
         for (int i = 0; i < sf.getYears().size(); i++) {
             legendData[i] = sf.getYears().get(i).toString();
@@ -391,6 +396,7 @@ public class MusicPracticeController extends BaseController {
     private ResultBean createTimeStatPieData(List<MusicPracticeTimeStat> list, MusicPracticeTimeStatSearch sf) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle(this.getChartTitle(sf.getMusicInstrumentId()));
+        chartPieData.setUnit("次");
         ChartPieSerieData serieData = new ChartPieSerieData();
         if (sf.getDateGroupType() == DateGroupType.MINUTE) {
             serieData.setName("练习时长");
@@ -427,6 +433,7 @@ public class MusicPracticeController extends BaseController {
     private ResultBean createTimeStatBarData(List<MusicPracticeTimeStat> list, MusicPracticeTimeStatSearch sf) {
         ChartData chartData = new ChartData();
         chartData.setTitle(this.getChartTitle(sf.getMusicInstrumentId()));
+        chartData.setUnit("次");
         chartData.setLegendData(new String[]{"次数"});
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");

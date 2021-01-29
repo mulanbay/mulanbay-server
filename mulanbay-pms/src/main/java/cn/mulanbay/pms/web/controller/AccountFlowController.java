@@ -73,6 +73,7 @@ public class AccountFlowController extends BaseController {
         ChartData chartData = new ChartData();
         Account account = baseService.getObject(Account.class, sf.getAccountId());
         chartData.setTitle("[" + account.getName() + "]账户变化分析");
+        chartData.setUnit("元");
         chartData.setLegendData(new String[]{"账户余额", "账户变化值"});
         ChartYData yData = new ChartYData("账户余额");
         ChartYData y2Data = new ChartYData("账户变化值");

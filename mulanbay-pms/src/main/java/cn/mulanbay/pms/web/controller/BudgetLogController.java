@@ -170,12 +170,14 @@ public class BudgetLogController extends BaseController {
                     sf.getUserId(), bp);
             ChartData chartData = new ChartData();
             chartData.setTitle(bp.getName() + "预算统计");
-            chartData.setLegendData(new String[]{"预算", "实际花费", "收入","花费/预算百分率"});
-            ChartYData budgetData = new ChartYData("预算");
-            ChartYData consumeData = new ChartYData("实际花费");
-            ChartYData incomeData = new ChartYData("收入");
-            ChartYData rateData = new ChartYData("花费/预算百分率");
-
+            chartData.setLegendData(new String[]{"预算(元)", "实际花费(元)", "收入(元)","花费/预算比率(%)"});
+            ChartYData budgetData = new ChartYData("预算(元)");
+            ChartYData consumeData = new ChartYData("实际花费(元)");
+            ChartYData incomeData = new ChartYData("收入(元)");
+            ChartYData rateData = new ChartYData("花费/预算比率(%)");
+            //混合图形下使用
+            chartData.addYAxis("金额","元");
+            chartData.addYAxis("比率","%");
             for (UserBudgetAndIncomeStat bean : list) {
                 String xformat = DateUtil.FormatDay1;
                 if (bp == PeriodType.YEARLY) {
@@ -249,6 +251,9 @@ public class BudgetLogController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("账户变化与系统计算误差统计");
         chartData.setLegendData(new String[]{"误差值(元)","误差率(%)"});
+        //混合图形下使用
+        chartData.addYAxis("金额","元");
+        chartData.addYAxis("比率","%");
         ChartYData yData1 = new ChartYData();
         yData1.setName("误差值(元)");
         ChartYData yData2 = new ChartYData();

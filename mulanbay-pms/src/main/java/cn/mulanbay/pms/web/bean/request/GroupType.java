@@ -7,24 +7,24 @@ package cn.mulanbay.pms.web.bean.request;
  * @create 2017-07-10 21:44
  */
 public enum GroupType {
-    COUNT(0, "次数", "次"),
-    TOTALPRICE(1, "花费", "元"),
-    SHIPMENT(2, "运费", "元"),
-    HOURS(3, "时长"),
+    COUNT(0, "次数", "","次"),
+    TOTALPRICE(1, "花费", "","元"),
+    SHIPMENT(2, "运费", "","元"),
+    HOURS(3, "时长","小时","小时"),
     KILOMETRES(4, "公里数", "kilometres", "公里"),
     MINUTES(5, "锻炼时间", "minutes", "分钟"),
     SPEED(6, "平均速度", "speed", "公里/小时"),
     PACE(7, "平均配速", "pace", "分钟/公里"),
     MAXHEARTRATE(8, "最大心率", "maxHeartRate", "次/分钟"),
     AVERAGEHEART(9, "平均心率", "averageHeartRate", "次/分钟"),
-    HEIGHT(10, "身高"),
-    WEIGHT(11, "体重"),
+    HEIGHT(10, "身高","","CM"),
+    WEIGHT(11, "体重","","KG"),
     BMI(12, "BMI"),
-    DAYS(13, "天数"),
+    DAYS(13, "天数","天"),
     PAYMENT(14, "支付方式"),
     SHOPNAME(15, "店铺"),
-    MAXSPEED(16, "最佳速度", "maxSpeed"),
-    MAXPACE(17, "最佳配速", "maxPace"),
+    MAXSPEED(16, "最佳速度", "maxSpeed","公里/小时"),
+    MAXPACE(17, "最佳配速", "maxPace","分钟/公里"),
     EXERCISEDATE(18, "锻炼日期", "exerciseDate");
 
     private int value;

@@ -582,7 +582,10 @@ public class LifeExperienceController extends BaseController {
         }
         ChartData chartData = new ChartData();
         chartData.setTitle("人生经历统计");
-        chartData.setLegendData(new String[]{"次数", "天数"});
+        chartData.setLegendData(new String[]{"天数","次数"});
+        //混合图形下使用
+        chartData.addYAxis("天数","天");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -592,8 +595,8 @@ public class LifeExperienceController extends BaseController {
             yData1.getData().add(bean.getTotalCount());
             yData2.getData().add(bean.getTotalDays());
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData1);
         chartData = ChartUtil.completeDate(chartData, sf);
         return callback(chartData);
     }

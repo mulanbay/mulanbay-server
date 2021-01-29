@@ -24,6 +24,7 @@ import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.GroupType;
+import cn.mulanbay.pms.web.bean.request.read.ReadingRecordAnalyseStatSearch;
 import cn.mulanbay.pms.web.bean.request.sport.*;
 import cn.mulanbay.pms.web.bean.response.chart.ChartCalendarData;
 import cn.mulanbay.pms.web.bean.response.chart.ChartCalendarMultiData;
@@ -310,6 +311,9 @@ public class SportExerciseController extends BaseController {
         }
         ChartData chartData = new ChartData();
         chartData.setTitle("锻炼统计");
+        //混合图形下使用
+        chartData.addYAxis("数值","");
+        chartData.addYAxis("次数","次");
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
         BigDecimal totalKilometres = new BigDecimal(0);
@@ -377,7 +381,14 @@ public class SportExerciseController extends BaseController {
         if (sf.getDateGroupType() == DateGroupType.DAY) {
             return callback(createChartCalandarMultiData(sf));
         }
-        ChartData chartData = initYoyCharData(sf, "运动锻炼同期对比", null);
+        SportType sp =this.getUserEntity(SportType.class,sf.getSportTypeId(),sf.getUserId());
+        String title = "["+sp.getName()+"]运动锻炼同期对比";
+        ChartData chartData = initYoyCharData(sf, title, null);
+        if(sf.getGroupType()== GroupType.KILOMETRES){
+            chartData.setUnit(sp.getUnit());
+        }else{
+            chartData.setUnit(sf.getGroupType().getUnit());
+        }
         String[] legendData = new String[sf.getYears().size()];
         //是否统计值（参数只对公里数、锻炼时间有效）
         boolean isSum = sf.getSumValue() == null ? true : sf.getSumValue();

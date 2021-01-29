@@ -26,6 +26,9 @@ public class ChartData extends BaseChartData {
     //y轴数据ChartData
     private List<ChartYData> ydata = new ArrayList<>();
 
+    //适合柱状图、折线混合图形(有且只有两条数据)
+    private List<ChartYAxis> yaxis = new ArrayList<>();
+
     public String[] getLegendData() {
         return legendData;
     }
@@ -56,6 +59,21 @@ public class ChartData extends BaseChartData {
 
     public void setYdata(List<ChartYData> ydata) {
         this.ydata = ydata;
+    }
+
+    public List<ChartYAxis> getYaxis() {
+        return yaxis;
+    }
+
+    public void setYaxis(List<ChartYAxis> yaxis) {
+        this.yaxis = yaxis;
+    }
+
+    public void addYAxis(String name,String unit){
+        ChartYAxis ya = new ChartYAxis();
+        ya.setName(name);
+        ya.setUnit(unit);
+        yaxis.add(ya);
     }
 
     /**

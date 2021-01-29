@@ -341,6 +341,7 @@ public class BudgetController extends BaseController {
     public ResultBean stat(BudgetStatSearch as) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("年预算费用分析");
+        chartPieData.setUnit("元");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("预算(年费用)");
         //总的值
@@ -414,9 +415,11 @@ public class BudgetController extends BaseController {
         chartData.setTitle("[" + DateUtil.getFormatDate(sf.getBussDay(), dateFormat) + "]预算与消费统计");
         String[] ld;
         if (sf.getStatType() == BudgetTimelineStatSearch.StatType.RATE) {
-            ld = new String[]{"消费/预算比例(%)", "时间进度(%)"};
+            ld = new String[]{"消费/预算比例", "时间进度"};
+            chartData.setUnit("%");
         } else {
-            ld = new String[]{"消费金额(元)", "预算金额(元)"};
+            ld = new String[]{"消费金额", "预算金额"};
+            chartData.setUnit("元");
         }
         chartData.setLegendData(ld);
         ChartYData cbData = new ChartYData();

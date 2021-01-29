@@ -16,6 +16,9 @@ public class ChartYData {
     //堆叠的分组，空为不需要
     private String stack;
 
+    //混合柱状图、折线图模式下使用
+    private String unit;
+
     private List<Object> data = new ArrayList<>();
 
     public ChartYData() {
@@ -44,6 +47,14 @@ public class ChartYData {
 
     public void setStack(String stack) {
         this.stack = stack;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     public List<Object> getData() {

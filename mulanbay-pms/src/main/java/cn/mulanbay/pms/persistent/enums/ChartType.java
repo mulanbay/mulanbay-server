@@ -16,7 +16,8 @@ public enum ChartType {
     RADAR(5, "雷达图"),
     SCATTER(6, "散点图"),
     TREE_MAP(7, "树形图"),
-    CALENDER_PIE(8, "日历饼图");
+    CALENDER_PIE(8, "日历饼图"),
+    MIX_LINE_BAR(9, "混合折线柱状图");
     private int value;
 
     private String name;

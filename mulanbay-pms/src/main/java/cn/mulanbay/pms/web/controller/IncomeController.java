@@ -208,6 +208,7 @@ public class IncomeController extends BaseController {
     private ChartPieData createStatPieData(IncomeStatSearch sf, List<IncomeTypeStat> list) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("收入分析");
+        chartPieData.setUnit("元");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("分析");
         //总的值

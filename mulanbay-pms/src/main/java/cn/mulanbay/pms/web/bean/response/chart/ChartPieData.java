@@ -31,4 +31,5 @@ public class ChartPieData extends BaseChartData {
     public void setDetailData(List<ChartPieSerieData> detailData) {
         this.detailData = detailData;
     }
+
 }

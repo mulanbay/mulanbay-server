@@ -563,7 +563,10 @@ public class DateUtil {
 		return maxDate;
 	}
 
-	public static double minutesToHours(double minutes){
+	public static double minutesToHours(Double minutes){
+		if(minutes==null){
+			return 0;
+		}
 		double l =minutes/60.0;
 		BigDecimal b = new BigDecimal(l);
 		double value  =  b.setScale(1,BigDecimal.ROUND_HALF_UP).doubleValue();

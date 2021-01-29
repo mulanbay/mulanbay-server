@@ -196,6 +196,7 @@ public class DreamController extends BaseController {
     private ChartPieData createStatPieData(List<DreamStat> list, DreamStatListSearch sf) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("梦想统计");
+        chartPieData.setUnit("个");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("梦想");
         //总的值
@@ -224,6 +225,7 @@ public class DreamController extends BaseController {
     private ChartData createStatBarData(List<DreamStat> list, DreamStatListSearch sf) {
         ChartData chartData = new ChartData();
         chartData.setTitle("梦想统计");
+        chartData.setUnit("个");
         chartData.setLegendData(new String[]{"类别"});
         ChartYData yData = new ChartYData();
         yData.setName("梦想");

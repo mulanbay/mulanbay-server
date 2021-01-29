@@ -149,7 +149,10 @@ public class WorkOvertimeController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("加班统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"次数", "总时长(小时)", "平均每天加班(小时)"});
+        chartData.setLegendData(new String[]{ "总时长(小时)", "平均每天加班(小时)","次数"});
+        //混合图形下使用
+        chartData.addYAxis("时长","小时");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -177,9 +180,10 @@ public class WorkOvertimeController extends BaseController {
             yData1.getData().add(bean.getTotalCount());
             yData2.getData().add(bean.getTotalHours().doubleValue());
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
         chartData.getYdata().add(yData3);
+
+        chartData.getYdata().add(yData1);
         chartData = ChartUtil.completeDate(chartData, sf);
         return callback(chartData);
     }

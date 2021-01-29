@@ -211,6 +211,7 @@ public class UserBehaviorController extends BaseController {
                 sf.getUserId(), sf.getMinHour(), sf.getMaxHour());
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("用户行为分析");
+        chartPieData.setUnit("次");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("次数");
         Map<String, Integer> map = new HashMap<>();

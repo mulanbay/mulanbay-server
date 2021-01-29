@@ -133,6 +133,7 @@ public class UserScoreController extends BaseController {
     private ChartPieData createPieStatChartData(List<UserScore> list) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("用户评分统计分析");
+        chartPieData.setUnit("次");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("次数");
         Map<String, Integer> map = new HashMap<>();
@@ -172,7 +173,8 @@ public class UserScoreController extends BaseController {
     private ChartData createLineStatChartData(List<UserScore> list) {
         ChartData chartData = new ChartData();
         chartData.setTitle("用户评分统计分析");
-        chartData.setLegendData(new String[]{"分"});
+        chartData.setUnit("分");
+        chartData.setLegendData(new String[]{"分数"});
         ChartYData yData1 = new ChartYData();
         yData1.setName("分数");
         int totalScore = 0;

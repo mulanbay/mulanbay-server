@@ -270,6 +270,7 @@ public class ReadingRecordController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("阅读统计");
         //chartData.setSubTitle(this.getDateTitle(sf));
+        chartData.setUnit("本");
         chartData.setLegendData(new String[]{"本数"});
         ChartYData yData1 = new ChartYData();
         yData1.setName("本数");
@@ -371,6 +372,7 @@ public class ReadingRecordController extends BaseController {
     private ChartPieData createAnalyseStatPieData(ReadingRecordAnalyseStatSearch sf, List<ReadingRecordAnalyseStat> list) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("阅读记录分析");
+        chartPieData.setUnit("本");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("本数");
         //总的值

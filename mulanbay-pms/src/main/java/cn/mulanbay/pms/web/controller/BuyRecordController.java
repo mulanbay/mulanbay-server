@@ -418,6 +418,7 @@ public class BuyRecordController extends BaseController {
     private ChartRadarData createAnalyseStatRadarData(BuyRecordAnalyseStatSearch sf) {
         ChartRadarData chartRadarData = new ChartRadarData();
         chartRadarData.setTitle("购买记录分析");
+        chartRadarData.setUnit(sf.getType().getUnit());
         sf.setDateGroupType(DateGroupType.YEAR);
         List<BuyRecordRadarStat> list = buyRecordService.getRadarStat(sf);
         if (list.isEmpty()) {
@@ -602,6 +603,7 @@ public class BuyRecordController extends BaseController {
     private ChartPieData createAnalyseStatPieData(List<BuyRecordRealTimeStat> list, BuyRecordAnalyseStatSearch sf) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("消费分析");
+        chartPieData.setUnit(sf.getType().getUnit());
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName(sf.getType().getName());
         //总的值
@@ -630,6 +632,7 @@ public class BuyRecordController extends BaseController {
     private ChartData createAnalyseStatBarData(List<BuyRecordRealTimeStat> list, BuyRecordAnalyseStatSearch sf) {
         ChartData chartData = new ChartData();
         chartData.setTitle("消费分析");
+        chartData.setUnit(sf.getType().getUnit());
         chartData.setLegendData(new String[]{sf.getType().getName()});
         ChartYData yData = new ChartYData();
         yData.setName(sf.getType().getName());
@@ -678,7 +681,10 @@ public class BuyRecordController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("消费统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"次数", "消费(元)"});
+        chartData.setLegendData(new String[]{"消费(元)","次数"});
+        //混合图形下使用
+        chartData.addYAxis("消费","元");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -694,8 +700,8 @@ public class BuyRecordController extends BaseController {
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount().longValue()));
             totalValue = totalValue.add(bean.getTotalPrice());
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData1);
         String subTitle = this.getDateTitle(sf, totalCount.longValue() + "次，" + totalValue.doubleValue() + "元");
         chartData.setSubTitle(subTitle);
         chartData = ChartUtil.completeDate(chartData, sf);
@@ -802,7 +808,10 @@ public class BuyRecordController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("关键字统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"次数", "消费(元)"});
+        chartData.setLegendData(new String[]{"消费(元)","次数"});
+        //混合图形下使用
+        chartData.addYAxis("消费","元");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -818,8 +827,8 @@ public class BuyRecordController extends BaseController {
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount().longValue()));
             totalValue = totalValue.add(bean.getTotalPrice());
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData1);
         String subTitle = this.getDateTitle(sf, totalCount.longValue() + "次，" + totalValue.doubleValue() + "元");
         chartData.setSubTitle(subTitle);
         chartData = ChartUtil.completeDate(chartData, sf);
@@ -838,7 +847,7 @@ public class BuyRecordController extends BaseController {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("[" + basf.getKeywords() + "]的消费分析");
         ChartPieSerieData serieData = new ChartPieSerieData();
-        serieData.setName("费用");
+        serieData.setName("费用(元)");
         //总的值
         double totalValue = 0;
         for (BuyRecordRealTimeStat bean : list) {

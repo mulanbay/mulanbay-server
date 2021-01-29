@@ -156,6 +156,7 @@ public class PlanReportController extends BaseController {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("实现情况统计");
         chartPieData.setSubTitle(this.getDateTitle(sf));
+        chartPieData.setUnit("次");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("计划次数实现情况统计(次)");
         ChartPieSerieData serieDataCount = new ChartPieSerieData();
@@ -345,7 +346,10 @@ public class PlanReportController extends BaseController {
     private ChartData createOriginalStatChartData(List<PlanReport> list, UserPlan userPlan, PlanReportSearch sf) {
         ChartData chartData = new ChartData();
         chartData.setTitle(userPlan.getTitle() + "执行统计");
-        chartData.setLegendData(new String[]{"次数", "值(" + userPlan.getPlanConfig().getUnit() + ")"});
+        chartData.setLegendData(new String[]{"值(" + userPlan.getPlanConfig().getUnit() + ")","次数"});
+        //混合图形下使用
+        chartData.addYAxis("数值",userPlan.getPlanConfig().getUnit());
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -426,6 +430,7 @@ public class PlanReportController extends BaseController {
             PlanReportTimeline pr0 = list.get(0);
             UserPlan userPlan = pr0.getUserPlan();
             chartData.setTitle(userPlan.getTitle() + "统计");
+            chartData.setUnit("%");
             chartData.setSubTitle("计划次数:" + pr0.getPlanCountValue() + ",计划值:" + pr0.getPlanValue() + "(" + userPlan.getPlanConfig().getUnit() + ")");
             chartData.setLegendData(new String[]{"计划次数完成进度(%)", "计划值完成进度(%)", "时间进度(%)"});
             ChartYData countData = new ChartYData();
@@ -457,7 +462,6 @@ public class PlanReportController extends BaseController {
             chartData.getYdata().add(countData);
             chartData.getYdata().add(valueData);
             chartData.getYdata().add(timeData);
-
         }
         return callback(chartData);
     }

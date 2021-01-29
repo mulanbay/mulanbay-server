@@ -210,7 +210,10 @@ public class CommonRecordController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle(crt.getName() + "统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"次数", crt.getUnit()});
+        chartData.setLegendData(new String[]{crt.getUnit(),"次数"});
+        //混合图形下使用
+        chartData.addYAxis("值",crt.getUnit());
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
@@ -223,8 +226,8 @@ public class CommonRecordController extends BaseController {
             yData2.getData().add(bean.getTotalValue());
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount()));
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData1);
         String subTitle = this.getDateTitle(sf, totalCount.longValue() + "次");
         chartData.setSubTitle(subTitle);
         chartData = ChartUtil.completeDate(chartData, sf);
