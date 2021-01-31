@@ -60,6 +60,9 @@ public class PmsMessageSendHandler extends BaseHandler {
     @Value("${system.nodeId}")
     String nodeId;
 
+    @Value("${system.mobile.baseUrl}")
+    private String mobileBaseUrl;
+
     @Autowired
     WxpayHandler wxpayHandler;
 
@@ -257,6 +260,9 @@ public class PmsMessageSendHandler extends BaseHandler {
      * @return
      */
     public boolean sendWxMessage(Long userId, String title, String content, Date time, LogLevel level, String url) {
+        if(StringUtil.isNotEmpty(url)&& !url.startsWith("http")){
+            url = mobileBaseUrl+url;
+        }
         return wxpayHandler.sendTemplateMessage(userId, title, content, time, level, url);
 
     }

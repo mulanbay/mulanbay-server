@@ -36,6 +36,15 @@ public class ErrorCodeDefineFormRequest {
 
     private Integer limitPeriod;
 
+    /**
+     * pc端连接
+     */
+    private String url;
+    /**
+     * 移动端连接
+     */
+    private String mobileUrl;
+
     private String remark;
 
     public Integer getCode() {
@@ -116,6 +125,22 @@ public class ErrorCodeDefineFormRequest {
 
     public void setLimitPeriod(Integer limitPeriod) {
         this.limitPeriod = limitPeriod;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    public String getMobileUrl() {
+        return mobileUrl;
+    }
+
+    public void setMobileUrl(String mobileUrl) {
+        this.mobileUrl = mobileUrl;
     }
 
     public String getRemark() {

@@ -37,9 +37,18 @@ public class ErrorCodeDefine implements Serializable {
 
     private Integer count;
 
-    //周期(秒数)，默认是0，如果大于0表示一段时间内只会对一个用户只发送一次通知
+    /**
+     * 周期(秒数)，默认是0，如果大于0表示一段时间内只会对一个用户只发送一次通知
+     */
     private Integer limitPeriod;
-
+    /**
+     * pc端连接
+     */
+    private String url;
+    /**
+     * 移动端连接
+     */
+    private String mobileUrl;
     private String remark;
     private Date createdTime;
     private Date lastModifyTime;
@@ -145,6 +154,26 @@ public class ErrorCodeDefine implements Serializable {
 
     public void setLimitPeriod(Integer limitPeriod) {
         this.limitPeriod = limitPeriod;
+    }
+
+    @Basic
+    @Column(name = "url")
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+    @Basic
+    @Column(name = "mobile_url")
+    public String getMobileUrl() {
+        return mobileUrl;
+    }
+
+    public void setMobileUrl(String mobileUrl) {
+        this.mobileUrl = mobileUrl;
     }
 
     @Basic

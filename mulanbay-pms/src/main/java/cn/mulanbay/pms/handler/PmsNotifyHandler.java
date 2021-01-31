@@ -95,10 +95,6 @@ public class PmsNotifyHandler extends BaseHandler implements NotifiableProcessor
         redisDelayQueueHandler.addMessage(message);
     }
 
-    public Long addNotifyMessage(int code, String title, String content, Long userId, Date notifyTime) {
-        return this.addNotifyMessage(code, title, content, userId, notifyTime, null);
-    }
-
     /**
      * 向某个特定的人添加消息
      * 消息可能针对普通用户，或者是系统管理员
@@ -107,9 +103,8 @@ public class PmsNotifyHandler extends BaseHandler implements NotifiableProcessor
      * @param content
      * @param userId
      * @param notifyTime
-     * @param url        微信消息跳转地址
      */
-    public Long addNotifyMessage(int code, String title, String content, Long userId, Date notifyTime, String url) {
+    public Long addNotifyMessage(int code, String title, String content, Long userId, Date notifyTime) {
         ErrorCodeDefine ec = systemConfigHandler.getErrorCodeDefine(code);
         if (ec == null) {
             logHandler.addSystemLog(LogLevel.WARNING, "错误代码未配置", "代码[" + code + "]没有配置",
@@ -122,7 +117,7 @@ public class PmsNotifyHandler extends BaseHandler implements NotifiableProcessor
         if (expectSendTime == null) {
             return null;
         }
-        UserMessage message = this.createUserMessage(ec, userId, expectSendTime, title, content, url, null);
+        UserMessage message = this.createUserMessage(ec, userId, expectSendTime, title, content, ec.getMobileUrl(), null);
         //因为用户日历和用户积分奖励都需要这个messageId，所以只能先保存。另外一种方法可以在UserMessage表中新增一个uuid字段来解决
         baseService.saveObject(message);
         this.addNotifyMessage(message);
