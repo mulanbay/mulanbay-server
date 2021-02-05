@@ -20,6 +20,7 @@ import cn.mulanbay.pms.persistent.enums.UserCalendarSource;
 import cn.mulanbay.pms.persistent.service.UserCalendarService;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
+import cn.mulanbay.pms.web.bean.request.UserCommonRequest;
 import cn.mulanbay.pms.web.bean.request.usercalendar.*;
 import cn.mulanbay.pms.web.bean.response.calendar.UserCalendarVo;
 import cn.mulanbay.pms.web.bean.response.chart.ChartData;
@@ -357,6 +358,23 @@ public class UserCalendarController extends BaseController {
     }
 
     /**
+     * 今日任务数
+     * @param uc
+     * @return
+     */
+    @RequestMapping(value = "/dailyCount", method = RequestMethod.GET)
+    public ResultBean dailyCount(UserCommonRequest uc) {
+        Long userId = uc.getUserId();
+        String key = MessageFormat.format(CacheKey.USER_TODAY_CALENDAR_COUNTS, userId);
+        Integer cc = cacheHandler.get(key, Integer.class);
+        if (cc == null) {
+            cc = userCalendarService.getTodayUserCalendarCount(userId).intValue();
+            cacheHandler.set(key, cc, 30);
+        }
+        return callback(cc);
+    }
+
+    /**
      * @return
      */
     @RequestMapping(value = "/dailyCountStat", method = RequestMethod.GET)
@@ -368,7 +386,7 @@ public class UserCalendarController extends BaseController {
             return callbackErrorInfo("没有相关统计数据");
         }
         ChartData chartData = new ChartData();
-        chartData.setTitle("每日任务数统计");
+        chartData.setTitle("每日任务量");
         chartData.setLegendData(new String[]{"任务数(个)"});
         ChartYData yData1 = new ChartYData();
         yData1.setName("任务数(个)");
