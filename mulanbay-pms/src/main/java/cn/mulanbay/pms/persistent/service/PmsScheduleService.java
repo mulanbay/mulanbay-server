@@ -184,4 +184,21 @@ public class PmsScheduleService extends HibernatePersistentProcessor {
     public TaskServer selectTaskServer(String deployId) {
         return super.selectTaskServer(deployId);
     }
+
+    /**
+     * 最近的调度(24小时内)
+     *
+     * @return
+     */
+    public List<TaskTrigger> getRecentSchedules() {
+        try {
+            Date now = new Date();
+            Date end = new Date(now.getTime()+24*3600*1000L);
+            String hql ="from TaskTrigger where nextExecuteTime>=?0 and nextExecuteTime<=?1 and triggerStatus=?2 and triggerType in (4,5,6,7,8) order by nextExecuteTime ";
+            return this.getEntityListNoPageHQL(hql,now,end,TriggerStatus.ENABLE);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "最近的调度异常", e);
+        }
+    }
 }

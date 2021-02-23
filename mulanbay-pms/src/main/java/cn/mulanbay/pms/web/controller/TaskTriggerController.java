@@ -402,4 +402,15 @@ public class TaskTriggerController extends BaseController {
         return callback(res);
     }
 
+    /**
+     * 最近的调度
+     *
+     * @return
+     */
+    @RequestMapping(value = "/recentSchedules", method = RequestMethod.GET)
+    public ResultBean recentSchedules() {
+        List<TaskTrigger> list = pmsScheduleService.getRecentSchedules();
+        return callback(list);
+    }
+
 }
