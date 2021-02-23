@@ -145,9 +145,6 @@ public class RedisDelayQueueHandler extends BaseHandler {
      * @return
      */
     public Set<UserMessage> getNeedSendMessage(Date now) {
-        if (now == null) {
-            now = new Date();
-        }
         ZSetOperations zSetOperations = redisTemplate.opsForZSet();
         Set<UserMessage> sets = zSetOperations.rangeByScore(getQueueName(), 0, now.getTime());
         return sets;

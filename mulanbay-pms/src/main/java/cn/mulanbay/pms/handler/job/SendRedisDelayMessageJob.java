@@ -2,6 +2,7 @@ package cn.mulanbay.pms.handler.job;
 
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.BeanFactoryUtil;
+import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.pms.handler.PmsMessageSendHandler;
 import cn.mulanbay.pms.handler.msg.RedisDelayQueueHandler;
 import cn.mulanbay.pms.persistent.domain.UserMessage;
@@ -37,7 +38,7 @@ public class SendRedisDelayMessageJob extends AbstractBaseJob {
         redisDelayQueueHandler = BeanFactoryUtil.getBean(RedisDelayQueueHandler.class);
         sendHandler = BeanFactoryUtil.getBean(PmsMessageSendHandler.class);
         Set<UserMessage> set = redisDelayQueueHandler.getNeedSendMessage(new Date());
-        if (set == null || set.size() == 0) {
+        if (StringUtil.isEmpty(set)) {
             tr.setExecuteResult(JobExecuteResult.SKIP);
         } else {
             tr.setExecuteResult(JobExecuteResult.SUCCESS);
