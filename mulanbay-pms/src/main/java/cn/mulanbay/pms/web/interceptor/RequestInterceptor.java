@@ -136,13 +136,14 @@ public class RequestInterceptor extends BaseInterceptor {
                 log.setIdValue(idValue);
             }
             logHandler.addOperationLog(log);
-            para.remove();
-            startTime.remove();
             logger.debug("记录了操作日志");
         } catch (ApplicationException e) {
             logger.error("do before addOperationLog error", e);
         } catch (Exception e) {
             logger.error("do before addOperationLog error", e);
+        }finally {
+            para.remove();
+            startTime.remove();
         }
     }
 }
