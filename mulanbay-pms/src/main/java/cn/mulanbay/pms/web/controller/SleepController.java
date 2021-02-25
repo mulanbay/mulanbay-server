@@ -126,6 +126,7 @@ public class SleepController extends BaseController {
         bean.setGetUpTime(formRequest.getGetUpTime());
         long n = bean.getGetUpTime().getTime() - bean.getSleepTime().getTime();
         bean.setTotalMinutes((int) (n / (1000 * 60)));
+        bean.setQuality(6);
         bean.setLastModifyTime(new Date());
         baseService.updateObject(bean);
         return callback(bean);
