@@ -137,11 +137,14 @@ public class IncomeController extends BaseController {
         List<IncomeDateStat> list = incomeService.statDateIncome(sf);
         ChartData chartData = new ChartData();
         chartData.setTitle(getChartTitle(sf.getAccountId(), sf.getUserId()));
-        chartData.setLegendData(new String[]{"次数", "总额(元)"});
+        chartData.setLegendData(new String[]{"收入(元)","次数"});
+        //混合图形下使用
+        chartData.addYAxis("收入(元)","元");
+        chartData.addYAxis("次数","次");
         ChartYData yData1 = new ChartYData();
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
-        yData2.setName("总额(元)");
+        yData2.setName("收入(元)");
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
         BigDecimal totalValue = new BigDecimal(0);
@@ -163,8 +166,8 @@ public class IncomeController extends BaseController {
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount()));
             totalValue = totalValue.add(bean.getTotalAmount());
         }
-        chartData.getYdata().add(yData1);
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData1);
         String totalString = totalCount.longValue() + "(次)," + totalValue.doubleValue() + "(元)";
         chartData.setSubTitle(this.getDateTitle(sf, totalString));
         chartData = ChartUtil.completeDate(chartData, sf);

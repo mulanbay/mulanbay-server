@@ -49,6 +49,9 @@ public class BackHomeController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("回家数据统计");
         chartData.setLegendData(new String[]{"回家次数", "交通次数", "路费"});
+        //混合图形下使用
+        chartData.addYAxis("次数","次");
+        chartData.addYAxis("路费","元");
         ChartYData yData1 = new ChartYData();
         yData1.setName("回家次数");
         ChartYData yData2 = new ChartYData();

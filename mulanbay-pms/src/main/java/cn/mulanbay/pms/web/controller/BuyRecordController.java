@@ -719,6 +719,7 @@ public class BuyRecordController extends BaseController {
             return callback(createChartCalandarMultiData(sf));
         }
         ChartData chartData = initYoyCharData(sf, "消费统计同期对比", null);
+        chartData.setUnit(sf.getGroupType().getUnit());
         String[] legendData = new String[sf.getYears().size()];
         for (int i = 0; i < sf.getYears().size(); i++) {
             legendData[i] = sf.getYears().get(i).toString();

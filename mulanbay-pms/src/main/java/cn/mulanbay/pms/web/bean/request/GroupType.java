@@ -20,7 +20,7 @@ public enum GroupType {
     HEIGHT(10, "身高","","CM"),
     WEIGHT(11, "体重","","KG"),
     BMI(12, "BMI"),
-    DAYS(13, "天数","天"),
+    DAYS(13, "天数","天","天"),
     PAYMENT(14, "支付方式"),
     SHOPNAME(15, "店铺"),
     MAXSPEED(16, "最佳速度", "maxSpeed","公里/小时"),

@@ -609,6 +609,7 @@ public class LifeExperienceController extends BaseController {
     @RequestMapping(value = "/yoyStat")
     public ResultBean yoyStat(@Valid LifeExperienceYoyStatSearch sf) {
         ChartData chartData = initYoyCharData(sf, "人生经历同期对比", null);
+        chartData.setUnit(sf.getGroupType().getUnit());
         String[] legendData = new String[sf.getYears().size()];
         for (int i = 0; i < sf.getYears().size(); i++) {
             legendData[i] = sf.getYears().get(i).toString();
