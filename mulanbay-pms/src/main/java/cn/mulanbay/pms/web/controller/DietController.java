@@ -515,7 +515,7 @@ public class DietController extends BaseController {
         List<DietCompareStat> list = dietService.statDietCompare(sf);
         ChartData chartData = new ChartData();
         chartData.setTitle("饮食比对");
-        chartData.setUnit("次");
+        chartData.setUnit(sf.getStatField().getUnit());
         List dietTypeVs = new ArrayList<>();
         for (DietType dt : DietType.values()) {
             dietTypeVs.add(0);
@@ -540,11 +540,11 @@ public class DietController extends BaseController {
             if (sf.getStatField() == DietCompareSearch.StatField.COUNTS) {
                 v = m.getTotalCount().longValue();
             } else if (sf.getStatField() == DietCompareSearch.StatField.TOTAL_PRICE) {
-                v = PriceUtil.changeToString(2, m.getTotalPrice());
+                v = PriceUtil.changeToString(0, m.getTotalPrice());
             } else if (sf.getStatField() == DietCompareSearch.StatField.AVG_PRICE) {
-                v = PriceUtil.changeToString(2, m.getTotalPrice().doubleValue() / m.getTotalCount().longValue());
+                v = PriceUtil.changeToString(0, m.getTotalPrice().doubleValue() / m.getTotalCount().longValue());
             } else if (sf.getStatField() == DietCompareSearch.StatField.AVG_SCORE) {
-                v = PriceUtil.changeToString(2, m.getTotalScore().doubleValue() / m.getTotalCount().longValue());
+                v = PriceUtil.changeToString(0, m.getTotalScore().doubleValue() / m.getTotalCount().longValue());
             }
             values.set(m.getDietType().getValue(), v);
         }

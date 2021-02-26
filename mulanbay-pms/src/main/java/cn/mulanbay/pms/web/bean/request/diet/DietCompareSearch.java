@@ -83,10 +83,23 @@ public class DietCompareSearch extends QueryBuilder implements BindUser, DateSta
      * 统计字段
      */
     public enum StatField {
-        COUNTS,
-        TOTAL_PRICE,
-        AVG_PRICE,
-        AVG_SCORE;
+        COUNTS("次"),
+        TOTAL_PRICE("元"),
+        AVG_PRICE("元"),
+        AVG_SCORE("元");
 
+        private String unit;
+
+        StatField(String unit) {
+            this.unit = unit;
+        }
+
+        public String getUnit() {
+            return unit;
+        }
+
+        public void setUnit(String unit) {
+            this.unit = unit;
+        }
     }
 }

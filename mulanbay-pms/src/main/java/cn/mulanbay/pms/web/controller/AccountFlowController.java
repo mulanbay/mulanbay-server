@@ -79,8 +79,8 @@ public class AccountFlowController extends BaseController {
         ChartYData y2Data = new ChartYData("账户变化值");
         for (AccountFlow bean : qr.getBeanList()) {
             chartData.getXdata().add(DateUtil.getFormatDate(bean.getCreatedTime(), DateUtil.FormatDay1));
-            yData.getData().add(bean.getAfterAmount());
-            y2Data.getData().add(PriceUtil.changeToString(2, bean.getAfterAmount() - bean.getBeforeAmount()));
+            yData.getData().add(PriceUtil.changeToString(0,bean.getAfterAmount()));
+            y2Data.getData().add(PriceUtil.changeToString(0, bean.getAfterAmount() - bean.getBeforeAmount()));
         }
         String subTitle = this.getDateTitle(sf);
         chartData.setSubTitle(subTitle);
@@ -98,6 +98,7 @@ public class AccountFlowController extends BaseController {
         List<AccountFlowSnapshotStat> list = accountFlowService.statSnapshot(sf.getUserId(), sf.getStartDate(), sf.getEndDate());
         ChartData chartData = new ChartData();
         chartData.setTitle("总账户变化分析(有效账户)");
+        chartData.setUnit("元");
         chartData.setLegendData(new String[]{"账户总额", "账户变化值"});
         ChartYData yData = new ChartYData("账户总额");
         ChartYData y2Data = new ChartYData("账户变化值");
@@ -116,7 +117,7 @@ public class AccountFlowController extends BaseController {
                 }
                 chartData.getXdata().add(xs);
                 yData.getData().add(bean.getAfterAmount().doubleValue());
-                String s = PriceUtil.changeToString(2, bean.getAfterAmount().subtract(before));
+                String s = PriceUtil.changeToString(0, bean.getAfterAmount().subtract(before));
                 y2Data.getData().add(s);
                 before = bean.getAfterAmount();
             }
