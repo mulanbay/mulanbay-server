@@ -771,6 +771,7 @@ public class DietController extends BaseController {
         DietType dietType = sf.getDietType();
         String dietTypeName = dietType == null ? "" : dietType.getName();
         chartData.setTitle("[" + dietTypeName + "]多样性");
+        chartData.setUnit("%");
         chartData.setLegendData(new String[]{"重复度(%)"});
         ChartYData yData1 = new ChartYData();
         yData1.setName("重复度(%)");
