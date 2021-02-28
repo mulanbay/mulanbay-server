@@ -43,17 +43,13 @@ public class SystemController extends BaseController {
         String key = CacheKey.getKey(CacheKey.SERVER_DETAIL_MONITOR_TIMELINE);
         LimitQueue<ServerDetail> queue = cacheHandler.get(key, LimitQueue.class);
         if (queue == null) {
-            ChartData chartData = new ChartData();
-            chartData.setTitle("暂无数据");
-            return callback(chartData);
+            queue = new LimitQueue<>(0);
+        } if (resourceType == SystemResourceType.DISK) {
+            return callback(createDiskChartData(queue));
+        } else if (resourceType == SystemResourceType.MEMORY) {
+            return callback(createMemoryChartData(queue));
         } else {
-            if (resourceType == SystemResourceType.DISK) {
-                return callback(createDiskChartData(queue));
-            } else if (resourceType == SystemResourceType.MEMORY) {
-                return callback(createMemoryChartData(queue));
-            } else {
-                return callback(createCpuChartData(queue));
-            }
+            return callback(createCpuChartData(queue));
         }
     }
 
