@@ -120,6 +120,9 @@ public class SystemController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("CPU监控");
         chartData.setLegendData(new String[]{"系统使用率(%)", "当前空闲率(%)"});
+        //混合图形下使用
+        chartData.addYAxis("使用率","%");
+        chartData.addYAxis("空闲率","%");
         ChartYData yData1 = new ChartYData();
         yData1.setName("系统使用率(%)");
         ChartYData yData2 = new ChartYData();
