@@ -66,6 +66,9 @@ public class SystemController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("磁盘监控");
         chartData.setLegendData(new String[]{"磁盘空闲空间(G)", "已使用比例(%)"});
+        //混合图形下使用
+        chartData.addYAxis("空间","G");
+        chartData.addYAxis("比例","%");
         ChartYData yData1 = new ChartYData();
         yData1.setName("磁盘空闲空间(G)");
         ChartYData yData2 = new ChartYData();
@@ -92,6 +95,9 @@ public class SystemController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("内存监控");
         chartData.setLegendData(new String[]{"空闲空间(G)", "已使用比例(%)"});
+        //混合图形下使用
+        chartData.addYAxis("空间","G");
+        chartData.addYAxis("比例","%");
         ChartYData yData1 = new ChartYData();
         yData1.setName("空闲空间(G)");
         ChartYData yData2 = new ChartYData();
