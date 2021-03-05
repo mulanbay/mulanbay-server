@@ -781,4 +781,35 @@ public class TreatService extends BaseHibernateDao {
         }
     }
 
+    /**
+     * 获取用药明细的时间列表
+     * @param treatDrugId
+     * @param startDate
+     * @param endDate
+     * @param userId
+     * @param mergeSameName
+     * @return
+     */
+    public List<Date> getDrugDetailDateList(Long treatDrugId,Date startDate,Date endDate,Long userId,boolean mergeSameName) {
+        try {
+            StringBuffer sb = new StringBuffer();
+            sb.append("select occurTime from TreatDrugDetail ");
+            sb.append("where userId=?0 and occurTime>=?1 and occurTime<=?2 ");
+            if(!mergeSameName){
+                sb.append("and treatDrug.id=?3 ");
+                sb.append(" order by occurTime");
+                List<Date> list = this.getEntityListNoPageHQL(sb.toString(), userId,startDate,endDate,treatDrugId);
+                return list;
+            }else{
+                TreatDrug td = (TreatDrug) this.getEntityById(TreatDrug.class,treatDrugId);
+                sb.append("and treatDrug.id in (select id from TreatDrug where name=?3) ");
+                List<Date> list = this.getEntityListNoPageHQL(sb.toString(), userId,startDate,endDate,td.getName());
+                return list;
+            }
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取用药明细的时间列表异常", e);
+        }
+    }
+
 }

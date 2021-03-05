@@ -162,6 +162,17 @@ public class TreatDrugDetailController extends BaseController {
     }
 
     /**
+     * 时间点
+     *
+     * @return
+     */
+    @RequestMapping(value = "/timeStat", method = RequestMethod.GET)
+    public ResultBean timeStat(TreatDrugDetailTimeStat sf){
+        List<Date> dateList = treatService.getDrugDetailDateList(sf.getTreatDrugId(),sf.getStartDate(),sf.getEndDate(),sf.getUserId(),sf.isMergeSameName());
+        return callback(this.createHMChartData(dateList,"用药分析","用药时间点"));
+    }
+
+    /**
      * 日历统计
      *
      * @return
