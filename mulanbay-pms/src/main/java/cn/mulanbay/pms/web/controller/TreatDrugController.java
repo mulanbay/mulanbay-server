@@ -80,7 +80,7 @@ public class TreatDrugController extends BaseController {
     public ResultBean getData(TreatDrugSearch sf) {
         PageRequest pr = sf.buildQuery();
         pr.setBeanClass(beanClass);
-        Sort s = new Sort("createdTime", Sort.DESC);
+        Sort s = new Sort("endDate", Sort.DESC);
         pr.addSort(s);
         PageResult<TreatDrug> qr = baseService.getBeanResult(pr);
         return callbackDataGrid(qr);
