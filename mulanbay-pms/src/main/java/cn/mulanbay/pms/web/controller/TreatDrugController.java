@@ -3,20 +3,21 @@ package cn.mulanbay.pms.web.controller;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
+import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.persistent.domain.TreatDrug;
+import cn.mulanbay.pms.persistent.domain.TreatDrugDetail;
 import cn.mulanbay.pms.persistent.domain.TreatRecord;
 import cn.mulanbay.pms.persistent.service.TreatService;
 import cn.mulanbay.pms.util.TreeBeanUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
-import cn.mulanbay.pms.web.bean.request.health.TreatDrugCategorySearch;
-import cn.mulanbay.pms.web.bean.request.health.TreatDrugFormRequest;
-import cn.mulanbay.pms.web.bean.request.health.TreatDrugLastGetRequest;
-import cn.mulanbay.pms.web.bean.request.health.TreatDrugSearch;
+import cn.mulanbay.pms.web.bean.request.data.UserBehaviorCalendarStatSearch;
+import cn.mulanbay.pms.web.bean.request.health.*;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
+import cn.mulanbay.pms.web.bean.response.health.TreatDrugCalendarVo;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -150,4 +151,91 @@ public class TreatDrugController extends BaseController {
         TreatDrug bean = treatService.getLastTreatDrug(getRequest.getName(), getRequest.getUserId());
         return callback(bean);
     }
+
+    /**
+     * 用药日历
+     *
+     * @return
+     */
+    @RequestMapping(value = "/calendar", method = RequestMethod.GET)
+    public ResultBean calendar(@Valid TreatDrugCalendarSearch sf) {
+        List<TreatDrug> drugList = treatService.getActiveTreatDrugList(sf.getBussDay(),sf.getUserId());
+        List<TreatDrugCalendarVo> res = this.initCalendar();
+        for(TreatDrug td :drugList){
+            //初始化
+            switch (td.getPerTimes()){
+                case 1:
+                    this.addDetail(8,res,td);
+                    break;
+                case 2:
+                    this.addDetail(8,res,td);
+                    this.addDetail(17,res,td);
+                    break;
+                case 3:
+                    this.addDetail(8,res,td);
+                    this.addDetail(12,res,td);
+                    this.addDetail(17,res,td);
+                    break;
+                default:
+                    break;
+            }
+            //查找用药列表
+            List<TreatDrugDetail> detailList = treatService.getTreatDrugDetailList(sf.getBussDay(),sf.getUserId(),td.getId());
+            for(TreatDrugDetail dd : detailList){
+                int hour = Integer.valueOf(DateUtil.getFormatDate(dd.getOccurTime(),"HH"));
+                TreatDrugCalendarVo vo = this.getCalendarVo(hour,res);
+                boolean b = vo.appendDetail(dd.getId(),dd.getOccurTime(),td.getId());
+                if(!b){
+                    //未匹配上,直接添加
+                    vo.addDetail(td,dd.getId(),dd.getOccurTime(),td.getId());
+                }
+            }
+        }
+        return callback(res);
+    }
+
+    /**
+     * 增加明细
+     * @param hour
+     * @param voList
+     * @param td
+     */
+    private void addDetail(int hour,List<TreatDrugCalendarVo> voList,TreatDrug td){
+        TreatDrugCalendarVo vo = this.getCalendarVo(hour,voList);
+        vo.addTreatDrug(td);
+    }
+
+    /**
+     * 查找TreatDrugCalendarVo
+     * @param hour
+     * @param voList
+     * @return
+     */
+    private TreatDrugCalendarVo getCalendarVo(int hour,List<TreatDrugCalendarVo> voList){
+        int n = voList.size();
+        for(int i=0;i<n;i++){
+            TreatDrugCalendarVo vo = voList.get(i);
+            if(vo.getStartHour()<=hour&&hour<=vo.getEndHour()){
+                return vo;
+            }
+        }
+        //默认最后一个
+        return voList.get(n-1);
+    }
+
+    /**
+     * 初始化
+     * @return
+     */
+    private List<TreatDrugCalendarVo> initCalendar(){
+        List<TreatDrugCalendarVo> list = new ArrayList<>();
+        TreatDrugCalendarVo mov = new TreatDrugCalendarVo("早",0,10);
+        list.add(mov);
+        TreatDrugCalendarVo miv = new TreatDrugCalendarVo("中",11,13);
+        list.add(miv);
+        TreatDrugCalendarVo afv = new TreatDrugCalendarVo("晚",14,23);
+        list.add(afv);
+        return list;
+    }
+
 }

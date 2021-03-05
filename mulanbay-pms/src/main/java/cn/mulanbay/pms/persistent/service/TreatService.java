@@ -812,4 +812,36 @@ public class TreatService extends BaseHibernateDao {
         }
     }
 
+    /**
+     * 获取用药中的药品列表
+     * @param date 比较日期
+     * @param userId
+     * @return
+     */
+    public List<TreatDrug> getActiveTreatDrugList(Date date,Long userId) {
+        try {
+            String hql = "from TreatDrug where userId=?0 and beginDate<=?1 and endDate>=?2 ";
+            return this.getEntityListNoPageHQL(hql,userId,date,date);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取用药中的药品列表异常", e);
+        }
+    }
+
+    /**
+     * 获取用药详情列表
+     * @param date 比较日期
+     * @param userId
+     * @return
+     */
+    public List<TreatDrugDetail> getTreatDrugDetailList(Date date,Long userId,Long treatDrugId) {
+        try {
+            Date end = DateUtil.getTodayTillMiddleNightDate(date);
+            String hql = "from TreatDrugDetail where userId=?0 and occurTime>=?1 and occurTime<=?2 and treatDrug.id=?3 order by occurTime";
+            return this.getEntityListNoPageHQL(hql,userId,date,end,treatDrugId);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取用药详情列表异常", e);
+        }
+    }
 }
