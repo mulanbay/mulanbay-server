@@ -19,6 +19,8 @@ import cn.mulanbay.pms.web.bean.request.BaseYoyStatSearch;
 import cn.mulanbay.pms.web.bean.request.DateStatSearch;
 import cn.mulanbay.pms.web.bean.response.DataGrid;
 import cn.mulanbay.pms.web.bean.response.chart.ChartData;
+import cn.mulanbay.pms.web.bean.response.chart.ScatterChartData;
+import cn.mulanbay.pms.web.bean.response.chart.ScatterChartDetailData;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -273,5 +275,34 @@ public class BaseController {
             dd[1] = DateUtil.getDate(year + "-12-31 23:59:59", DateUtil.Format24Datetime);
         }
         return dd;
+    }
+
+    /**
+     * 生成基于时分统计的散点图形数据
+     * @param dateList
+     * @param title
+     * @param name
+     * @return
+     */
+    protected ScatterChartData createHMChartData(List<Date> dateList ,String title,String name){
+        ScatterChartData chartData = new ScatterChartData();
+        chartData.setTitle(title);
+        chartData.setxUnit("");
+        chartData.setyUnit("点");
+        chartData.addLegent(name);
+        ScatterChartDetailData detailData = new ScatterChartDetailData();
+        detailData.setName(name);
+        double totalX = 0;
+        int n = 0;
+        for (Date date : dateList) {
+            String x = DateUtil.getFormatDate(date,"yyyyMMdd");
+            String y = DateUtil.getFormatDate(date,"HH.mm");
+            detailData.addData(new Object[]{x, y});
+            totalX += Double.valueOf(y);
+            n++;
+        }
+        detailData.setxAxisAverage(totalX / n);
+        chartData.addSeriesData(detailData);
+        return chartData;
     }
 }

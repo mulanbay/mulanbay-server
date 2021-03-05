@@ -24,29 +24,36 @@ public class MysqlUtil {
      */
     public static String dateTypeMethod(String field, DateGroupType dateGroupType) {
         String method = null;
-        if (dateGroupType == DateGroupType.HOUR) {
-            method = "hour";
-        } else if (dateGroupType == DateGroupType.DAYOFMONTH) {
-            method = "DAYOFMONTH";
-            //统计都是哪些小时点练习的
-        } else if (dateGroupType == DateGroupType.DAYOFWEEK) {
-            //星期索引，周一=1，周二=2，周日=7
-            return " WEEKDAY(" + field + ")+1 ";
-        } else if (dateGroupType == DateGroupType.WEEK) {
-            method = "weekofyear";
-        } else if (dateGroupType == DateGroupType.MONTH) {
-            method = "month";
-        } else if (dateGroupType == DateGroupType.YEAR) {
-            return " CAST(DATE_FORMAT(" + field + ",'%Y') AS signed) ";
-        } else if (dateGroupType == DateGroupType.DAY || dateGroupType == DateGroupType.DAYCALENDAR) {
-            return " CAST(DATE_FORMAT(" + field + ",'%Y%m%d') AS signed) ";
-        } else if (dateGroupType == DateGroupType.YEARMONTH) {
-            return " CAST(DATE_FORMAT(" + field + ",'%Y%m') AS signed) ";
-        } else if (dateGroupType == DateGroupType.HOURMINUTE) {
-            //这里是除以100，不是60，比如：7.5代表的是7点50分，而不是7点半
-            return "(CAST(DATE_FORMAT(" + field + ",'%H') AS signed)+CAST(DATE_FORMAT(" + field + ",'%i') AS signed)/100)";
-        } else {
-            throw new ApplicationException(PmsErrorCode.UN_SUPPORT_DATE_GROUP_TYPE);
+        switch (dateGroupType){
+            case HOUR:
+                method = "hour";
+                break;
+            case DAYOFMONTH:
+                //统计都是哪些小时点练习的
+                method = "hour";
+                break;
+            case DAYOFWEEK:
+                //星期索引，周一=1，周二=2，周日=7
+                return " WEEKDAY(" + field + ")+1 ";
+            case WEEK:
+                method = "weekofyear";
+                break;
+            case MONTH:
+                method = "month";
+                break;
+            case YEAR:
+                return " CAST(DATE_FORMAT(" + field + ",'%Y') AS signed) ";
+            case DAY:
+                return " CAST(DATE_FORMAT(" + field + ",'%Y%m%d') AS signed) ";
+            case DAYCALENDAR:
+                return " CAST(DATE_FORMAT(" + field + ",'%Y%m%d') AS signed) ";
+            case YEARMONTH:
+                return " CAST(DATE_FORMAT(" + field + ",'%Y%m') AS signed) ";
+            case HOURMINUTE:
+                //这里是除以100，不是60，比如：7.5代表的是7点50分，而不是7点半
+                return "(CAST(DATE_FORMAT(" + field + ",'%H') AS signed)+CAST(DATE_FORMAT(" + field + ",'%i') AS signed)/100)";
+            default:
+                throw new ApplicationException(PmsErrorCode.UN_SUPPORT_DATE_GROUP_TYPE);
         }
         return " " + method + "(" + field + ") ";
     }

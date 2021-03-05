@@ -16,6 +16,7 @@ import cn.mulanbay.pms.persistent.domain.*;
 import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.*;
 import cn.mulanbay.pms.persistent.service.BuyRecordService;
+import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.IncomeService;
 import cn.mulanbay.pms.persistent.service.LifeExperienceService;
 import cn.mulanbay.pms.util.ChartUtil;
@@ -76,6 +77,9 @@ public class BuyRecordController extends BaseController {
 
     @Autowired
     SystemConfigHandler systemConfigHandler;
+
+    @Autowired
+    DataService dataService;
 
     // # 购买记录统计中是否启用商品类型里的可统计字段
     @Value("${system.buyRecord.stat.useStatable}")
@@ -672,11 +676,20 @@ public class BuyRecordController extends BaseController {
      */
     @RequestMapping(value = "/dateStat")
     public ResultBean dateStat(BuyRecordDateStatSearch sf) {
-        //sf.setUserId(this.getCurrentUserId());
         sf.setUseStatable(useStatable);
-        List<BuyRecordDateStat> list = buyRecordService.statBuyRecordByDate(sf);
-        if (sf.getDateGroupType() == DateGroupType.DAYCALENDAR) {
-            return callback(ChartUtil.createChartCalendarData("消费统计", "次数", "次", sf, list));
+        switch (sf.getDateGroupType()){
+            case DAYCALENDAR :
+                //日历
+                List<BuyRecordDateStat> list = buyRecordService.statBuyRecordByDate(sf);
+                return callback(ChartUtil.createChartCalendarData("消费统计", "次数", "次", sf, list));
+            case HOURMINUTE :
+                //散点图
+                PageRequest pr = sf.buildQuery();
+                pr.setBeanClass(beanClass);
+                List<Date> dateList = dataService.getDateList(pr,"buyDate");
+                return callback(this.createHMChartData(dateList,"消费分析","消费时间点"));
+            default:
+                break;
         }
         ChartData chartData = new ChartData();
         chartData.setTitle("消费统计");
@@ -693,6 +706,7 @@ public class BuyRecordController extends BaseController {
         BigDecimal totalValue = new BigDecimal(0);
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
+        List<BuyRecordDateStat> list = buyRecordService.statBuyRecordByDate(sf);
         for (BuyRecordDateStat bean : list) {
             chartData.addXData(bean, sf.getDateGroupType());
             yData1.getData().add(bean.getTotalCount());

@@ -8,9 +8,11 @@ import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.persistent.domain.Company;
 import cn.mulanbay.pms.persistent.domain.WorkOvertime;
+import cn.mulanbay.pms.persistent.dto.BuyRecordDateStat;
 import cn.mulanbay.pms.persistent.dto.WorkOvertimeDateStat;
 import cn.mulanbay.pms.persistent.dto.WorkOvertimeStat;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
+import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.WorkService;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
@@ -50,6 +52,9 @@ public class WorkOvertimeController extends BaseController {
 
     @Autowired
     SystemConfigHandler systemConfigHandler;
+
+    @Autowired
+    DataService dataService;
 
     /**
      * 获取列表数据
@@ -142,9 +147,19 @@ public class WorkOvertimeController extends BaseController {
      */
     @RequestMapping(value = "/dateStat")
     public ResultBean dateStat(WorkOvertimeDateStatSearch sf) {
-        List<WorkOvertimeDateStat> list = workService.statDateWorkOvertime(sf);
-        if (sf.getDateGroupType() == DateGroupType.DAYCALENDAR) {
-            return callback(ChartUtil.createChartCalendarData("回家统计", "次数", "次", sf, list));
+        switch (sf.getDateGroupType()){
+            case DAYCALENDAR :
+                //日历
+                List<WorkOvertimeDateStat> list = workService.statDateWorkOvertime(sf);
+                return callback(ChartUtil.createChartCalendarData("加班统计", "次数", "次", sf, list));
+            case HOURMINUTE :
+                //散点图
+                PageRequest pr = sf.buildQuery();
+                pr.setBeanClass(beanClass);
+                List<Date> dateList = dataService.getDateList(pr,"workStartTime");
+                return callback(this.createHMChartData(dateList,"加班分析","加班时间点"));
+            default:
+                break;
         }
         ChartData chartData = new ChartData();
         chartData.setTitle("加班统计");
@@ -162,6 +177,7 @@ public class WorkOvertimeController extends BaseController {
         double monthWorkDays = systemConfigHandler.getDoubleConfig("work.days.of.month");
         double weekWorkDays = systemConfigHandler.getDoubleConfig("work.days.of.week");
         double yearWorkDays = systemConfigHandler.getDoubleConfig("work.days.of.year");
+        List<WorkOvertimeDateStat> list = workService.statDateWorkOvertime(sf);
         for (WorkOvertimeDateStat bean : list) {
             chartData.getIntXData().add(bean.getIndexValue());
             if (sf.getDateGroupType() == DateGroupType.MONTH) {

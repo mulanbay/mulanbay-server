@@ -13,12 +13,14 @@ import cn.mulanbay.pms.persistent.domain.SportExercise;
 import cn.mulanbay.pms.persistent.domain.SportMilestone;
 import cn.mulanbay.pms.persistent.domain.SportType;
 import cn.mulanbay.pms.persistent.domain.User;
+import cn.mulanbay.pms.persistent.dto.BuyRecordDateStat;
 import cn.mulanbay.pms.persistent.dto.SportExerciseDateStat;
 import cn.mulanbay.pms.persistent.dto.SportExerciseMultiStat;
 import cn.mulanbay.pms.persistent.dto.SportExerciseStat;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.NextMilestoneType;
 import cn.mulanbay.pms.persistent.enums.RewardSource;
+import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.SportExerciseService;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
@@ -70,6 +72,8 @@ public class SportExerciseController extends BaseController {
     @Autowired
     SystemConfigHandler systemConfigHandler;
 
+    @Autowired
+    DataService dataService;
     /**
      * 获取列表数据
      *
@@ -293,22 +297,33 @@ public class SportExerciseController extends BaseController {
      */
     @RequestMapping(value = "/dateStat", method = RequestMethod.GET)
     public ResultBean dateStat(@Valid SportExerciseDateStatSearch sf) {
-        List<SportExerciseDateStat> list = sportExerciseService.statDateSportExercise(sf);
-        if (sf.getDateGroupType() == DateGroupType.DAYCALENDAR) {
-            ChartCalendarData calandarData = ChartUtil.createChartCalendarData("锻炼统计", "公里数", "km", sf, list);
-            if (!StringUtil.isEmpty(sf.getBestField())) {
-                //获取最佳记录
-                List<SportExercise> bests = sportExerciseService.getBestMilestoneSportExerciseList(sf);
-                for (SportExercise se : bests) {
-                    if ("mileageBest".equals(sf.getBestField())) {
-                        calandarData.addGraph(se.getExerciseDate(), se.getKilometres());
-                    } else {
-                        calandarData.addGraph(se.getExerciseDate(), se.getMaxSpeed());
+        switch (sf.getDateGroupType()){
+            case DAYCALENDAR :
+                //日历
+                List<SportExerciseDateStat> list = sportExerciseService.statDateSportExercise(sf);
+                ChartCalendarData calandarData = ChartUtil.createChartCalendarData("锻炼统计", "公里数", "km", sf, list);
+                if (!StringUtil.isEmpty(sf.getBestField())) {
+                    //获取最佳记录
+                    List<SportExercise> bests = sportExerciseService.getBestMilestoneSportExerciseList(sf);
+                    for (SportExercise se : bests) {
+                        if ("mileageBest".equals(sf.getBestField())) {
+                            calandarData.addGraph(se.getExerciseDate(), se.getKilometres());
+                        } else {
+                            calandarData.addGraph(se.getExerciseDate(), se.getMaxSpeed());
+                        }
                     }
                 }
-            }
-            return callback(calandarData);
+                return callback(calandarData);
+            case HOURMINUTE :
+                //散点图
+                PageRequest pr = sf.buildQuery();
+                pr.setBeanClass(beanClass);
+                List<Date> dateList = dataService.getDateList(pr,"exerciseDate");
+                return callback(this.createHMChartData(dateList,"锻炼分析","锻炼时间点"));
+            default:
+                break;
         }
+
         ChartData chartData = new ChartData();
         chartData.setTitle("锻炼统计");
         //混合图形下使用
@@ -340,6 +355,7 @@ public class SportExerciseController extends BaseController {
         ChartYData maxHeartRateData = new ChartYData("最大心率");
         ChartYData averageHeartRateData = new ChartYData("平均心率");
         ChartYData countData = new ChartYData("锻炼次数");
+        List<SportExerciseDateStat> list = sportExerciseService.statDateSportExercise(sf);
         for (SportExerciseDateStat bean : list) {
             chartData.addXData(bean, sf.getDateGroupType());
             kilometresData.getData().add(bean.getTotalKilometres());

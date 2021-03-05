@@ -743,4 +743,24 @@ public class DataService extends BaseHibernateDao {
         }
     }
 
+    /**
+     * 获取时间列表
+     * @param pr
+     * @param dateField
+     * @return
+     */
+    public List<Date> getDateList(PageRequest pr ,String dateField) {
+        try {
+            StringBuffer sb = new StringBuffer();
+            sb.append("select "+dateField+" from "+pr.getBeanClass().getSimpleName());
+            sb.append(pr.getParameterString());
+            sb.append(" order by "+dateField);
+            List<Date> list = this.getEntityListNoPageHQL(sb.toString(), pr.getParameterValue());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取时间列表异常", e);
+        }
+    }
+
 }

@@ -11,11 +11,10 @@ import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.persistent.domain.BookCategory;
 import cn.mulanbay.pms.persistent.domain.ReadingRecord;
-import cn.mulanbay.pms.persistent.dto.ReadingRecordAnalyseStat;
-import cn.mulanbay.pms.persistent.dto.ReadingRecordDateStat;
-import cn.mulanbay.pms.persistent.dto.ReadingRecordReadedStat;
-import cn.mulanbay.pms.persistent.dto.ReadingRecordTimeStat;
+import cn.mulanbay.pms.persistent.domain.ReadingRecordDetail;
+import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.ReadingStatus;
+import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.ReadingRecordService;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
@@ -49,6 +48,9 @@ public class ReadingRecordController extends BaseController {
 
     @Autowired
     ReadingRecordService readingRecordService;
+
+    @Autowired
+    DataService dataService;
 
     /**
      * 获取列表列表
@@ -266,6 +268,14 @@ public class ReadingRecordController extends BaseController {
      */
     @RequestMapping(value = "/dateStat")
     public ResultBean dateStat(ReadingRecordDateStatSearch sf) {
+        switch (sf.getDateGroupType()){
+            case HOURMINUTE :
+                //散点图
+                List<Date> dateList = this.getReadTimeList(sf);
+                return callback(this.createHMChartData(dateList,"阅读分析","阅读时间点"));
+            default:
+                break;
+        }
         List<ReadingRecordDateStat> list = readingRecordService.statDateReadingRecord(sf);
         ChartData chartData = new ChartData();
         chartData.setTitle("阅读统计");
@@ -286,6 +296,21 @@ public class ReadingRecordController extends BaseController {
         chartData.setSubTitle(subTitle);
         chartData = ChartUtil.completeDate(chartData, sf);
         return callback(chartData);
+    }
+
+    /**
+     * 获取阅读时间列表
+     * @param sf
+     * @return
+     */
+    private List<Date> getReadTimeList(ReadingRecordDateStatSearch sf){
+        ReadingRecordDetailSearch rrds = new ReadingRecordDetailSearch();
+        BeanCopy.copyProperties(sf,rrds);
+        PageRequest pr = rrds.buildQuery();
+        //阅读散点图统计的是阅读明细的数据
+        pr.setBeanClass(ReadingRecordDetail.class);
+        List<Date> dateList = dataService.getDateList(pr,"readTime");
+        return dateList;
     }
 
     /**

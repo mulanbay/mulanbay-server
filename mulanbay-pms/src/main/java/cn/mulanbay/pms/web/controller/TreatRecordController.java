@@ -11,12 +11,10 @@ import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.persistent.domain.TreatRecord;
-import cn.mulanbay.pms.persistent.dto.TreatRecordAnalyseStat;
-import cn.mulanbay.pms.persistent.dto.TreatRecordDateStat;
-import cn.mulanbay.pms.persistent.dto.TreatRecordFullStat;
-import cn.mulanbay.pms.persistent.dto.TreatRecordSummaryStat;
+import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.ChartType;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
+import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.TreatService;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.util.TreeBeanUtil;
@@ -55,6 +53,8 @@ public class TreatRecordController extends BaseController {
     @Autowired
     SystemConfigHandler systemConfigHandler;
 
+    @Autowired
+    DataService dataService;
     /**
      * 获取看病或者器官的各种分类归类
      *
@@ -306,8 +306,18 @@ public class TreatRecordController extends BaseController {
      */
     @RequestMapping(value = "/dateStat", method = RequestMethod.GET)
     public ResultBean dateStat(TreatRecordDateStatSearch sf) {
-        if (sf.getDateGroupType() == DateGroupType.DAYCALENDAR) {
-            return callback(this.createChartCalandarDataDateStat(sf));
+        switch (sf.getDateGroupType()){
+            case DAYCALENDAR :
+                //日历
+                return callback(this.createChartCalandarDataDateStat(sf));
+            case HOURMINUTE :
+                //散点图
+                PageRequest pr = sf.buildQuery();
+                pr.setBeanClass(beanClass);
+                List<Date> dateList = dataService.getDateList(pr,"treatDate");
+                return callback(this.createHMChartData(dateList,"看病分析","看病时间点"));
+            default:
+                break;
         }
         List<TreatRecordDateStat> list = treatService.statDateTreatRecord(sf);
         ChartData chartData = new ChartData();

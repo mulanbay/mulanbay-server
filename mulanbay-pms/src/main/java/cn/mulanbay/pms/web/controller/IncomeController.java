@@ -7,14 +7,17 @@ import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.persistent.domain.Account;
 import cn.mulanbay.pms.persistent.domain.Income;
+import cn.mulanbay.pms.persistent.dto.BuyRecordDateStat;
 import cn.mulanbay.pms.persistent.dto.IncomeDateStat;
 import cn.mulanbay.pms.persistent.dto.IncomeTypeStat;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.IncomeType;
+import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.IncomeService;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
+import cn.mulanbay.pms.web.bean.request.buy.BuyRecordDateStatSearch;
 import cn.mulanbay.pms.web.bean.request.fund.IncomeDateStatSearch;
 import cn.mulanbay.pms.web.bean.request.fund.IncomeFormRequest;
 import cn.mulanbay.pms.web.bean.request.fund.IncomeSearch;
@@ -46,6 +49,9 @@ public class IncomeController extends BaseController {
 
     @Autowired
     IncomeService incomeService;
+
+    @Autowired
+    DataService dataService;
 
     /**
      * 获取列表数据
@@ -131,8 +137,21 @@ public class IncomeController extends BaseController {
      */
     @RequestMapping(value = "/dateStat")
     public ResultBean dateStat(IncomeDateStatSearch sf) {
-        if (sf.getDateGroupType() == DateGroupType.DAYCALENDAR) {
-            return callback(createChartCalendarData(sf));
+        switch (sf.getDateGroupType()){
+            case DAYCALENDAR :
+                //日历
+                List<IncomeDateStat> list = incomeService.statDateIncome(sf);
+                ChartCalendarData calendarData = ChartUtil.createChartCalendarData("收入统计", "金额", "元", sf, list);
+                calendarData.setTop(3);
+                return callback(calendarData);
+            case HOURMINUTE :
+                //散点图
+                PageRequest pr = sf.buildQuery();
+                pr.setBeanClass(beanClass);
+                List<Date> dateList = dataService.getDateList(pr,"occurTime");
+                return callback(this.createHMChartData(dateList,"收入分析","收入时间点"));
+            default:
+                break;
         }
         List<IncomeDateStat> list = incomeService.statDateIncome(sf);
         ChartData chartData = new ChartData();
@@ -172,13 +191,6 @@ public class IncomeController extends BaseController {
         chartData.setSubTitle(this.getDateTitle(sf, totalString));
         chartData = ChartUtil.completeDate(chartData, sf);
         return callback(chartData);
-    }
-
-    private ChartCalendarData createChartCalendarData(IncomeDateStatSearch sf) {
-        List<IncomeDateStat> list = incomeService.statDateIncome(sf);
-        ChartCalendarData calendarData = ChartUtil.createChartCalendarData("收入统计", "金额", "元", sf, list);
-        calendarData.setTop(3);
-        return calendarData;
     }
 
     /**

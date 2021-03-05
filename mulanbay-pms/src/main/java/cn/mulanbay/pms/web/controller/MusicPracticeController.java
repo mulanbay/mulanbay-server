@@ -16,6 +16,7 @@ import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.ChartType;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.RewardSource;
+import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.MusicPracticeService;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
@@ -57,6 +58,9 @@ public class MusicPracticeController extends BaseController {
 
     @Autowired
     MusicPracticeService musicPracticeService;
+
+    @Autowired
+    DataService dataService;
 
     /**
      * 获取列表数据
@@ -251,8 +255,18 @@ public class MusicPracticeController extends BaseController {
      */
     @RequestMapping(value = "/dateStat")
     public ResultBean dateStat(MusicPracticeDateStatSearch sf) {
-        if (sf.getDateGroupType() == DateGroupType.DAYCALENDAR) {
-            return callback(createChartCalandarData(sf));
+        switch (sf.getDateGroupType()){
+            case DAYCALENDAR :
+                //日历
+                return callback(createChartCalendarData(sf));
+            case HOURMINUTE :
+                //散点图
+                PageRequest pr = sf.buildQuery();
+                pr.setBeanClass(beanClass);
+                List<Date> dateList = dataService.getDateList(pr,"practiceStartTime");
+                return callback(this.createHMChartData(dateList,"音乐练习分析","练习时间点"));
+            default:
+                break;
         }
         List<MusicPracticeDateStat> list = musicPracticeService.statDateMusicPractice(sf);
         ChartData chartData = new ChartData();
@@ -308,7 +322,7 @@ public class MusicPracticeController extends BaseController {
         return callback(chartData);
     }
 
-    private ChartCalendarData createChartCalandarData(MusicPracticeDateStatSearch sf) {
+    private ChartCalendarData createChartCalendarData(MusicPracticeDateStatSearch sf) {
         List<MusicPracticeDateStat> list = musicPracticeService.statDateMusicPractice(sf);
         ChartCalendarData calandarData = ChartUtil.createChartCalendarData("音乐练习统计", "练习时间", "分钟", sf, list);
         if (!StringUtil.isEmpty(sf.getTune())) {

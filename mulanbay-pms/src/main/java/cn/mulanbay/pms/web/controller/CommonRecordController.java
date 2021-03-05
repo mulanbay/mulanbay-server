@@ -7,6 +7,7 @@ import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.RewardPointsHandler;
 import cn.mulanbay.pms.persistent.domain.CommonRecord;
 import cn.mulanbay.pms.persistent.domain.CommonRecordType;
+import cn.mulanbay.pms.persistent.dto.BuyRecordDateStat;
 import cn.mulanbay.pms.persistent.dto.CommonRecordDateStat;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.RewardSource;
@@ -141,14 +142,22 @@ public class CommonRecordController extends BaseController {
      */
     @RequestMapping(value = "/dateStat")
     public ResultBean dateStat(CommonRecordDateStatSearch sf) {
-        if (sf.getDateGroupType() == DateGroupType.DAYCALENDAR) {
-            return callback(createChartCalandarDataDateStat(sf));
-        } else if (sf.getDateGroupType() == DateGroupType.MINUTE) {
-            //值的单位
-            return callback(creatBarDataDateStatByValue(sf));
-        } else {
-            ChartData chartData = creatBarDataDateStat(sf);
-            return callback(chartData);
+        switch (sf.getDateGroupType()){
+            case DAYCALENDAR :
+                //日历
+                return callback(createChartCalandarDataDateStat(sf));
+            case MINUTE :
+                //值的单位
+                return callback(creatBarDataDateStatByValue(sf));
+            case HOURMINUTE :
+                //散点图
+                PageRequest pr = sf.buildQuery();
+                pr.setBeanClass(beanClass);
+                List<Date> dateList = dataService.getDateList(pr,"occurTime");
+                return callback(this.createHMChartData(dateList,"通用记录分析","时间点"));
+            default:
+                ChartData chartData = creatBarDataDateStat(sf);
+                return callback(chartData);
         }
     }
 
