@@ -68,4 +68,8 @@ public class UserBehaviorDataStat {
     public void setBehaviorType(UserBehaviorType behaviorType) {
         this.behaviorType = behaviorType;
     }
+
+    public String getBehaviorTypeName(){
+        return behaviorType==null ? null :behaviorType.getName();
+    }
 }
