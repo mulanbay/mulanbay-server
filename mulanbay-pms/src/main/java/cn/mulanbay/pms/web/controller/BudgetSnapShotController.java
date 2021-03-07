@@ -10,8 +10,10 @@ import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.domain.BudgetSnapshot;
 import cn.mulanbay.pms.persistent.dto.BuyRecordBudgetStat;
+import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.DietService;
+import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotListSearch;
 import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotSearch;
 import cn.mulanbay.pms.web.bean.response.chart.ChartPieData;
 import cn.mulanbay.pms.web.bean.response.chart.ChartPieSerieData;
@@ -50,15 +52,125 @@ public class BudgetSnapShotController extends BaseController {
     DietService dietService;
 
     /**
-     * 获取任务列表
+     * 获取列表，普通模式
      *
      * @return
      */
     @RequestMapping(value = "/getData", method = RequestMethod.GET)
     public ResultBean getData(BudgetSnapshotSearch sf) {
-        return callbackDataGrid(getBudgetDetail(sf));
+        PageRequest pr = sf.buildQuery();
+        pr.setBeanClass(beanClass);
+        Sort sort = new Sort("createdTime", Sort.ASC);
+        pr.addSort(sort);
+        PageResult<BudgetSnapshot> qr = baseService.getBeanResult(pr);
+        return callbackDataGrid(qr);
     }
 
+    /**
+     * 获取列表,查询所有相关联的
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getList", method = RequestMethod.GET)
+    public ResultBean getList(BudgetSnapshotListSearch sf) {
+        BudgetLog budgetLog = this.getUserEntity(BudgetLog.class, sf.getBudgetLogId(), sf.getUserId());
+        Date bussDay = budgetLog.getOccurDate();
+        List<BudgetSnapshot> snapshotList = budgetService.getBudgetSnapshotList(sf.getUserId(),sf.getBudgetLogId());
+        List<BudgetDetailVo> res = new ArrayList<>();
+        for(BudgetSnapshot bg : snapshotList){
+            BudgetDetailVo vo=null;
+            switch (bg.getPeriod()){
+                case ONCE:
+                    if(bg.getFeeType()!=null){
+                        //实时统计
+                        vo = this.getDetail(bg,bussDay);
+                    }else{
+                        vo = new BudgetDetailVo();
+                        BeanCopy.copyProperties(bg,vo);
+                        //查手动日志
+                        BudgetLog bl = budgetService.selectBudgetLog(budgetLog.getBussKey(), bg.getUserId(), null, bg.getFromId());
+                        if(bl!=null){
+                            //有记录
+                            vo.setCpPaidTime(bl.getOccurDate());
+                            BigDecimal paidAmount = new BigDecimal(bl.getTrAmount());
+                            paidAmount.add(new BigDecimal(bl.getNcAmount()));
+                            paidAmount.add(new BigDecimal(bl.getBcAmount()));
+                            vo.setCpPaidAmount(paidAmount.doubleValue());
+                        }
+                    }
+                    break;
+                case MONTHLY:
+                    vo = this.getDetail(bg,bussDay);
+                    if(budgetLog.getPeriod()==PeriodType.YEARLY){
+                        //设置子类
+                        this.setChildren(vo,budgetLog.getBussKey());
+                        vo.setBussKey(budgetLog.getBussKey());
+                    }
+                    break;
+                case YEARLY:
+                    vo = this.getDetail(bg,bussDay);
+                    break;
+                default:
+                    break;
+            }
+            res.add(vo);
+        }
+        return callback(res);
+    }
+
+    /**
+     * 设置子类
+     * @param vo
+     * @param bussKey
+     */
+    private void setChildren(BudgetDetailVo vo,String bussKey){
+        List<BudgetLog> logList = budgetService.getBudgetLogList(vo.getUserId(),vo.getId(),bussKey);
+        BigDecimal total  = new BigDecimal(0);
+        for(BudgetLog log :logList){
+            BudgetDetailVo child = new BudgetDetailVo();
+            BeanCopy.copyProperties(log.getBudget(),child);
+            child.setId(log.getBudget().getId());
+            child.setBussKey(log.getBussKey());
+            //有记录
+            child.setCpPaidTime(log.getOccurDate());
+            BigDecimal paidAmount = new BigDecimal(log.getTrAmount());
+            paidAmount = paidAmount.add(new BigDecimal(log.getNcAmount()));
+            paidAmount = paidAmount.add(new BigDecimal(log.getBcAmount()));
+            child.setCpPaidAmount(paidAmount.doubleValue());
+            total = total.add(paidAmount);
+            vo.addChild(child);
+        }
+        //查询设置金额
+        vo.setCpPaidAmount(total.doubleValue());
+    }
+    /**
+     * 获取详情
+     * @param bg
+     * @param bussDay
+     * @return
+     */
+    private BudgetDetailVo getDetail(BudgetSnapshot bg,Date bussDay){
+        BudgetDetailVo bdb = new BudgetDetailVo();
+        BeanCopy.copyProperties(bg, bdb);
+        if (bg.getFeeType()!=null) {
+            //查询预算实际支付
+            Budget budget = new Budget();
+            BeanCopy.copyProperties(bg,budget);
+            BuyRecordBudgetStat bs= budgetHandler.getActualAmount(budget,bussDay);
+            if (bs.getTotalPrice() != null) {
+                bdb.setCpPaidTime(bs.getMaxBuyDate());
+                bdb.setCpPaidAmount(bs.getTotalPrice().doubleValue());
+            }
+        }
+        bdb.setId(bg.getFromId());
+        return bdb;
+    }
+
+    /**
+     * 获取详情列表
+     * @param sf
+     * @return
+     */
     private PageResult<BudgetDetailVo> getBudgetDetail(BudgetSnapshotSearch sf) {
         PageRequest pr = sf.buildQuery();
         pr.setBeanClass(beanClass);
@@ -70,18 +182,7 @@ public class BudgetSnapShotController extends BaseController {
         List<BudgetDetailVo> list = new ArrayList<>();
         Date bussDay = budgetLog.getOccurDate();
         for (BudgetSnapshot bg : qr.getBeanList()) {
-            BudgetDetailVo bdb = new BudgetDetailVo();
-            BeanCopy.copyProperties(bg, bdb);
-            if (bg.getFeeType()!=null) {
-                //查询预算实际支付
-                Budget budget = new Budget();
-                BeanCopy.copyProperties(bg,budget);
-                BuyRecordBudgetStat bs= budgetHandler.getActualAmount(budget,bussDay);
-                if (bs.getTotalPrice() != null) {
-                    bdb.setCpPaidTime(bs.getMaxBuyDate());
-                    bdb.setCpPaidAmount(bs.getTotalPrice().doubleValue());
-                }
-            }
+            BudgetDetailVo bdb = this.getDetail(bg,bussDay);
             list.add(bdb);
         }
         res.setBeanList(list);

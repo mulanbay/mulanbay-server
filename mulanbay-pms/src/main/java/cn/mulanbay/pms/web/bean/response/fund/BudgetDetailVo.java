@@ -2,7 +2,9 @@ package cn.mulanbay.pms.web.bean.response.fund;
 
 import cn.mulanbay.pms.persistent.domain.Budget;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class BudgetDetailVo extends Budget {
 
@@ -16,6 +18,21 @@ public class BudgetDetailVo extends Budget {
     private Date cpPaidTime;
 
     private Double cpPaidAmount;
+
+    private String bussKey;
+
+    List<BudgetDetailVo> children;
+
+    /**
+     * 增加子类
+     * @param vo
+     */
+    public void addChild(BudgetDetailVo vo){
+        if(children==null){
+            children = new ArrayList<>();
+        }
+        children.add(vo);
+    }
 
     public Date getNextPaytime() {
         return nextPaytime;
@@ -47,5 +64,21 @@ public class BudgetDetailVo extends Budget {
 
     public void setCpPaidAmount(Double cpPaidAmount) {
         this.cpPaidAmount = cpPaidAmount;
+    }
+
+    public String getBussKey() {
+        return bussKey;
+    }
+
+    public void setBussKey(String bussKey) {
+        this.bussKey = bussKey;
+    }
+
+    public List<BudgetDetailVo> getChildren() {
+        return children;
+    }
+
+    public void setChildren(List<BudgetDetailVo> children) {
+        this.children = children;
     }
 }

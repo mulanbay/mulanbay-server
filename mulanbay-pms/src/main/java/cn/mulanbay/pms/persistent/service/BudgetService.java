@@ -110,6 +110,40 @@ public class BudgetService extends BaseHibernateDao {
         }
     }
 
+    /**
+     * 获取用户预算快照列表
+     *
+     * @param userId
+     * @return
+     */
+    public List<BudgetSnapshot> getBudgetSnapshotList(Long userId, Long budgetLogId) {
+        try {
+            String hql = "from BudgetSnapshot where userId=?0 and budgetLogId=?1 ";
+            List<BudgetSnapshot> list = this.getEntityListNoPageHQL(hql, userId,budgetLogId);
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取用户预算快照列表异常", e);
+        }
+    }
+
+    /**
+     * 获取用户预算日志列表
+     * @param userId
+     * @param budgetId
+     * @param bussKeyPre 前缀
+     * @return
+     */
+    public List<BudgetLog> getBudgetLogList(Long userId, Long budgetId,String bussKeyPre) {
+        try {
+            String hql = "from BudgetLog where userId=?0 and budget.id=?1 and bussKey like '"+bussKeyPre+"%'";
+            List<BudgetLog> list = this.getEntityListNoPageHQL(hql, userId,budgetId);
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取用户预算快照列表异常", e);
+        }
+    }
 
     /**
      * 获取用户预算列表
