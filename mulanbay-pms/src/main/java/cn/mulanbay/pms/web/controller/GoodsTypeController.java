@@ -100,6 +100,7 @@ public class GoodsTypeController extends BaseController {
                 for (GoodsType cc : childrenResult.getBeanList()) {
                     GoodsTypeVo child = new GoodsTypeVo();
                     BeanCopy.copyProperties(cc, child);
+                    child.setParentId(cc.getParentId());
                     child.setParentName(cc.getParentName());
                     children.add(child);
                 }
