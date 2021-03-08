@@ -445,7 +445,7 @@ public class MainController extends BaseController {
             router.setName(getRouteName(sf));
             router.setPath(getRouterPath(sf));
             router.setComponent(getComponent(sf));
-            router.setMeta(new RouterMetaVo(sf.getName(), sf.getImageName()));
+            router.setMeta(new RouterMetaVo(sf.getName(), sf.getImageName(),!sf.getCache()));
             List<SystemFunction> cMenus = sf.getChildren();
             if (!cMenus.isEmpty() && cMenus.size() > 0 && FunctionDataType.M.equals(sf.getFunctionDataType())) {
                 router.setAlwaysShow(true);
@@ -457,7 +457,7 @@ public class MainController extends BaseController {
                 children.setPath(sf.getPath());
                 children.setComponent(sf.getComponent());
                 children.setName(StringUtils.capitalize(sf.getPath()));
-                children.setMeta(new RouterMetaVo(sf.getName(), sf.getImageName()));
+                children.setMeta(new RouterMetaVo(sf.getName(), sf.getImageName(),!sf.getCache()));
                 childrenList.add(children);
                 router.setChildren(childrenList);
             }

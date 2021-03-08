@@ -6,12 +6,18 @@ public class RouterMetaVo {
 
     private String icon;
 
+    /**
+     * keep-alive缓存参数
+     */
+    private boolean noCache;
+
     public RouterMetaVo() {
     }
 
-    public RouterMetaVo(String title, String icon) {
+    public RouterMetaVo(String title, String icon, boolean noCache) {
         this.title = title;
         this.icon = icon;
+        this.noCache = noCache;
     }
 
     public String getTitle() {
@@ -28,5 +34,13 @@ public class RouterMetaVo {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public boolean isNoCache() {
+        return noCache;
+    }
+
+    public void setNoCache(boolean noCache) {
+        this.noCache = noCache;
     }
 }

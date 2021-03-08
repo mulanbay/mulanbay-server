@@ -80,6 +80,8 @@ public class SystemFunction implements java.io.Serializable {
     private Boolean router;
     //外链
     private Boolean frame;
+    //是否缓存，keep-alive使用
+    private Boolean cache;
     private String remark;
     private Date createdTime;
     private Date lastModifyTime;
@@ -404,6 +406,15 @@ public class SystemFunction implements java.io.Serializable {
 
     public void setFrame(Boolean frame) {
         this.frame = frame;
+    }
+
+    @Column(name = "cache")
+    public Boolean getCache() {
+        return cache;
+    }
+
+    public void setCache(Boolean cache) {
+        this.cache = cache;
     }
 
     @Column(name = "remark", length = 200)

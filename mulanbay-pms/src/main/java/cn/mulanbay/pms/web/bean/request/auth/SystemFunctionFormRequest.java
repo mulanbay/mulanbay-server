@@ -61,6 +61,8 @@ public class SystemFunctionFormRequest {
     private Boolean router;
     //外链
     private Boolean frame;
+    //是否缓存，keep-alive使用
+    private Boolean cache;
     private String remark;
 
     public Long getId() {
@@ -349,6 +351,14 @@ public class SystemFunctionFormRequest {
 
     public void setFrame(Boolean frame) {
         this.frame = frame;
+    }
+
+    public Boolean getCache() {
+        return cache;
+    }
+
+    public void setCache(Boolean cache) {
+        this.cache = cache;
     }
 
     public String getRemark() {
