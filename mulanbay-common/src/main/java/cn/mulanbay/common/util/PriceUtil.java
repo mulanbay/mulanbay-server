@@ -52,6 +52,19 @@ public class PriceUtil {
     }
 
     /**
+     * 合计
+     * @param values
+     * @return
+     */
+    public static double sum(double... values){
+        BigDecimal total = new BigDecimal(0);
+        for(double d : values){
+            total.add(new BigDecimal(d));
+        }
+        return total.doubleValue();
+    }
+
+    /**
      * 价格转换为String
      * @param scale
      * @param price

@@ -27,6 +27,8 @@ public class BudgetSnapshot implements java.io.Serializable {
     private Long userId;
     //日终统计的月度/年度统计外键
     private Long budgetLogId;
+    //冗余
+    private String bussKey;
     //来源ID
     private Long fromId;
     //名称
@@ -86,6 +88,16 @@ public class BudgetSnapshot implements java.io.Serializable {
 
     public void setBudgetLogId(Long budgetLogId) {
         this.budgetLogId = budgetLogId;
+    }
+
+    @Basic
+    @Column(name = "buss_key")
+    public String getBussKey() {
+        return bussKey;
+    }
+
+    public void setBussKey(String bussKey) {
+        this.bussKey = bussKey;
     }
 
     @Basic

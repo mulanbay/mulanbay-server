@@ -126,8 +126,8 @@ public class NumberUtil {
 	 * @param scale
 	 * @return
 	 */
-	public static double getPercentValue(double value,double counts,int scale){
-		if(counts<=0){
+	public static double getPercentValue(Double value,Double counts,int scale){
+		if(value==null||counts==null||counts<=0){
 			return 0;
 		}
 		double l =(value*100)/counts;

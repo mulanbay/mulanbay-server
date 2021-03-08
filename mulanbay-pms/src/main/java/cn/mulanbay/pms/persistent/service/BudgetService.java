@@ -128,22 +128,25 @@ public class BudgetService extends BaseHibernateDao {
     }
 
     /**
-     * 获取用户预算日志列表
+     * 获取月度预算快照列表
      * @param userId
      * @param budgetId
-     * @param bussKeyPre 前缀
+     * @param year
      * @return
      */
-    public List<BudgetLog> getBudgetLogList(Long userId, Long budgetId,String bussKeyPre) {
+    public List<BudgetSnapshot> getMonthBudgetSnapshotList(Long userId, Long budgetId,String year) {
         try {
-            String hql = "from BudgetLog where userId=?0 and budget.id=?1 and bussKey like '"+bussKeyPre+"%'";
-            List<BudgetLog> list = this.getEntityListNoPageHQL(hql, userId,budgetId);
+            String hql = "from BudgetSnapshot where userId=?0 and fromId=?1 and period=?2 and budgetLogId in ";
+            hql += "(select id from BudgetLog where period=?3 and userId=?4 and bussKey like ?5) ";
+            String bussKeyPara = year+"%";
+            List<BudgetSnapshot> list = this.getEntityListNoPageHQL(hql, userId,budgetId,PeriodType.MONTHLY,PeriodType.MONTHLY,userId,bussKeyPara);
             return list;
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
-                    "获取用户预算快照列表异常", e);
+                    "获取月度预算快照列表异常", e);
         }
     }
+
 
     /**
      * 获取用户预算列表
@@ -266,6 +269,9 @@ public class BudgetService extends BaseHibernateDao {
                 snapshot.setId(null);
                 snapshot.setBudgetLogId(budgetLog.getId());
                 snapshot.setFromId(b.getId());
+                snapshot.setBussKey(budgetLog.getBussKey());
+                snapshot.setCreatedTime(new Date());
+                snapshot.setLastModifyTime(null);
                 ss.add(snapshot);
             }
             this.saveEntities(ss.toArray());

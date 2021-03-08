@@ -1,12 +1,15 @@
 package cn.mulanbay.pms.web.bean.response.fund;
 
+import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.pms.persistent.domain.Budget;
+import cn.mulanbay.pms.persistent.enums.BudgetLogSource;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 public class BudgetDetailVo extends Budget {
+
+    //快照ID
+    private Long snapshotId;
 
     //下一次支付时间
     private Date nextPaytime;
@@ -21,17 +24,26 @@ public class BudgetDetailVo extends Budget {
 
     private String bussKey;
 
-    List<BudgetDetailVo> children;
+    //是否有子类
+    private boolean hasChild;
+
+    //数据来源
+    private BudgetLogSource source;
 
     /**
-     * 增加子类
-     * @param vo
+     * 比例
+     * @return
      */
-    public void addChild(BudgetDetailVo vo){
-        if(children==null){
-            children = new ArrayList<>();
-        }
-        children.add(vo);
+    public double getRate(){
+        return NumberUtil.getPercentValue(this.cpPaidAmount,this.getAmount(),2);
+    }
+
+    public Long getSnapshotId() {
+        return snapshotId;
+    }
+
+    public void setSnapshotId(Long snapshotId) {
+        this.snapshotId = snapshotId;
     }
 
     public Date getNextPaytime() {
@@ -74,11 +86,23 @@ public class BudgetDetailVo extends Budget {
         this.bussKey = bussKey;
     }
 
-    public List<BudgetDetailVo> getChildren() {
-        return children;
+    public boolean isHasChild() {
+        return hasChild;
     }
 
-    public void setChildren(List<BudgetDetailVo> children) {
-        this.children = children;
+    public void setHasChild(boolean hasChild) {
+        this.hasChild = hasChild;
+    }
+
+    public BudgetLogSource getSource() {
+        return source;
+    }
+
+    public void setSource(BudgetLogSource source) {
+        this.source = source;
+    }
+
+    public String getSourceName(){
+        return source==null ? null : source.getName();
     }
 }
