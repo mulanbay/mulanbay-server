@@ -7,7 +7,7 @@ public class RouterMetaVo {
     private String icon;
 
     /**
-     * keep-alive缓存参数
+     * 设置为true，则不会被 <keep-alive>缓存
      */
     private boolean noCache;
 

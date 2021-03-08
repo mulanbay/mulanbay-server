@@ -11,16 +11,16 @@ import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.domain.BudgetSnapshot;
 import cn.mulanbay.pms.persistent.dto.BuyRecordBudgetStat;
+import cn.mulanbay.pms.persistent.dto.BuyRecordDateStat;
 import cn.mulanbay.pms.persistent.enums.BudgetLogSource;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.DietService;
+import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotChildrenSearch;
 import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotListSearch;
 import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotSearch;
-import cn.mulanbay.pms.web.bean.response.chart.ChartPieData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartPieSerieData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartPieSerieDetailData;
+import cn.mulanbay.pms.web.bean.response.chart.*;
 import cn.mulanbay.pms.web.bean.response.fund.BudgetChildrenVo;
 import cn.mulanbay.pms.web.bean.response.fund.BudgetDetailVo;
 import cn.mulanbay.web.bean.response.ResultBean;
@@ -162,11 +162,44 @@ public class BudgetSnapShotController extends BaseController {
             res.setBudgetAmount(budgetAmount.doubleValue());
             res.setCpPaidAmount(paidAmount.doubleValue());
             res.setBussKey(bl.getBussKey());
-            return callback(res);
+            res.setName(snapshot.getName());
+            return callback(appendChartData(res,sf.isNeedChart()));
         }
         return callback(null);
     }
 
+    private BudgetChildrenVo appendChartData(BudgetChildrenVo vo,boolean needChart){
+        if(needChart){
+            ChartData chartData = new ChartData();
+            chartData.setTitle("["+vo.getName()+"]"+vo.getBussKey()+"执行统计");
+            chartData.setLegendData(new String[]{"预算(元)","花费(元)","比例(%)"});
+            //混合图形下使用
+            chartData.addYAxis("金额","元");
+            chartData.addYAxis("比例","%");
+            ChartYData yData1 = new ChartYData();
+            yData1.setName("预算(元)");
+            ChartYData yData2 = new ChartYData();
+            yData2.setName("花费(元)");
+            ChartYData yData3 = new ChartYData();
+            yData3.setName("比例(%)");
+            List<BudgetDetailVo> children = vo.getChildren();
+            for (BudgetDetailVo bean : children) {
+                chartData.addXData(bean.getBussKey());
+                yData1.getData().add(PriceUtil.changeToString(2,bean.getAmount()));
+                if(bean.getCpPaidTime()==null){
+                    yData2.getData().add("0");
+                }else{
+                    yData2.getData().add(PriceUtil.changeToString(2,bean.getCpPaidAmount()));
+                }
+                yData3.getData().add(Math.round(bean.getRate()));
+            }
+            chartData.getYdata().add(yData1);
+            chartData.getYdata().add(yData2);
+            chartData.getYdata().add(yData3);
+            vo.setChartData(chartData);
+        }
+        return vo;
+    }
     /**
      * 获取详情
      * @param bg

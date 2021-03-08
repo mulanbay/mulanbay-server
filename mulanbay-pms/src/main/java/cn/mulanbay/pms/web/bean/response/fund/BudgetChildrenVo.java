@@ -1,11 +1,14 @@
 package cn.mulanbay.pms.web.bean.response.fund;
 
 import cn.mulanbay.common.util.NumberUtil;
+import cn.mulanbay.pms.web.bean.response.chart.ChartData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class BudgetChildrenVo  {
+
+    private String name;
 
     private Double budgetAmount;
 
@@ -14,6 +17,8 @@ public class BudgetChildrenVo  {
     private String bussKey;
 
     private List<BudgetDetailVo> children;
+
+    private ChartData chartData;
 
     /**
      * 增加子类
@@ -32,6 +37,14 @@ public class BudgetChildrenVo  {
      */
     public double getRate(){
         return NumberUtil.getPercentValue(this.cpPaidAmount,this.budgetAmount,2);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Double getBudgetAmount() {
@@ -64,5 +77,13 @@ public class BudgetChildrenVo  {
 
     public void setChildren(List<BudgetDetailVo> children) {
         this.children = children;
+    }
+
+    public ChartData getChartData() {
+        return chartData;
+    }
+
+    public void setChartData(ChartData chartData) {
+        this.chartData = chartData;
     }
 }

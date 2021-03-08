@@ -87,6 +87,15 @@ public class ChartData extends BaseChartData {
         this.getXdata().add(ChartUtil.getStringXdata(dateGroupType, dateStat.getIndexValue()));
     }
 
+    /**
+     * 添加X轴的数据
+     *
+     * @param s
+     */
+    public void addXData(String s) {
+        this.getXdata().add(s);
+    }
+
     public ChartYData findYData(String name) {
         for (ChartYData y : ydata) {
             if (y.getName().equals(name)) {

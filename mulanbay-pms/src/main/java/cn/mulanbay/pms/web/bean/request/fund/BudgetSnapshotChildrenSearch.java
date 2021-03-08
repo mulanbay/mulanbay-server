@@ -6,11 +6,11 @@ import cn.mulanbay.persistent.query.Query;
 
 public class BudgetSnapshotChildrenSearch implements BindUser {
 
-    @Query(fieldName = "snapshotId", op = Parameter.Operator.EQ)
     private Long snapshotId;
 
-    @Query(fieldName = "userId", op = Parameter.Operator.EQ)
     private Long userId;
+
+    private boolean needChart;
 
     public Long getSnapshotId() {
         return snapshotId;
@@ -28,5 +28,13 @@ public class BudgetSnapshotChildrenSearch implements BindUser {
     @Override
     public void setUserId(Long userId) {
         this.userId = userId;
+    }
+
+    public boolean isNeedChart() {
+        return needChart;
+    }
+
+    public void setNeedChart(boolean needChart) {
+        this.needChart = needChart;
     }
 }
