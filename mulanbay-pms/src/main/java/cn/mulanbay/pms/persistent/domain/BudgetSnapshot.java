@@ -29,7 +29,7 @@ public class BudgetSnapshot implements java.io.Serializable {
     private Long budgetLogId;
     //冗余
     private String bussKey;
-    //来源ID
+    //来源ID，即Budget主键
     private Long fromId;
     //名称
     private String name;

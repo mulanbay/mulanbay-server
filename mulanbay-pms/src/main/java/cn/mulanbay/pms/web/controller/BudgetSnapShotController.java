@@ -18,6 +18,7 @@ import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.DietService;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotChildrenSearch;
+import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotHistorySearch;
 import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotListSearch;
 import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotSearch;
 import cn.mulanbay.pms.web.bean.response.chart.*;
@@ -30,9 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 预算快照
@@ -106,10 +105,7 @@ public class BudgetSnapShotController extends BaseController {
                 case MONTHLY:
                     if(budgetLog.getPeriod()==PeriodType.YEARLY){
                         //月报，直接空数据,前端以子列表显示
-                        vo = new BudgetDetailVo();
-                        BeanCopy.copyProperties(bg,vo);
-                        vo.setId(bg.getFromId());
-                        vo.setHasChild(true);
+                        vo = this.createDefault(bg);
                     }else{
                         vo = this.getDetail(bg,bussDay,bussKey);
                         vo.setBussKey(budgetLog.getBussKey());
@@ -130,6 +126,18 @@ public class BudgetSnapShotController extends BaseController {
         return callback(res);
     }
 
+    /**
+     * 生成默认
+     * @param bg
+     * @return
+     */
+    private BudgetDetailVo createDefault(BudgetSnapshot bg){
+        BudgetDetailVo vo = new BudgetDetailVo();
+        BeanCopy.copyProperties(bg,vo);
+        vo.setId(bg.getFromId());
+        vo.setHasChild(true);
+        return vo;
+    }
     /**
      * 获取子列表
      *
@@ -163,43 +171,85 @@ public class BudgetSnapShotController extends BaseController {
             res.setCpPaidAmount(paidAmount.doubleValue());
             res.setBussKey(bl.getBussKey());
             res.setName(snapshot.getName());
-            return callback(appendChartData(res,sf.isNeedChart()));
+            if(sf.isNeedChart()){
+                String title = "["+res.getName()+"]"+res.getBussKey()+"执行统计";
+                ChartData chartData = this.createChartData(title,res.getChildren());
+                res.setChartData(chartData);
+            }
+            return callback(res);
         }
         return callback(null);
     }
 
-    private BudgetChildrenVo appendChartData(BudgetChildrenVo vo,boolean needChart){
-        if(needChart){
-            ChartData chartData = new ChartData();
-            chartData.setTitle("["+vo.getName()+"]"+vo.getBussKey()+"执行统计");
-            chartData.setLegendData(new String[]{"预算(元)","花费(元)","比例(%)"});
-            //混合图形下使用
-            chartData.addYAxis("金额","元");
-            chartData.addYAxis("比例","%");
-            ChartYData yData1 = new ChartYData();
-            yData1.setName("预算(元)");
-            ChartYData yData2 = new ChartYData();
-            yData2.setName("花费(元)");
-            ChartYData yData3 = new ChartYData();
-            yData3.setName("比例(%)");
-            List<BudgetDetailVo> children = vo.getChildren();
-            for (BudgetDetailVo bean : children) {
-                chartData.addXData(bean.getBussKey());
-                yData1.getData().add(PriceUtil.changeToString(2,bean.getAmount()));
-                if(bean.getCpPaidTime()==null){
-                    yData2.getData().add("0");
-                }else{
-                    yData2.getData().add(PriceUtil.changeToString(2,bean.getCpPaidAmount()));
-                }
-                yData3.getData().add(Math.round(bean.getRate()));
+    private ChartData createChartData(String title,List<BudgetDetailVo> list){
+        ChartData chartData = new ChartData();
+        chartData.setTitle(title);
+        chartData.setLegendData(new String[]{"预算(元)","花费(元)","比例(%)"});
+        //混合图形下使用
+        chartData.addYAxis("金额","元");
+        chartData.addYAxis("比例","%");
+        ChartYData yData1 = new ChartYData();
+        yData1.setName("预算(元)");
+        ChartYData yData2 = new ChartYData();
+        yData2.setName("花费(元)");
+        ChartYData yData3 = new ChartYData();
+        yData3.setName("比例(%)");
+        for (BudgetDetailVo bean : list) {
+            chartData.addXData(bean.getBussKey());
+            yData1.getData().add(PriceUtil.changeToString(2,bean.getAmount()));
+            if(bean.getCpPaidTime()==null){
+                yData2.getData().add("0");
+            }else{
+                yData2.getData().add(PriceUtil.changeToString(2,bean.getCpPaidAmount()));
             }
-            chartData.getYdata().add(yData1);
-            chartData.getYdata().add(yData2);
-            chartData.getYdata().add(yData3);
-            vo.setChartData(chartData);
+            yData3.getData().add(Math.round(bean.getRate()));
         }
-        return vo;
+        chartData.getYdata().add(yData1);
+        chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData3);
+        return chartData;
     }
+
+    /**
+     * 获取子列表
+     *
+     * @return
+     */
+    @RequestMapping(value = "/history", method = RequestMethod.GET)
+    public ResultBean history(BudgetSnapshotHistorySearch sf) {
+        Budget budget = this.getUserEntity(Budget.class,sf.getBudgetId(),sf.getUserId());
+        sf.setStartBussKey(budgetHandler.createBussKey(budget.getPeriod(),sf.getStartDate()));
+        sf.setEndBussKey(budgetHandler.createBussKey(budget.getPeriod(),sf.getEndDate()));
+        PageRequest pr = sf.buildQuery();
+        pr.setBeanClass(beanClass);
+        Sort sort = new Sort("bussKey", Sort.DESC);
+        pr.addSort(sort);
+        PageResult<BudgetSnapshot> qr = baseService.getBeanResult(pr);
+        Map res = new HashMap<>();
+        List<BudgetDetailVo> list = new ArrayList<>();
+        for (BudgetSnapshot bg : qr.getBeanList()) {
+            if(bg.getBussKey().length()==4){
+                //在年度里面不需要统计
+                BudgetDetailVo bdb = this.createDefault(bg);
+                list.add(bdb);
+            }else{
+                Date bussDay = DateUtil.getDate(bg.getBussKey()+"01","yyyyMMdd");
+                BudgetDetailVo bdb = this.getDetail(bg,bussDay,bg.getBussKey());
+                list.add(bdb);
+            }
+        }
+        res.put("beanList",list);
+        res.put("maxRow",qr.getMaxRow());
+        res.put("page",qr.getPage());
+        res.put("pageSize",qr.getPageSize());
+        if(sf.isNeedChart()){
+            String title = "["+budget.getName()+"]历史执行统计";
+            ChartData chartData = this.createChartData(title,list);
+            res.put("chartData",chartData);
+        }
+        return callback(res);
+    }
+
     /**
      * 获取详情
      * @param bg

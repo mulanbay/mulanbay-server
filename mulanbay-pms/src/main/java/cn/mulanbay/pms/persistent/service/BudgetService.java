@@ -147,14 +147,12 @@ public class BudgetService extends BaseHibernateDao {
         }
     }
 
-
     /**
      * 获取用户预算列表
      *
      * @param userId
      * @return
      */
-    @SuppressWarnings("unchecked")
     public List<Budget> getActiveUserBudget(Long userId, Boolean bindFlow) {
         try {
             String hql = "from Budget where status=?0 ";
