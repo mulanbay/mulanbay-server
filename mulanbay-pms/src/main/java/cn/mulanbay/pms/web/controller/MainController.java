@@ -480,21 +480,23 @@ public class MainController extends BaseController {
 
     /**
      * 获取路由名称
-     *
+     * 如果配置的path包含斜杠/,则过滤掉，vue的组件名称不推荐斜杠/
+     * 比如path：buyRecord/dateStat,则那么:BuyRecord/DateStat
      * @param menu 菜单信息
      * @return 路由名称
      */
     public String getRouteName(SystemFunction menu) {
         String path = menu.getPath();
-//        int n = path.lastIndexOf("/");
-//        if(n>0){
-//            path = path.substring(n+1);
-//        }
-        String routerName = StringUtils.capitalize(path);
+        String[] ss = path.split("/");
+        String routerName="";
+        for(String s : ss){
+            routerName += StringUtils.capitalize(s);
+        }
         // 非外链并且是一级目录（类型为目录）
         if (isMenuFrame(menu)) {
             routerName = StringUtils.EMPTY;
         }
+
         return routerName;
     }
 
