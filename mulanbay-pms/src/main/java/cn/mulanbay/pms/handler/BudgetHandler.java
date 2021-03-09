@@ -225,6 +225,18 @@ public class BudgetHandler extends BaseHandler {
     }
 
     /**
+     * 通过bussKey获取BussDay
+     * @param bussKey
+     * @return
+     */
+    public Date getBussDay(String bussKey){
+        if(bussKey.length()==4){
+            return DateUtil.getDate(bussKey+"0101","yyyyMMdd");
+        }else{
+            return DateUtil.getDate(bussKey+"01","yyyyMMdd");
+        }
+    }
+    /**
      * 统计及保存预算日志
      *
      * @param usList

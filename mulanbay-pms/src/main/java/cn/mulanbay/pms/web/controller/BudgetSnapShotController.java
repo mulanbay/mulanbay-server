@@ -1,26 +1,20 @@
 package cn.mulanbay.pms.web.controller;
 
 import cn.mulanbay.common.util.BeanCopy;
-import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.common.util.PriceUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.BudgetHandler;
-import cn.mulanbay.pms.persistent.domain.Budget;
-import cn.mulanbay.pms.persistent.domain.BudgetLog;
-import cn.mulanbay.pms.persistent.domain.BudgetSnapshot;
+import cn.mulanbay.pms.persistent.domain.*;
 import cn.mulanbay.pms.persistent.dto.BuyRecordBudgetStat;
-import cn.mulanbay.pms.persistent.dto.BuyRecordDateStat;
 import cn.mulanbay.pms.persistent.enums.BudgetLogSource;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.DietService;
-import cn.mulanbay.pms.util.ChartUtil;
-import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotChildrenSearch;
-import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotHistorySearch;
-import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotListSearch;
-import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotSearch;
+import cn.mulanbay.pms.web.bean.request.buy.BuyRecordSearch;
+import cn.mulanbay.pms.web.bean.request.fund.*;
+import cn.mulanbay.pms.web.bean.request.health.TreatRecordSearch;
 import cn.mulanbay.pms.web.bean.response.chart.*;
 import cn.mulanbay.pms.web.bean.response.fund.BudgetChildrenVo;
 import cn.mulanbay.pms.web.bean.response.fund.BudgetDetailVo;
@@ -160,7 +154,7 @@ public class BudgetSnapShotController extends BaseController {
             BigDecimal budgetAmount = new BigDecimal(0);
             BigDecimal paidAmount = new BigDecimal(0);
             for(BudgetSnapshot ss : snapshotList){
-                Date bussDay = DateUtil.getDate(ss.getBussKey()+"01","yyyyMMdd");
+                Date bussDay = budgetHandler.getBussDay(ss.getBussKey());
                 BudgetDetailVo child = this.getDetail(ss,bussDay,ss.getBussKey());
                 double b = child.getCpPaidAmount()==null ? 0:child.getCpPaidAmount();
                 budgetAmount=budgetAmount.add(new BigDecimal(child.getAmount()));
@@ -233,7 +227,7 @@ public class BudgetSnapShotController extends BaseController {
                 BudgetDetailVo bdb = this.createDefault(bg);
                 list.add(bdb);
             }else{
-                Date bussDay = DateUtil.getDate(bg.getBussKey()+"01","yyyyMMdd");
+                Date bussDay = budgetHandler.getBussDay(bg.getBussKey());
                 BudgetDetailVo bdb = this.getDetail(bg,bussDay,bg.getBussKey());
                 list.add(bdb);
             }
@@ -362,5 +356,64 @@ public class BudgetSnapShotController extends BaseController {
         chartPieData.getDetailData().add(serieData);
 
         return callback(chartPieData);
+    }
+
+    /**
+     * 获取消费记录
+     *
+     * @return
+     */
+    @RequestMapping(value = "/buyRecord", method = RequestMethod.GET)
+    public ResultBean buyRecord(BudgetSnapshotBuyRecordSearch sf) {
+        BudgetSnapshot snapshot = this.getUserEntity(beanClass,sf.getSnapshotId(),sf.getUserId());
+        Date[] ds = this.getDateRange(snapshot);
+        BuyRecordSearch brs = new BuyRecordSearch();
+        brs.setUserId(sf.getUserId());
+        brs.setPage(sf.getPage());
+        brs.setPageSize(sf.getPageSize());
+        brs.setStartDate(ds[0]);
+        brs.setEndDate(ds[1]);
+        brs.setGoodsType(snapshot.getGoodsTypeId());
+        brs.setSubGoodsType(snapshot.getSubGoodsTypeId());
+        brs.setKeywords(snapshot.getKeywords());
+        PageRequest pr = brs.buildQuery();
+        Sort s = new Sort("buyDate", Sort.DESC);
+        pr.addSort(s);
+        pr.setBeanClass(BuyRecord.class);
+        PageResult<BuyRecord> qr = baseService.getBeanResult(pr);
+        return callbackDataGrid(qr);
+    }
+
+    private Date[] getDateRange(BudgetSnapshot snapshot ){
+        Date bussDay = budgetHandler.getBussDay(snapshot.getBussKey());
+        BudgetLog bl = baseService.getObject(BudgetLog.class,snapshot.getBudgetLogId());
+        /**
+         * 周期需要使用父类的周期
+         * 假如snapshot是月度类型预算，但是该记录是在年度预算统计里面，需要查询的是整个年度的数据
+         */
+        Date[] ds = budgetHandler.getDateRange(bl.getPeriod(), bussDay, true);
+        return ds;
+    }
+    /**
+     * 获取看病记录
+     *
+     * @return
+     */
+    @RequestMapping(value = "/treatRecord", method = RequestMethod.GET)
+    public ResultBean treatRecord(BudgetSnapshotBuyRecordSearch sf) {
+        BudgetSnapshot snapshot = this.getUserEntity(beanClass,sf.getSnapshotId(),sf.getUserId());
+        Date[] ds = this.getDateRange(snapshot);
+        TreatRecordSearch brs = new TreatRecordSearch();
+        brs.setUserId(sf.getUserId());
+        brs.setPage(sf.getPage());
+        brs.setPageSize(sf.getPageSize());
+        brs.setStartDate(ds[0]);
+        brs.setEndDate(ds[1]);
+        PageRequest pr = brs.buildQuery();
+        Sort s = new Sort("treatDate", Sort.DESC);
+        pr.addSort(s);
+        pr.setBeanClass(TreatRecord.class);
+        PageResult<TreatRecord> qr = baseService.getBeanResult(pr);
+        return callbackDataGrid(qr);
     }
 }

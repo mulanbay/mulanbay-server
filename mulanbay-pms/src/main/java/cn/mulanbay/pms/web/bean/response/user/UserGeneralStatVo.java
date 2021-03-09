@@ -1,6 +1,6 @@
 package cn.mulanbay.pms.web.bean.response.user;
 
-public class UserGeneralStatResponse {
+public class UserGeneralStatVo {
 
     // 本月预算
     private Double monthBudget = 0.0;
@@ -22,24 +22,6 @@ public class UserGeneralStatResponse {
 
     // 看病次数
     private Long totalTreatCount = 0L;
-
-    // 锻炼总小时数
-    private Double totalSportExerciseHours = 0.0;
-
-    // 锻炼次数
-    private Long totalSportExerciseCount = 0L;
-
-    // 阅读总小时数
-    private Double totalReadingHours = 0.0;
-
-    // 阅读总次数
-    private Long totalReadingCount = 0L;
-
-    // 音乐练习总小时数
-    private Double totalMusicPracticeHours = 0.0;
-
-    // 音乐练习总次数
-    private Long totalMusicPracticeCount = 0L;
 
     // 本月已过去时间（百分比）
     private double dayMonthRate = 0;
@@ -110,54 +92,6 @@ public class UserGeneralStatResponse {
 
     public void setTotalTreatCount(Long totalTreatCount) {
         this.totalTreatCount = totalTreatCount;
-    }
-
-    public Double getTotalSportExerciseHours() {
-        return totalSportExerciseHours;
-    }
-
-    public void setTotalSportExerciseHours(Double totalSportExerciseHours) {
-        this.totalSportExerciseHours = totalSportExerciseHours;
-    }
-
-    public Long getTotalSportExerciseCount() {
-        return totalSportExerciseCount;
-    }
-
-    public void setTotalSportExerciseCount(Long totalSportExerciseCount) {
-        this.totalSportExerciseCount = totalSportExerciseCount;
-    }
-
-    public Double getTotalReadingHours() {
-        return totalReadingHours;
-    }
-
-    public void setTotalReadingHours(Double totalReadingHours) {
-        this.totalReadingHours = totalReadingHours;
-    }
-
-    public Long getTotalReadingCount() {
-        return totalReadingCount;
-    }
-
-    public void setTotalReadingCount(Long totalReadingCount) {
-        this.totalReadingCount = totalReadingCount;
-    }
-
-    public Double getTotalMusicPracticeHours() {
-        return totalMusicPracticeHours;
-    }
-
-    public void setTotalMusicPracticeHours(Double totalMusicPracticeHours) {
-        this.totalMusicPracticeHours = totalMusicPracticeHours;
-    }
-
-    public Long getTotalMusicPracticeCount() {
-        return totalMusicPracticeCount;
-    }
-
-    public void setTotalMusicPracticeCount(Long totalMusicPracticeCount) {
-        this.totalMusicPracticeCount = totalMusicPracticeCount;
     }
 
     public double getDayMonthRate() {

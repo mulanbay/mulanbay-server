@@ -6,17 +6,14 @@ import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.common.BaseException;
 import cn.mulanbay.persistent.dao.BaseHibernateDao;
+import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.domain.BudgetSnapshot;
 import cn.mulanbay.pms.persistent.domain.BudgetTimeline;
-import cn.mulanbay.pms.persistent.dto.BudgetStat;
-import cn.mulanbay.pms.persistent.dto.UserBudgetAndIncomeStat;
-import cn.mulanbay.pms.persistent.dto.UserBudgetStat;
-import cn.mulanbay.pms.persistent.enums.BudgetStatType;
-import cn.mulanbay.pms.persistent.enums.BudgetType;
-import cn.mulanbay.pms.persistent.enums.CommonStatus;
-import cn.mulanbay.pms.persistent.enums.PeriodType;
+import cn.mulanbay.pms.persistent.dto.*;
+import cn.mulanbay.pms.persistent.enums.*;
+import cn.mulanbay.pms.web.bean.request.fund.BudgetSnapshotBuyRecordSearch;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -107,6 +104,22 @@ public class BudgetService extends BaseHibernateDao {
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "获取预算分析异常", e);
+        }
+    }
+
+    /**
+     * 查询月度预算在快照里的数量
+     * @param budgetId
+     * @param year
+     * @return
+     */
+    public long countMonthBudgetSnapshot(Long budgetId, int year) {
+        try {
+            String sql = " select count(0) from budget_snapshot where from_id=?0 and buss_key >=?1 and buss_key<=?2 ";
+            return this.getCountSQL(sql,budgetId,year+"01",year+"12");
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "查询月度预算在快照里的数量异常", e);
         }
     }
 

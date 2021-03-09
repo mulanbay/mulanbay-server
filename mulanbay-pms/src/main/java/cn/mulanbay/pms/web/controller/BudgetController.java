@@ -193,6 +193,14 @@ public class BudgetController extends BaseController {
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public ResultBean edit(@RequestBody @Valid BudgetFormRequest bean) {
+        //如果设置为无效，查看今年是否已经有记录
+        if(bean.getPeriod()==PeriodType.MONTHLY&&bean.getStatus()==CommonStatus.DISABLE){
+            int year = DateUtil.getYear(new Date());
+            long n = budgetService.countMonthBudgetSnapshot(bean.getId(),year);
+            if(n>0){
+                return this.callbackErrorInfo("该预算已经在本年度的"+n+"个月度快照中存在，无法直接修改为无效。请设置为预算金额为0或者第二年再设置为无效");
+            }
+        }
         Budget budget = this.getUserEntity(beanClass, bean.getId(), bean.getUserId());
         BeanCopy.copyProperties(bean, budget);
         budget.setLastModifyTime(new Date());

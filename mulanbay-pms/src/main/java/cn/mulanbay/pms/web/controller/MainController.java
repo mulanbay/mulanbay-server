@@ -30,7 +30,8 @@ import cn.mulanbay.pms.web.bean.response.MyInfoResponse;
 import cn.mulanbay.pms.web.bean.response.auth.RouterMetaVo;
 import cn.mulanbay.pms.web.bean.response.auth.RouterVo;
 import cn.mulanbay.pms.web.bean.response.auth.SecAuthInfoResponse;
-import cn.mulanbay.pms.web.bean.response.user.UserGeneralStatResponse;
+import cn.mulanbay.pms.web.bean.response.user.UserGeneralStatVo;
+import cn.mulanbay.pms.web.bean.response.user.UserGeneralLifeStatVo;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -323,13 +324,13 @@ public class MainController extends BaseController {
     }
 
     /**
-     * 总的概要统计
+     * 总的资金统计
      *
      * @return
      */
     @RequestMapping(value = "/generalStat", method = RequestMethod.GET)
     public ResultBean generalStat(@Valid UserGeneralStatSearch ugs) {
-        UserGeneralStatResponse res = new UserGeneralStatResponse();
+        UserGeneralStatVo res = new UserGeneralStatVo();
         BudgetSearch bs = new BudgetSearch();
         bs.setStatus(CommonStatus.ENABLE);
         bs.setUserId(ugs.getUserId());
@@ -374,6 +375,34 @@ public class MainController extends BaseController {
         res.setTotalTreatCount(0L);
         res.appendConsume(tt.getValue());
 
+        //收入
+        IncomeSummaryStat iss = incomeService.incomeSummaryStat(ugs.getUserId(), ugs.getStartDate(), ugs.getEndDate());
+        res.setTotalIncome(iss.getTotalAmount() == null ? 0.0 : iss.getTotalAmount().doubleValue());
+
+        //获取月度统计
+        int n = DateUtil.getMonthDays(new Date());
+        int a = DateUtil.getDayOfMonth(new Date());
+        res.setDayMonthRate(NumberUtil.getPercentValue(a, n, 2));
+        res.setRemainMonthDays(n - a);
+        res.setMonthDays(n);
+        res.setMonthPassDays(a);
+
+        Date[] dd = getStatDateRange(DateGroupType.MONTH, new Date());
+        double monthConsumeAmount = buyRecordService.statBuyAmount(dd[0], dd[1], ugs.getUserId(), ugs.getConsumeType());
+        res.appendMonthConsume(monthConsumeAmount);
+        double treatMonthAmount = budgetHandler.getTreadConsume(dd[0], dd[1], ugs.getUserId());
+        res.appendMonthConsume(treatMonthAmount);
+        return callback(res);
+    }
+
+    /**
+     * 总的概要统计
+     *
+     * @return
+     */
+    @RequestMapping(value = "/generalLifeStat", method = RequestMethod.GET)
+    public ResultBean generalLifeStat(@Valid UserGeneralStatSearch ugs) {
+        UserGeneralLifeStatVo res = new UserGeneralLifeStatVo();
         //统计锻炼的
         SportExerciseStatSearch sess = new SportExerciseStatSearch();
         sess.setStartDate(ugs.getStartDate());
@@ -396,26 +425,9 @@ public class MainController extends BaseController {
         ReadingDetailSummaryStat rdss = readingRecordService.statReadingDetailSummary(sess.getStartDate(), sess.getEndDate(), sess.getUserId());
         res.setTotalReadingCount(rdss.getTotalCount().longValue());
         res.setTotalReadingHours(rdss.getTotalMinutes() == null ? 0 : rdss.getTotalMinutes().doubleValue() / 60);
-
-        //收入
-        IncomeSummaryStat iss = incomeService.incomeSummaryStat(ugs.getUserId(), ugs.getStartDate(), ugs.getEndDate());
-        res.setTotalIncome(iss.getTotalAmount() == null ? 0.0 : iss.getTotalAmount().doubleValue());
-
-        //获取月度统计
-        int n = DateUtil.getMonthDays(new Date());
-        int a = DateUtil.getDayOfMonth(new Date());
-        res.setDayMonthRate(NumberUtil.getPercentValue(a, n, 2));
-        res.setRemainMonthDays(n - a);
-        res.setMonthDays(n);
-        res.setMonthPassDays(a);
-
-        Date[] dd = getStatDateRange(DateGroupType.MONTH, new Date());
-        double monthConsumeAmount = buyRecordService.statBuyAmount(dd[0], dd[1], ugs.getUserId(), ugs.getConsumeType());
-        res.appendMonthConsume(monthConsumeAmount);
-        double treatMonthAmount = budgetHandler.getTreadConsume(dd[0], dd[1], ugs.getUserId());
-        res.appendMonthConsume(treatMonthAmount);
         return callback(res);
     }
+
 
     /**
      * 路由表
