@@ -3,8 +3,8 @@ package cn.mulanbay.pms.web.bean.request.report;
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.common.aop.BindUserLevel;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class UserReportConfigFormRequest implements BindUser, BindUserLevel {

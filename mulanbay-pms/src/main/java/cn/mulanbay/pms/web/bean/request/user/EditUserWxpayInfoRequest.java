@@ -1,7 +1,6 @@
 package cn.mulanbay.pms.web.bean.request.user;
 
 import javax.validation.constraints.NotEmpty;
-
 import javax.validation.constraints.NotNull;
 
 public class EditUserWxpayInfoRequest {

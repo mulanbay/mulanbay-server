@@ -1,8 +1,8 @@
 package cn.mulanbay.pms.web.bean.request.sport;
 
 import cn.mulanbay.common.aop.BindUser;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 

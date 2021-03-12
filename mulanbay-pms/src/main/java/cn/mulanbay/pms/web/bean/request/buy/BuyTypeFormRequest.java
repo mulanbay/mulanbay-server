@@ -2,9 +2,9 @@ package cn.mulanbay.pms.web.bean.request.buy;
 
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
-import javax.validation.constraints.NotEmpty;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class BuyTypeFormRequest implements BindUser {

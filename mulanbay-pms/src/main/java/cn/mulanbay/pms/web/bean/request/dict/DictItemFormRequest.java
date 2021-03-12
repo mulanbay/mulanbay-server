@@ -1,8 +1,8 @@
 package cn.mulanbay.pms.web.bean.request.dict;
 
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class DictItemFormRequest {

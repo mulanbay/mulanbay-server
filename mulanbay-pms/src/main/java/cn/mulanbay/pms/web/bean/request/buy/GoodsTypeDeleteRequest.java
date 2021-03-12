@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.web.bean.request.buy;
 
 import cn.mulanbay.common.aop.BindUser;
+
 import javax.validation.constraints.NotEmpty;
 
 public class GoodsTypeDeleteRequest implements BindUser {

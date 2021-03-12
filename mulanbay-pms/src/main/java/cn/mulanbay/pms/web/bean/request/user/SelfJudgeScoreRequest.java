@@ -3,7 +3,6 @@ package cn.mulanbay.pms.web.bean.request.user;
 import cn.mulanbay.common.aop.BindUser;
 
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
 
 public class SelfJudgeScoreRequest implements BindUser {
 

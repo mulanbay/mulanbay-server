@@ -3,8 +3,8 @@ package cn.mulanbay.pms.web.bean.request.life;
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.pms.persistent.enums.ExperienceType;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 

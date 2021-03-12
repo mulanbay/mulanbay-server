@@ -1,7 +1,6 @@
 package cn.mulanbay.pms.web.bean.request.notify;
 
 import javax.validation.constraints.NotEmpty;
-
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 

@@ -1,8 +1,8 @@
 package cn.mulanbay.pms.web.bean.request.report;
 
 import cn.mulanbay.common.aop.BindUser;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class UserReportRemindFormRequest implements BindUser {

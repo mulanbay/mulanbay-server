@@ -5,8 +5,8 @@ import cn.mulanbay.schedule.enums.RedoType;
 import cn.mulanbay.schedule.enums.TaskUniqueType;
 import cn.mulanbay.schedule.enums.TriggerStatus;
 import cn.mulanbay.schedule.enums.TriggerType;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 

@@ -4,8 +4,8 @@ import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.pms.persistent.domain.BuyRecord;
 import cn.mulanbay.pms.persistent.enums.GoodsConsumeType;
 import cn.mulanbay.pms.persistent.enums.Payment;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 

@@ -2,8 +2,8 @@ package cn.mulanbay.pms.web.bean.request.log;
 
 import cn.mulanbay.pms.persistent.enums.LogLevel;
 import cn.mulanbay.pms.persistent.enums.MonitorBussType;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class ErrorCodeDefineFormRequest {

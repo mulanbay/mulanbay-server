@@ -1,7 +1,6 @@
 package cn.mulanbay.pms.web.bean.response.life;
 
 import cn.mulanbay.pms.web.bean.response.chart.BaseChartData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartData;
 import com.github.abel533.echarts.data.MapData;
 
 import java.util.ArrayList;

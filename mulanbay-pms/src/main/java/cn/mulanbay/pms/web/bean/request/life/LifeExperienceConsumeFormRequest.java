@@ -1,8 +1,8 @@
 package cn.mulanbay.pms.web.bean.request.life;
 
 import cn.mulanbay.common.aop.BindUser;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class LifeExperienceConsumeFormRequest implements BindUser {

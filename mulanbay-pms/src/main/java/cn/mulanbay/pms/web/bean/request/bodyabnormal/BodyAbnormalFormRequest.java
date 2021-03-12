@@ -2,8 +2,8 @@ package cn.mulanbay.pms.web.bean.request.bodyabnormal;
 
 import cn.mulanbay.common.aop.BindUser;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 

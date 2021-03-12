@@ -2,7 +2,6 @@ package cn.mulanbay.pms.persistent.dto;
 
 import cn.mulanbay.pms.persistent.dto.common.CalendarDateStat;
 
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class OperationLogDateStat implements DateStat, CalendarDateStat {

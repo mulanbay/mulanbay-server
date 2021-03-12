@@ -3,8 +3,8 @@ package cn.mulanbay.pms.web.bean.request.chart;
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.common.aop.BindUserLevel;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class UserChartFormRequest implements BindUser, BindUserLevel {

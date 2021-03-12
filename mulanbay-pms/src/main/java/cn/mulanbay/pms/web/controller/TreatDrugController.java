@@ -14,7 +14,6 @@ import cn.mulanbay.pms.persistent.service.TreatService;
 import cn.mulanbay.pms.util.TreeBeanUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
-import cn.mulanbay.pms.web.bean.request.data.UserBehaviorCalendarStatSearch;
 import cn.mulanbay.pms.web.bean.request.health.*;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
 import cn.mulanbay.pms.web.bean.response.health.TreatDrugCalendarVo;

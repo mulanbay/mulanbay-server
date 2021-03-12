@@ -1,8 +1,8 @@
 package cn.mulanbay.pms.web.bean.request.notify;
 
 import cn.mulanbay.pms.persistent.enums.*;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class NotifyConfigFormRequest {

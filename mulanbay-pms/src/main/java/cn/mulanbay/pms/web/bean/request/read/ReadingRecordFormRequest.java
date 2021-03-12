@@ -5,8 +5,8 @@ import cn.mulanbay.pms.persistent.enums.BookLanguage;
 import cn.mulanbay.pms.persistent.enums.BookType;
 import cn.mulanbay.pms.persistent.enums.ReadingStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 

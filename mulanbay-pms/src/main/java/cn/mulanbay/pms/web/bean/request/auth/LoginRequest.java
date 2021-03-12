@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.web.bean.request.auth;
 
 import cn.mulanbay.pms.persistent.enums.FamilyMode;
+
 import javax.validation.constraints.NotEmpty;
 
 public class LoginRequest {

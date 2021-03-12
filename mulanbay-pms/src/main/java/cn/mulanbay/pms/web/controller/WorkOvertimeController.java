@@ -8,7 +8,6 @@ import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.persistent.domain.Company;
 import cn.mulanbay.pms.persistent.domain.WorkOvertime;
-import cn.mulanbay.pms.persistent.dto.BuyRecordDateStat;
 import cn.mulanbay.pms.persistent.dto.WorkOvertimeDateStat;
 import cn.mulanbay.pms.persistent.dto.WorkOvertimeStat;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;

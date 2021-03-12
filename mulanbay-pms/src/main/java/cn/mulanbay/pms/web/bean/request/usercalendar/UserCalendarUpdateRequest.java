@@ -1,8 +1,8 @@
 package cn.mulanbay.pms.web.bean.request.usercalendar;
 
 import cn.mulanbay.common.aop.BindUser;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 public class UserCalendarUpdateRequest implements BindUser {

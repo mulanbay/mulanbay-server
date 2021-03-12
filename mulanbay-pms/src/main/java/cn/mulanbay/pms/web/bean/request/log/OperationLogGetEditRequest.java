@@ -1,8 +1,8 @@
 package cn.mulanbay.pms.web.bean.request.log;
 
 import cn.mulanbay.pms.persistent.enums.LogCompareType;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class OperationLogGetEditRequest {

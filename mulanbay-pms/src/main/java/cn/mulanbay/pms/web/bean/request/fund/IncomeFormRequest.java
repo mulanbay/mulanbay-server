@@ -3,8 +3,8 @@ package cn.mulanbay.pms.web.bean.request.fund;
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.IncomeType;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 

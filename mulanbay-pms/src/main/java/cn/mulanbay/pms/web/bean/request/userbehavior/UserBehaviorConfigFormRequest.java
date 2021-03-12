@@ -3,8 +3,8 @@ package cn.mulanbay.pms.web.bean.request.userbehavior;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.SqlType;
 import cn.mulanbay.pms.persistent.enums.UserBehaviorType;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class UserBehaviorConfigFormRequest {

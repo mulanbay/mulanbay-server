@@ -2,8 +2,8 @@ package cn.mulanbay.pms.web.bean.request.user;
 
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.CompareType;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class ScoreConfigFormRequest {

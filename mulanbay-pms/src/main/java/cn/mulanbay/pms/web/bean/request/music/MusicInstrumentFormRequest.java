@@ -1,8 +1,8 @@
 package cn.mulanbay.pms.web.bean.request.music;
 
 import cn.mulanbay.common.aop.BindUser;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class MusicInstrumentFormRequest implements BindUser {

@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.web.bean.request;
 
 import cn.mulanbay.common.aop.BindUser;
+
 import javax.validation.constraints.NotEmpty;
 
 /**

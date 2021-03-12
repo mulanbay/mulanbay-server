@@ -5,8 +5,8 @@ import cn.mulanbay.common.aop.FullEndDateTime;
 import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.web.bean.request.PageSearch;
-import javax.validation.constraints.NotEmpty;
 
+import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 
 public class TreatTestStatSearch extends PageSearch implements FullEndDateTime, BindUser {

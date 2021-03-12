@@ -26,17 +26,9 @@ import cn.mulanbay.pms.web.bean.request.GroupType;
 import cn.mulanbay.pms.web.bean.request.life.*;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
 import cn.mulanbay.pms.web.bean.response.chart.*;
-import cn.mulanbay.pms.web.bean.response.life.LocationMapStatChartData;
-import cn.mulanbay.pms.web.bean.response.life.TransferMapDoubleStatChartData;
-import cn.mulanbay.pms.web.bean.response.life.TransferMapSingleStatChartData;
-import cn.mulanbay.pms.web.bean.response.life.TransferMapStatChartData;
+import cn.mulanbay.pms.web.bean.response.life.*;
 import cn.mulanbay.web.bean.response.ResultBean;
-import com.github.abel533.echarts.Option;
-import com.github.abel533.echarts.VisualMap;
-import com.github.abel533.echarts.code.Orient;
-import com.github.abel533.echarts.code.Trigger;
 import com.github.abel533.echarts.data.MapData;
-import com.github.abel533.echarts.series.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,10 +41,7 @@ import javax.validation.Valid;
 import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 /**
  * 人生经历表
@@ -206,21 +195,30 @@ public class LifeExperienceController extends BaseController {
      */
     @RequestMapping(value = "/mapStat", method = RequestMethod.GET)
     public ResultBean mapStat(LifeExperienceMapStatSearch sf) {
-        if (sf.getMapType() == MapType.LOCATION) {
-            List<LifeExperienceMapStat> list = lifeExperienceService.getLifeExperienceMapStat(sf);
-            return this.callback(createLocationMapStat(list, sf.getStatType(), sf.getUserId(), sf.getStartDate(), sf.getEndDate()));
-        }else if (sf.getMapType() == MapType.LC_NAME) {
-            return this.callback(createLcNameMapStat(sf));
+        switch (sf.getMapType() ){
+            case LOCATION:
+                List<LifeExperienceMapStat> list = lifeExperienceService.getLifeExperienceMapStat(sf);
+                return this.callback(createLocationMapStat(list, sf.getStatType(), sf.getUserId(), sf.getStartDate(), sf.getEndDate()));
+            case LC_NAME:
+                return this.callback(createLcNameMapStat(sf));
+            default:
+                return this.callback(createMapData(sf));
         }
-        String mapType = "china";
-        // 是否需要显示地图上的地点名称
-        boolean showName = true;
+    }
+
+    /**
+     * 生成统计图表
+     * @param sf
+     * @return
+     */
+    private MapStatChartData createMapData(LifeExperienceMapStatSearch sf){
+        MapStatChartData chartData = new MapStatChartData();
+        chartData.setMapName("china");
         if (sf.getMapType() == MapType.WORLD) {
-            mapType = "world";
-            showName = false;
+            chartData.setMapName("world");
         }
-        Option option = new Option();
-        option.title("人生去过的地方统计", this.getDateTitle(sf));
+        chartData.setTitle("人生去过的地方统计");
+
         List<LifeExperienceMapStat> list = lifeExperienceService.getLifeExperienceMapStat(sf);
         int ps = list.size();
         String subText = "一共去过" + ps + "个省或直辖市";
@@ -228,52 +226,35 @@ public class LifeExperienceController extends BaseController {
         if (sf.getStartDate() != null && sf.getEndDate() != null) {
             subText += "," + DateUtil.getFormatDate(sf.getStartDate(), DateUtil.FormatDay1) + "~" + DateUtil.getFormatDate(sf.getEndDate(), DateUtil.FormatDay1);
         }
-        option.title().subtext(subText);
-        option.title().x("center");
-        option.tooltip().trigger(Trigger.item);
-        option.legend().orient(Orient.vertical).left("left").data(sf.getStatType().getName());
-
-        VisualMap visualMap = new VisualMap();
-        visualMap.setMin(0);
-        visualMap.left("left");
-        visualMap.top("bottom");
-        visualMap.text(new String[]{"高", "低"});
-        visualMap.calculable(true);
-        option.visualMap().add(visualMap);
-        option.toolbox().show(true).orient(Orient.vertical).left("right").top("center");
-
-        List<MapData> mapDataList = new ArrayList<>();
+        chartData.setSubTitle(subText);
         int maxValue = 0;
         for (LifeExperienceMapStat dd : list) {
+            String name = dd.getName();
+            MapStatChartDetail detail = new MapStatChartDetail();
+            detail.setName(name);
             if (sf.getStatType() == LifeExperienceMapStatSearch.StatType.COUNT) {
-                MapData c = new MapData(dd.getName(), dd.getTotalCount().intValue());
-                mapDataList.add(c);
+                detail.setValue(dd.getTotalCount().intValue());
                 if (dd.getTotalCount().intValue() > maxValue) {
                     maxValue = dd.getTotalCount().intValue();
                 }
             } else if (sf.getStatType() == LifeExperienceMapStatSearch.StatType.DAYS) {
-                MapData c = new MapData(dd.getName(), dd.getTotalDays().longValue());
-                mapDataList.add(c);
+                detail.setValue(dd.getTotalDays().intValue());
                 if (dd.getTotalDays().intValue() > maxValue) {
                     maxValue = dd.getTotalDays().intValue();
                 }
             } else {
-                MapData c = new MapData(dd.getName(), PriceUtil.changeToString(2, dd.getTotalCost()));
-                mapDataList.add(c);
+                detail.setValue(dd.getTotalCost().intValue());
                 if (dd.getTotalCost().intValue() > maxValue) {
                     maxValue = dd.getTotalCost().intValue();
                 }
             }
+            detail.setCounts(dd.getTotalCount().intValue());
+            detail.setDays(dd.getTotalDays().intValue());
+            detail.setCost(dd.getTotalCost().intValue());
+            chartData.addDetail(detail);
         }
-
-        //最大值由计算得出
-        visualMap.setMax(maxValue);
-        Map map = new Map();
-        map.name(sf.getStatType().getName()).mapType(mapType).roam(false).label().normal().show(showName);
-        map.label().emphasis().show(true);
-        map.setData(mapDataList);
-        option.series().add(map);
-        return callback(option);
+        chartData.setMaxValue(maxValue);
+        return chartData;
     }
 
     /**
@@ -399,7 +380,7 @@ public class LifeExperienceController extends BaseController {
      * @param endDate
      * @return
      */
-    private java.util.Map<String, double[]> getGeoMapData(Long userId, Date startDate, Date endDate) {
+    private Map<String, double[]> getGeoMapData(Long userId, Date startDate, Date endDate) {
         if (startDate == null) {
             startDate = new Date(0L);
         }
