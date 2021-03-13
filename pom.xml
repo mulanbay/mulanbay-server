@@ -48,7 +48,6 @@
         <hamcrest-core.version>1.3</hamcrest-core.version>
         <validation-api.version>2.0.1.Final</validation-api.version>
         <poi.version>3.13</poi.version>
-        <ECharts.version>3.0.0.2</ECharts.version>
         <slf4j-api.version>1.7.30</slf4j-api.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <javax.mail.version>1.5.2</javax.mail.version>
