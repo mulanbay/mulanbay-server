@@ -9,23 +9,21 @@ import java.util.List;
  * @Author: fenghong
  * @Create : 2021/3/14
  */
-public class ChartGraphData {
+public class ChartRelationDetailData {
 
     private double value;
 
     private String name;
 
-    private long pid;
-
-    public ChartGraphData() {
+    public ChartRelationDetailData() {
     }
 
-    public ChartGraphData(double value, String name) {
+    public ChartRelationDetailData(double value, String name) {
         this.value = value;
         this.name = name;
     }
 
-    private List<ChartGraphData> children = new ArrayList<>();
+    private List<ChartRelationDetailData> children = new ArrayList<>();
 
     public double getValue() {
         return value;
@@ -43,19 +41,11 @@ public class ChartGraphData {
         this.name = name;
     }
 
-    public long getPid() {
-        return pid;
-    }
-
-    public void setPid(long pid) {
-        this.pid = pid;
-    }
-
-    public List<ChartGraphData> getChildren() {
+    public List<ChartRelationDetailData> getChildren() {
         return children;
     }
 
-    public void setChildren(List<ChartGraphData> children) {
+    public void setChildren(List<ChartRelationDetailData> children) {
         this.children = children;
     }
 }

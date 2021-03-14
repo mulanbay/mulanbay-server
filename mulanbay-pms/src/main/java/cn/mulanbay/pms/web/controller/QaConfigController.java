@@ -22,7 +22,8 @@ import cn.mulanbay.pms.web.bean.request.system.QaConfigFormRequest;
 import cn.mulanbay.pms.web.bean.request.system.QaConfigSearch;
 import cn.mulanbay.pms.web.bean.request.system.QaTestReq;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
-import cn.mulanbay.pms.web.bean.response.chart.ChartGraphData;
+import cn.mulanbay.pms.web.bean.response.chart.ChartRelationData;
+import cn.mulanbay.pms.web.bean.response.chart.ChartRelationDetailData;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -232,7 +233,7 @@ public class QaConfigController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/stat", method = RequestMethod.GET)
-    public ResultBean stat() {
+    public ResultBean ration() {
         QaConfigSearch sf = new QaConfigSearch();
         PageRequest pr = sf.buildQuery();
         pr.setBeanClass(beanClass);
@@ -240,12 +241,15 @@ public class QaConfigController extends BaseController {
         Sort sort = new Sort("parentId", Sort.ASC);
         pr.addSort(sort);
         List<QaConfig> list = baseService.getBeanList(pr);
-        ChartGraphData root = new ChartGraphData(0,"根");
+        ChartRelationDetailData root = new ChartRelationDetailData(0,"根");
+        //构建
         CopyOnWriteArrayList<QaConfig> newList = new CopyOnWriteArrayList();
         newList.addAll(list);
-        List<ChartGraphData> children = this.getChildren(newList,0L);
+        List<ChartRelationDetailData> children = this.getChildren(newList,0L);
         root.setChildren(children);
-        return callback(root);
+        ChartRelationData chartData = new ChartRelationData();
+        chartData.addData(root);
+        return callback(chartData);
     }
 
     /**
@@ -253,12 +257,12 @@ public class QaConfigController extends BaseController {
      * @param list
      * @return
      */
-    private List<ChartGraphData> getChildren(CopyOnWriteArrayList<QaConfig> list,long pid) {
-        List<ChartGraphData> children = new LinkedList<>();
+    private List<ChartRelationDetailData> getChildren(CopyOnWriteArrayList<QaConfig> list, long pid) {
+        List<ChartRelationDetailData> children = new LinkedList<>();
         for (QaConfig qa : list) {
             long p = qa.getParentId()==null ? 0L:qa.getParentId().longValue();
             if(p==pid){
-                ChartGraphData child = new ChartGraphData(qa.getId(),qa.getName());
+                ChartRelationDetailData child = new ChartRelationDetailData(qa.getId(),qa.getName());
                 children.add(child);
                 list.remove(qa);
                 child.setChildren(this.getChildren(list,qa.getId()));
