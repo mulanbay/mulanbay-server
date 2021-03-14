@@ -22,8 +22,7 @@ import cn.mulanbay.pms.web.bean.request.system.QaConfigFormRequest;
 import cn.mulanbay.pms.web.bean.request.system.QaConfigSearch;
 import cn.mulanbay.pms.web.bean.request.system.QaTestReq;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
-import cn.mulanbay.pms.web.bean.response.chart.ChartTreeData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartTreeDetailData;
+import cn.mulanbay.pms.web.bean.response.chart.ChartGraphData;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -34,7 +33,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * QA配置
@@ -230,8 +231,8 @@ public class QaConfigController extends BaseController {
      *
      * @return
      */
-    @RequestMapping(value = "/treeView", method = RequestMethod.GET)
-    public ResultBean treeView() {
+    @RequestMapping(value = "/stat", method = RequestMethod.GET)
+    public ResultBean stat() {
         QaConfigSearch sf = new QaConfigSearch();
         PageRequest pr = sf.buildQuery();
         pr.setBeanClass(beanClass);
@@ -239,50 +240,31 @@ public class QaConfigController extends BaseController {
         Sort sort = new Sort("parentId", Sort.ASC);
         pr.addSort(sort);
         List<QaConfig> list = baseService.getBeanList(pr);
-        ChartTreeDetailData data = getQaTreeView(list);
-        ChartTreeData treeData = new ChartTreeData();
-        treeData.setData(data);
-        return callback(treeData);
+        ChartGraphData root = new ChartGraphData(0,"根");
+        CopyOnWriteArrayList<QaConfig> newList = new CopyOnWriteArrayList();
+        newList.addAll(list);
+        List<ChartGraphData> children = this.getChildren(newList,0L);
+        root.setChildren(children);
+        return callback(root);
     }
 
-    private ChartTreeDetailData getQaTreeView(List<QaConfig> qaList) {
-        ChartTreeDetailData data = new ChartTreeDetailData(0, "根");
-        for (QaConfig qc : qaList) {
-            if (qc.getParentId() == null) {
-                ChartTreeDetailData tb = new ChartTreeDetailData();
-                tb.setName(qc.getName());
-                tb.setValue(1);
-                setTreeChildren(tb, qaList);
-                data.addChild(tb);
+    /**
+     * 构建
+     * @param list
+     * @return
+     */
+    private List<ChartGraphData> getChildren(CopyOnWriteArrayList<QaConfig> list,long pid) {
+        List<ChartGraphData> children = new LinkedList<>();
+        for (QaConfig qa : list) {
+            long p = qa.getParentId()==null ? 0L:qa.getParentId().longValue();
+            if(p==pid){
+                ChartGraphData child = new ChartGraphData(qa.getId(),qa.getName());
+                children.add(child);
+                list.remove(qa);
+                child.setChildren(this.getChildren(list,qa.getId()));
             }
         }
-        return data;
+        return children;
     }
 
-    private void setTreeChildren(ChartTreeDetailData tb, List<QaConfig> qaList) {
-        for (QaConfig qc : qaList) {
-            Long parentId = qc.getParentId();
-            if (parentId == null) {
-                continue;
-            } else {
-                QaConfig parent = this.getQaConfig(parentId, qaList);
-                if (tb.getName().equals(parent.getName())) {
-                    ChartTreeDetailData child = new ChartTreeDetailData();
-                    child.setName(qc.getName());
-                    child.setValue(1);
-                    tb.addChild(child);
-                    setTreeChildren(child, qaList);
-                }
-            }
-        }
-    }
-
-    private QaConfig getQaConfig(Long id, List<QaConfig> list) {
-        for (QaConfig qc : list) {
-            if (id.longValue() == qc.getId()) {
-                return qc;
-            }
-        }
-        return null;
-    }
 }

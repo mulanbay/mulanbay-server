@@ -26,7 +26,7 @@ public class ChartTreeDetailData {
         this.name = name;
     }
 
-    private List<ChartTreeDetailData> children;
+    private List<ChartTreeDetailData> children = new ArrayList<>();
 
     /**
      * 添加子节点
@@ -39,9 +39,6 @@ public class ChartTreeDetailData {
     }
 
     public void addChild(ChartTreeDetailData tmb) {
-        if (children == null) {
-            children = new ArrayList<>();
-        }
         children.add(tmb);
     }
 

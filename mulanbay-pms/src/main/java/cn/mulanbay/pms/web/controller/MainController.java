@@ -493,7 +493,7 @@ public class MainController extends BaseController {
     /**
      * 获取路由名称
      * 如果配置的path包含斜杠/,则过滤掉，vue的组件名称不推荐斜杠/
-     * 比如path：buyRecord/dateStat,则那么:BuyRecord/DateStat
+     * 比如path：buyRecord/dateStat,则name:BuyRecordDateStat
      * @param menu 菜单信息
      * @return 路由名称
      */
