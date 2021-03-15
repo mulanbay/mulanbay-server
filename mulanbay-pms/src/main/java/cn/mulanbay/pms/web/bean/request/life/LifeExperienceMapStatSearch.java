@@ -33,6 +33,9 @@ public class LifeExperienceMapStatSearch extends QueryBuilder implements DateSta
     @Query(fieldName = "start_city", op = Parameter.Operator.EQ)
     private String startCity;
 
+    @Query(fieldName = "international", op = Parameter.Operator.EQ)
+    private Boolean international;
+
     private MapType mapType;
 
     private StatType statType;
@@ -121,6 +124,14 @@ public class LifeExperienceMapStatSearch extends QueryBuilder implements DateSta
 
     public void setStartCity(String startCity) {
         this.startCity = startCity;
+    }
+
+    public Boolean getInternational() {
+        return international;
+    }
+
+    public void setInternational(Boolean international) {
+        this.international = international;
     }
 
     public enum StatType {

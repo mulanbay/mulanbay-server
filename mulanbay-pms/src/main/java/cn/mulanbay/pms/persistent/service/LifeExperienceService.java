@@ -127,10 +127,33 @@ public class LifeExperienceService extends BaseHibernateDao {
             sb.append("select start_city as startCity,arrive_city as arriveCity,count(0) as totalCount");
             sb.append(" from life_experience_detail ");
             sb.append(pr.getParameterString());
-            sb.append(" and map_stat=1 ");
+            sb.append(" and map_stat=1  and international=0 ");
             sb.append(" group by startCity,arriveCity ");
             List<TransferMapStat> list = this.getEntityListWithClassSQL(sb.toString(),
                     pr.getPage(), pr.getPageSize(), TransferMapStat.class, pr.getParameterValue());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "人生经历地图统计", e);
+        }
+    }
+
+    /**
+     * 获取迁徙地图的数据
+     *
+     * @param sf
+     * @return
+     */
+    public List<WorldTransferMapStat> statWorldTransMap(LifeExperienceMapStatSearch sf) {
+        try {
+            PageRequest pr = sf.buildQuery();
+            StringBuffer sb = new StringBuffer();
+            sb.append("select start_city as startCity,sc_location as scLocation,arrive_city as arriveCity,ac_location as acLocation ");
+            sb.append(" from life_experience_detail ");
+            sb.append(pr.getParameterString());
+            sb.append(" and map_stat=1 and international=1");
+            List<WorldTransferMapStat> list = this.getEntityListWithClassSQL(sb.toString(),
+                    pr.getPage(), pr.getPageSize(), WorldTransferMapStat.class, pr.getParameterValue());
             return list;
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
@@ -171,8 +194,35 @@ public class LifeExperienceService extends BaseHibernateDao {
             String s = (String) this.getEntityForOne(hql,country);
             return s;
         } catch (BaseException e) {
-            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+            throw new PersistentException(ErrorCode.OBJECT_GET_ERROR,
                     "获取国家地理位置信息异常", e);
+        }
+    }
+
+    /**
+     * 获取城市地理位置信息
+     *
+     * @param city
+     * @return
+     */
+    public String getCityLocation(String city) {
+        try {
+            String hql = "select scLocation,acLocation from LifeExperienceDetail where startCity=?0 or arriveCity=?1";
+            Object[] ss = (Object[]) this.getEntityForOne(hql,city,city);
+            if(ss==null){
+                return null;
+            }else{
+                if(ss[0]!=null){
+                    return ss[0].toString();
+                }
+                if(ss[1]!=null){
+                    return ss[1].toString();
+                }
+            }
+            return null;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_ERROR,
+                    "获取城市地理位置信息异常", e);
         }
     }
 

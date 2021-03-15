@@ -112,7 +112,7 @@ public class LifeExperienceDetailController extends BaseController {
     }
 
     /**
-     * 根据名称获取
+     * 获取国际位置
      *
      * @param country
      * @return
@@ -120,6 +120,18 @@ public class LifeExperienceDetailController extends BaseController {
     @RequestMapping(value = "/getCountryLocation", method = RequestMethod.GET)
     public ResultBean getCountryLocation(String country) {
         String s = lifeExperienceService.getCountryLocation(country);
+        return callback(s);
+    }
+
+    /**
+     * 根据城市位置
+     *
+     * @param city
+     * @return
+     */
+    @RequestMapping(value = "/getCityLocation", method = RequestMethod.GET)
+    public ResultBean getCityLocation(String city) {
+        String s = lifeExperienceService.getCityLocation(city);
         return callback(s);
     }
 

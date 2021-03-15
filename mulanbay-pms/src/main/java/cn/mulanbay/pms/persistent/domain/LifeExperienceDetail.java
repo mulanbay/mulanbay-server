@@ -33,6 +33,8 @@ public class LifeExperienceDetail implements java.io.Serializable {
     private Double cost;
     //是否加入到地图的绘制
     private Boolean mapStat;
+    //国际线路
+    private Boolean international;
     private String remark;
     private Date createdTime;
     private Date lastModifyTime;
@@ -186,6 +188,16 @@ public class LifeExperienceDetail implements java.io.Serializable {
 
     public void setMapStat(Boolean mapStat) {
         this.mapStat = mapStat;
+    }
+
+    @Basic
+    @Column(name = "international")
+    public Boolean getInternational() {
+        return international;
+    }
+
+    public void setInternational(Boolean international) {
+        this.international = international;
     }
 
     @Basic

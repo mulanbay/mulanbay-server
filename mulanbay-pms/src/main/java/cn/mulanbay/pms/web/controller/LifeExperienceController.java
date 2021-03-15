@@ -13,7 +13,6 @@ import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.ExperienceType;
 import cn.mulanbay.pms.persistent.enums.LifeExperienceCostStatType;
-import cn.mulanbay.pms.persistent.enums.MapType;
 import cn.mulanbay.pms.persistent.service.LifeExperienceService;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.util.TreeBeanUtil;
@@ -549,12 +548,50 @@ public class LifeExperienceController extends BaseController {
      */
     @RequestMapping(value = "/transferMapStat")
     public ResultBean transferMapStat(LifeExperienceMapStatSearch sf) {
-        //sf.setUserId(this.getCurrentUserId());
-        if (sf.getMapType() == MapType.TRANSFER_DOUBLE) {
-            return callback(this.createDoubleTransferMapStatResponse(sf));
-        } else {
-            return callback(this.createSingleTransferMapStatResponse(sf));
+        switch (sf.getMapType()){
+            case TRANSFER_DOUBLE:
+                return callback(this.createDoubleTransferMap(sf));
+            case TRANSFER_SINGLE:
+                return callback(this.createSingleTransferMap(sf));
+            case WORLD:
+                return callback(this.createWorldTransferMap(sf));
+            default:
+                return callbackErrorInfo("无效的地图类型");
         }
+    }
+
+    /**
+     * 世界迁移地图数据封装
+     *
+     * @param sf
+     * @return
+     */
+    private WorldTransferChartData createWorldTransferMap(LifeExperienceMapStatSearch sf) {
+        List<WorldTransferMapStat> list  = lifeExperienceService.statWorldTransMap(sf);
+        Map<String, double[]> geoMap = new HashMap<>();
+        WorldTransferChartData chartData = new WorldTransferChartData();
+        chartData.setTitle("人生经历线路统计");
+        String centerCity = "北京";
+        chartData.setCenterCity(centerCity);
+        for(WorldTransferMapStat dd : list){
+            chartData.addDetail(dd.getStartCity(),dd.getArriveCity(),1);
+            double[] scGeo = geoMap.get(dd.getStartCity());
+            if(scGeo==null){
+                String[] geo = dd.getScLocation().split(",");
+                geoMap.put(dd.getStartCity(), new double[]{Double.valueOf(geo[0]), Double.valueOf(geo[1])});
+            }
+            double[] acGeo = geoMap.get(dd.getArriveCity());
+            if(acGeo==null){
+                String[] geo = dd.getAcLocation().split(",");
+                geoMap.put(dd.getArriveCity(), new double[]{Double.valueOf(geo[0]), Double.valueOf(geo[1])});
+            }
+        }
+        if(geoMap.get(centerCity)==null){
+            geoMap.put(centerCity, new double[]{116.413315,39.912142});
+        }
+        chartData.setGeoCoordMapData(geoMap);
+        chartData.setUnit("次");
+        return chartData;
     }
 
     /**
@@ -563,7 +600,7 @@ public class LifeExperienceController extends BaseController {
      * @param sf
      * @return
      */
-    private TransferMapStatChartData createDoubleTransferMapStatResponse(LifeExperienceMapStatSearch sf) {
+    private TransferMapStatChartData createDoubleTransferMap(LifeExperienceMapStatSearch sf) {
         TransferMapDoubleStatChartData response = new TransferMapDoubleStatChartData();
         response.setTitle("人生经历线路统计");
         response.setSubTitle(this.getDateTitle(sf));
@@ -580,7 +617,7 @@ public class LifeExperienceController extends BaseController {
      * @param sf
      * @return
      */
-    private TransferMapStatChartData createSingleTransferMapStatResponse(LifeExperienceMapStatSearch sf) {
+    private TransferMapStatChartData createSingleTransferMap(LifeExperienceMapStatSearch sf) {
         TransferMapSingleStatChartData response = new TransferMapSingleStatChartData();
         response.setTitle("人生经历线路统计");
         response.setSubTitle(this.getDateTitle(sf));
