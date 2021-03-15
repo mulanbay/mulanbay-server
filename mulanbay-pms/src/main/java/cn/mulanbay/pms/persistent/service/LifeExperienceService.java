@@ -74,6 +74,29 @@ public class LifeExperienceService extends BaseHibernateDao {
     }
 
     /**
+     * 人生经历地图统计
+     *
+     * @param sf
+     * @return
+     */
+    public List<LifeExperienceWorldMapStat> getLifeExperienceWorldMapStat(LifeExperienceMapStatSearch sf) {
+        try {
+            PageRequest pr = sf.buildQuery();
+            StringBuffer sb = new StringBuffer();
+            sb.append("select country,max(country_location) as countryLocation,count(0) as totalCount,count(0) as totalDays,sum(cost) as totalCost ");
+            sb.append(" from life_experience_detail ");
+            sb.append(pr.getParameterString());
+            sb.append(" and map_stat=1 ");
+            sb.append(" group by country ");
+            List<LifeExperienceWorldMapStat> list = this.getEntityListWithClassSQL(sb.toString(), pr.getPage(), pr.getPageSize(), LifeExperienceWorldMapStat.class, pr.getParameterValue());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "人生经历地图统计", e);
+        }
+    }
+
+    /**
      * 获取出发城市列表
      *
      * @return
@@ -133,6 +156,23 @@ public class LifeExperienceService extends BaseHibernateDao {
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "获取地理位置信息异常", e);
+        }
+    }
+
+    /**
+     * 获取国家地理位置信息
+     *
+     * @param country
+     * @return
+     */
+    public String getCountryLocation(String country) {
+        try {
+            String hql = "select countryLocation from LifeExperienceDetail where country=?0 ";
+            String s = (String) this.getEntityForOne(hql,country);
+            return s;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取国家地理位置信息异常", e);
         }
     }
 

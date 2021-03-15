@@ -26,8 +26,6 @@ import cn.mulanbay.pms.web.bean.response.TreeBean;
 import cn.mulanbay.pms.web.bean.response.chart.*;
 import cn.mulanbay.pms.web.bean.response.life.*;
 import cn.mulanbay.web.bean.response.ResultBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,8 +46,6 @@ import java.util.*;
 @RestController
 @RequestMapping("/lifeExperience")
 public class LifeExperienceController extends BaseController {
-
-    private static final Logger logger = LoggerFactory.getLogger(LifeExperienceController.class);
 
     @Autowired
     LifeExperienceService lifeExperienceService;
@@ -184,9 +180,6 @@ public class LifeExperienceController extends BaseController {
 
     /**
      * 地图统计
-     * 如果是中国地图、世界地图类型的统计，则直接返回全部封装好的Option
-     * 如果是按照地点统计分析（即详细的统计），后端只返回核心数据（用com.github.abel533.echarts比较麻烦，觉得以后的统计还是只返回核心数据）
-     *
      * @return
      */
     @RequestMapping(value = "/mapStat", method = RequestMethod.GET)
@@ -197,8 +190,10 @@ public class LifeExperienceController extends BaseController {
                 return this.callback(createLocationMapStat(list, sf.getStatType(), sf.getUserId(), sf.getStartDate(), sf.getEndDate()));
             case LC_NAME:
                 return this.callback(createLcNameMapStat(sf));
+            case WORLD:
+                return this.callback(createWorldMapData(sf));
             default:
-                return this.callback(createMapData(sf));
+                return this.callback(createChinaMapData(sf));
         }
     }
 
@@ -207,12 +202,9 @@ public class LifeExperienceController extends BaseController {
      * @param sf
      * @return
      */
-    private MapStatChartData createMapData(LifeExperienceMapStatSearch sf){
+    private MapStatChartData createChinaMapData(LifeExperienceMapStatSearch sf){
         MapStatChartData chartData = new MapStatChartData();
         chartData.setMapName("china");
-        if (sf.getMapType() == MapType.WORLD) {
-            chartData.setMapName("world");
-        }
         chartData.setTitle("人生去过的地方统计");
 
         List<LifeExperienceMapStat> list = lifeExperienceService.getLifeExperienceMapStat(sf);
@@ -250,6 +242,64 @@ public class LifeExperienceController extends BaseController {
             chartData.addDetail(detail);
         }
         chartData.setMaxValue(maxValue);
+        return chartData;
+    }
+
+    /**
+     * 生成世界统计图表
+     * @param sf
+     * @return
+     */
+    private WorldMapStatChartData createWorldMapData(LifeExperienceMapStatSearch sf){
+        WorldMapStatChartData chartData = new WorldMapStatChartData();
+        chartData.setMapName("world");
+        chartData.setTitle("人生去过的国家统计");
+
+        List<LifeExperienceWorldMapStat> list = lifeExperienceService.getLifeExperienceWorldMapStat(sf);
+        int maxValue = 0;
+        java.util.Map<String, double[]> geoMapData = new HashMap<>();
+        for (LifeExperienceWorldMapStat dd : list) {
+            String name = dd.getCountry();
+            MapStatChartDetail detail = new MapStatChartDetail();
+            detail.setName(name);
+            if (sf.getStatType() == LifeExperienceMapStatSearch.StatType.COUNT) {
+                detail.setValue(dd.getTotalCount().intValue());
+                if (dd.getTotalCount().intValue() > maxValue) {
+                    maxValue = dd.getTotalCount().intValue();
+                }
+            } else if (sf.getStatType() == LifeExperienceMapStatSearch.StatType.DAYS) {
+                detail.setValue(dd.getTotalDays().intValue());
+                if (dd.getTotalDays().intValue() > maxValue) {
+                    maxValue = dd.getTotalDays().intValue();
+                }
+            } else {
+                detail.setValue(dd.getTotalCost().intValue());
+                if (dd.getTotalCost().intValue() > maxValue) {
+                    maxValue = dd.getTotalCost().intValue();
+                }
+            }
+            //地理位置
+            if(StringUtil.isEmpty(dd.getCountryLocation())){
+                geoMapData.put(name, new double[]{0, 0});
+            }else{
+                String[] geo = dd.getCountryLocation().split(",");
+                geoMapData.put(name,new double[]{Double.valueOf(geo[0]), Double.valueOf(geo[1])});
+            }
+            detail.setCounts(dd.getTotalCount().intValue());
+            detail.setDays(dd.getTotalDays().intValue());
+            detail.setCost(dd.getTotalCost().intValue());
+            chartData.addDetail(detail);
+        }
+        LifeExperienceMapStatSearch.StatType statType = sf.getStatType();
+        if (statType == LifeExperienceMapStatSearch.StatType.COUNT){
+            chartData.setUnit("次");
+        }else if (statType == LifeExperienceMapStatSearch.StatType.DAYS){
+            chartData.setUnit("天");
+        }else{
+            chartData.setUnit("元");
+        }
+        chartData.setMaxValue(maxValue);
+        chartData.setGeoCoordMapData(geoMapData);
         return chartData;
     }
 

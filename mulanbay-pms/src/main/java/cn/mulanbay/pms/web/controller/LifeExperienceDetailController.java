@@ -111,4 +111,16 @@ public class LifeExperienceDetailController extends BaseController {
         return callback(null);
     }
 
+    /**
+     * 根据名称获取
+     *
+     * @param country
+     * @return
+     */
+    @RequestMapping(value = "/getCountryLocation", method = RequestMethod.GET)
+    public ResultBean getCountryLocation(String country) {
+        String s = lifeExperienceService.getCountryLocation(country);
+        return callback(s);
+    }
+
 }

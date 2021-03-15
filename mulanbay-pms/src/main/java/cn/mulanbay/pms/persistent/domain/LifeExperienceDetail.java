@@ -19,6 +19,7 @@ public class LifeExperienceDetail implements java.io.Serializable {
     private Long userId;
     private LifeExperience lifeExperience;
     private String country;
+    private String countryLocation;
     private Integer provinceId;
     private Integer cityId;
     private Integer districtId;
@@ -75,6 +76,16 @@ public class LifeExperienceDetail implements java.io.Serializable {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    @Basic
+    @Column(name = "country_location")
+    public String getCountryLocation() {
+        return countryLocation;
+    }
+
+    public void setCountryLocation(String countryLocation) {
+        this.countryLocation = countryLocation;
     }
 
     @Basic

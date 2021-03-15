@@ -17,6 +17,7 @@ public class LifeExperienceDetailFormRequest implements BindUser {
 
     @NotEmpty(message = "{validate.lifeExperienceDetail.country.NotEmpty}")
     private String country;
+    private String countryLocation;
 
     private Integer provinceId;
     private Integer cityId;
@@ -79,6 +80,14 @@ public class LifeExperienceDetailFormRequest implements BindUser {
 
     public void setCountry(String country) {
         this.country = country;
+    }
+
+    public String getCountryLocation() {
+        return countryLocation;
+    }
+
+    public void setCountryLocation(String countryLocation) {
+        this.countryLocation = countryLocation;
     }
 
     public Integer getProvinceId() {
