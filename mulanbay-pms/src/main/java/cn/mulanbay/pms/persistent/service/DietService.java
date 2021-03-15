@@ -10,6 +10,7 @@ import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.*;
 import cn.mulanbay.pms.persistent.util.MysqlUtil;
 import cn.mulanbay.pms.web.bean.request.diet.*;
+import cn.mulanbay.pms.web.bean.request.life.LifeExperienceWouldCloudStatSearch;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -456,6 +457,36 @@ public class DietService extends BaseHibernateDao {
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "饮食点统计异常", e);
+        }
+    }
+
+    /**
+     * 获取标签列表
+     *
+     * @param sf
+     * @return
+     */
+    public List<NameCountDto> statTags(DietWordCloudSearch sf) {
+        try {
+            PageRequest pr = sf.buildQuery();
+            String field = sf.getField();
+            StringBuffer sb = new StringBuffer();
+            sb.append("select name,count(0) as counts from ");
+            sb.append("( ");
+            sb.append("select (substring_index(substring_index(a.col,',',b.help_topic_id+1),',',-1)) as name ");
+            sb.append("from ");
+            sb.append(" (select "+field+" as col from diet  ");
+            sb.append(pr.getParameterString());
+            sb.append("    ) as a ");
+            sb.append("join ");
+            sb.append("mysql.help_topic as b ");
+            sb.append("on b.help_topic_id < (char_length(a.col) - char_length(replace(a.col,',',''))+1) ");
+            sb.append(") as res group by name ");
+            List<NameCountDto> list = this.getEntityListWithClassSQL(sb.toString(),0,0,NameCountDto.class, pr.getParameterValue());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取标签列表异常", e);
         }
     }
 }

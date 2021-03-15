@@ -5,32 +5,29 @@ import cn.mulanbay.common.aop.FullEndDateTime;
 import cn.mulanbay.persistent.query.CrossType;
 import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Query;
-import cn.mulanbay.pms.persistent.enums.DietSource;
-import cn.mulanbay.pms.persistent.enums.DietType;
-import cn.mulanbay.pms.persistent.enums.FoodType;
 import cn.mulanbay.web.bean.request.PageSearch;
 
 import java.util.Date;
 
 public class DietWordCloudSearch extends PageSearch implements BindUser, FullEndDateTime {
 
-    @Query(fieldName = "occurTime", op = Parameter.Operator.GTE)
+    @Query(fieldName = "occur_time", op = Parameter.Operator.GTE)
     private Date startDate;
 
-    @Query(fieldName = "occurTime", op = Parameter.Operator.LTE)
+    @Query(fieldName = "occur_time", op = Parameter.Operator.LTE)
     private Date endDate;
 
     @Query(fieldName = "foods,shop,tags", op = Parameter.Operator.LIKE, crossType = CrossType.OR)
     private String name;
 
-    @Query(fieldName = "dietType", op = Parameter.Operator.EQ)
-    private DietType dietType;
+    @Query(fieldName = "diet_type", op = Parameter.Operator.EQ)
+    private Integer dietType;
 
-    @Query(fieldName = "dietSource", op = Parameter.Operator.EQ)
-    private DietSource dietSource;
+    @Query(fieldName = "diet_source", op = Parameter.Operator.EQ)
+    private Integer dietSource;
 
-    @Query(fieldName = "foodType", op = Parameter.Operator.EQ)
-    private FoodType foodType;
+    @Query(fieldName = "food_type", op = Parameter.Operator.EQ)
+    private Integer foodType;
 
     @Query(fieldName = "score", op = Parameter.Operator.GTE)
     private Integer minScore;
@@ -38,7 +35,7 @@ public class DietWordCloudSearch extends PageSearch implements BindUser, FullEnd
     @Query(fieldName = "score", op = Parameter.Operator.LTE)
     private Integer maxScore;
 
-    @Query(fieldName = "userId", op = Parameter.Operator.EQ)
+    @Query(fieldName = "user_id", op = Parameter.Operator.EQ)
     public Long userId;
 
     private String field;
@@ -73,27 +70,27 @@ public class DietWordCloudSearch extends PageSearch implements BindUser, FullEnd
         this.name = name;
     }
 
-    public DietType getDietType() {
+    public Integer getDietType() {
         return dietType;
     }
 
-    public void setDietType(DietType dietType) {
+    public void setDietType(Integer dietType) {
         this.dietType = dietType;
     }
 
-    public DietSource getDietSource() {
+    public Integer getDietSource() {
         return dietSource;
     }
 
-    public void setDietSource(DietSource dietSource) {
+    public void setDietSource(Integer dietSource) {
         this.dietSource = dietSource;
     }
 
-    public FoodType getFoodType() {
+    public Integer getFoodType() {
         return foodType;
     }
 
-    public void setFoodType(FoodType foodType) {
+    public void setFoodType(Integer foodType) {
         this.foodType = foodType;
     }
 

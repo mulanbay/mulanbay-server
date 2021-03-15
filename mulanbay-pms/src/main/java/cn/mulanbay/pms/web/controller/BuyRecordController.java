@@ -39,7 +39,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -897,31 +896,50 @@ public class BuyRecordController extends BaseController {
      */
     @RequestMapping(value = "/statWordCloud", method = RequestMethod.GET)
     public ResultBean statWordCloud(@Valid BuyRecordWordCloudSearch sf) {
-        try {
-            List<BuyRecord> list = buyRecordService.getBuyRecordWordCloudStat(sf);
-            List<String> words = new ArrayList<>();
-            Integer num = systemConfigHandler.getIntegerConfig("nlp.buyRecord.goodsName.ekNum");
-            for (BuyRecord d : list) {
-                if ("goodsName".equals(sf.getField())) {
-                    //先分词
-                    List<String> keywords = ahaNLPHandler.extractKeyword(d.getGoodsName(),num);
-                    words.addAll(keywords);
-                } else if ("shopName".equals(sf.getField())&&StringUtil.isNotEmpty(d.getShopName())) {
-                    words.add(d.getShopName());
-                } else if ("brand".equals(sf.getField())&&StringUtil.isNotEmpty(d.getBrand())) {
-                    words.add(d.getBrand());
+        List<BuyRecord> list = buyRecordService.getBuyRecordWordCloudStat(sf);
+        List<String> words = new ArrayList<>();
+        Map<String,Long> statData = new HashMap<>();
+        Integer num = systemConfigHandler.getIntegerConfig("nlp.buyRecord.goodsName.ekNum");
+        for (BuyRecord d : list) {
+            if ("goodsName".equals(sf.getField())) {
+                //先分词
+                List<String> keywords = ahaNLPHandler.extractKeyword(d.getGoodsName(),num);
+                for(String s : keywords){
+                    Long n = statData.get(s);
+                    if(n==null){
+                        statData.put(s,1L);
+                    }else{
+                        statData.put(s,n+1);
+                    }
+                }
+            } else if ("shopName".equals(sf.getField())&&StringUtil.isNotEmpty(d.getShopName())) {
+                String s = d.getShopName();
+                Long n = statData.get(s);
+                if(n==null){
+                    statData.put(s,1L);
+                }else{
+                    statData.put(s,n+1);
+                }
+            } else if ("brand".equals(sf.getField())&&StringUtil.isNotEmpty(d.getBrand())) {
+                String s = d.getBrand();
+                Long n = statData.get(s);
+                if(n==null){
+                    statData.put(s,1L);
+                }else{
+                    statData.put(s,n+1);
                 }
             }
-
-            String picPath = ahaNLPHandler.wordCloud(words, sf.getPicWidth(), sf.getPicHeight());
-            String imgBase64 = FileUtil.encodeImageTOBase64(picPath);
-            //删除
-            new File(picPath).delete();
-            return callback(imgBase64);
-        } catch (Exception e) {
-            logger.error("生成词云异常", e);
-            return callbackErrorInfo("生成词云异常:" + e.getMessage());
         }
+
+        ChartWorldCloudData chartData = new ChartWorldCloudData();
+        for(String key : statData.keySet()){
+            ChartWorldCloudDetailData dd = new ChartWorldCloudDetailData();
+            dd.setName(key);
+            dd.setValue(statData.get(key));
+            chartData.addData(dd);
+        }
+        chartData.setTitle("消费词云");
+        return callback(chartData);
     }
 
 

@@ -9,10 +9,7 @@ import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.LifeExperience;
 import cn.mulanbay.pms.persistent.domain.LifeExperienceDetail;
-import cn.mulanbay.pms.persistent.dto.LifeExperienceCostStat;
-import cn.mulanbay.pms.persistent.dto.LifeExperienceDateStat;
-import cn.mulanbay.pms.persistent.dto.LifeExperienceMapStat;
-import cn.mulanbay.pms.persistent.dto.TransferMapStat;
+import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.ExperienceType;
 import cn.mulanbay.pms.persistent.enums.LifeExperienceCostStatType;
@@ -38,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.io.File;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.*;
@@ -279,6 +275,7 @@ public class LifeExperienceController extends BaseController {
         List<MapData> dataList = new ArrayList<>();
         List<LifeExperienceMapStat> newList = convertMapStatLocation(list);
         int maxValue = 0;
+        int minValue = 0;
         for (LifeExperienceMapStat dd : newList) {
             if (statType == LifeExperienceMapStatSearch.StatType.COUNT) {
                 int count = dd.getTotalCount().intValue();
@@ -287,12 +284,18 @@ public class LifeExperienceController extends BaseController {
                 if (count > maxValue) {
                     maxValue = count;
                 }
+                if (count < minValue) {
+                    minValue = count;
+                }
             }else if (statType == LifeExperienceMapStatSearch.StatType.DAYS) {
                 int days = dd.getTotalDays().intValue();
                 MapData c = new MapData(dd.getName(), days );
                 dataList.add(c);
                 if (days > maxValue) {
                     maxValue = days;
+                }
+                if (days < minValue) {
+                    minValue = days;
                 }
             } else {
                 double money = dd.getTotalCost()==null ? 0:dd.getTotalCost().doubleValue();
@@ -301,10 +304,14 @@ public class LifeExperienceController extends BaseController {
                 if (money > maxValue) {
                     maxValue = (int) money;
                 }
+                if (money < minValue) {
+                    minValue = (int) money;
+                }
             }
         }
         chartData.setDataList(dataList);
         chartData.setMax(maxValue);
+        chartData.setMin(minValue);
         chartData.setGeoCoordMapData(getGeoMapData(userId, startDate, endDate));
         return chartData;
 
@@ -687,24 +694,16 @@ public class LifeExperienceController extends BaseController {
      */
     @RequestMapping(value = "/wordCloudStat", method = RequestMethod.GET)
     public ResultBean wordCloudStat(@Valid LifeExperienceWouldCloudStatSearch sf) {
-        try {
-            List<String> tagsList = lifeExperienceService.getTagsList(sf);
-            List<String> wordList = new ArrayList<>();
-            for (String s : tagsList) {
-                String[] ss = s.split(",");
-                for (String w : ss) {
-                    wordList.add(w);
-                }
-            }
-            String picPath = ahaNLPHandler.wordCloud(wordList, sf.getPicWidth(), sf.getPicHeight());
-            String imgBase64 = FileUtil.encodeImageTOBase64(picPath);
-            //删除
-            new File(picPath).delete();
-            return callback(imgBase64);
-        } catch (Exception e) {
-            logger.error("生成词云异常", e);
-            return callbackErrorInfo("生成词云异常:" + e.getMessage());
+        List<NameCountDto> tagsList = lifeExperienceService.statTags(sf);
+        ChartWorldCloudData chartData = new ChartWorldCloudData();
+        for(NameCountDto s : tagsList){
+            ChartWorldCloudDetailData dd = new ChartWorldCloudDetailData();
+            dd.setName(s.getName());
+            dd.setValue(s.getCounts().longValue());
+            chartData.addData(dd);
         }
+        chartData.setTitle("人生经历词云统计");
+        return callback(chartData);
     }
 
 }

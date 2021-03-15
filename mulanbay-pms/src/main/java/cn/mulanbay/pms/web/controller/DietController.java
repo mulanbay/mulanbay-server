@@ -1,7 +1,9 @@
 package cn.mulanbay.pms.web.controller;
 
 import cn.mulanbay.common.exception.ApplicationException;
-import cn.mulanbay.common.util.*;
+import cn.mulanbay.common.util.BeanCopy;
+import cn.mulanbay.common.util.DateUtil;
+import cn.mulanbay.common.util.PriceUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
@@ -35,7 +37,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.io.File;
 import java.math.BigDecimal;
 import java.util.*;
 
@@ -721,37 +722,16 @@ public class DietController extends BaseController {
      */
     @RequestMapping(value = "/statWordCloud", method = RequestMethod.GET)
     public ResultBean statWordCloud(@Valid DietWordCloudSearch sf) {
-        try {
-            PageRequest pr = sf.buildQuery();
-            pr.setBeanClass(beanClass);
-            pr.setPage(0);
-            List<Diet> list = baseService.getBeanList(pr);
-            List<String> wordList = new ArrayList<>();
-            for (Diet d : list) {
-                String doc = null;
-                if ("foods".equals(sf.getField())) {
-                    doc = d.getFoods();
-                } else if ("tags".equals(sf.getField())) {
-                    doc = d.getTags();
-                } else if ("shop".equals(sf.getField())) {
-                    doc = d.getShop();
-                }
-                if (StringUtil.isNotEmpty(doc)) {
-                    String[] ss = doc.split(",");
-                    for (String w : ss) {
-                        wordList.add(w);
-                    }
-                }
-            }
-            String picPath = ahaNLPHandler.wordCloud(wordList, sf.getPicWidth(), sf.getPicHeight());
-            String imgBase64 = FileUtil.encodeImageTOBase64(picPath);
-            //删除
-            new File(picPath).delete();
-            return callback(imgBase64);
-        } catch (Exception e) {
-            logger.error("生成词云异常", e);
-            return callbackErrorInfo("生成词云异常:" + e.getMessage());
+        List<NameCountDto> tagsList = dietService.statTags(sf);
+        ChartWorldCloudData chartData = new ChartWorldCloudData();
+        for(NameCountDto s : tagsList){
+            ChartWorldCloudDetailData dd = new ChartWorldCloudDetailData();
+            dd.setName(s.getName());
+            dd.setValue(s.getCounts().longValue());
+            chartData.addData(dd);
         }
+        chartData.setTitle("饮食词云统计");
+        return callback(chartData);
     }
 
     /**

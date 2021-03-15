@@ -3,11 +3,11 @@ package cn.mulanbay.pms.web.controller;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
-import cn.mulanbay.common.util.FileUtil;
 import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
+import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.UserOperationConfig;
 import cn.mulanbay.pms.persistent.service.UserBehaviorService;
@@ -20,6 +20,8 @@ import cn.mulanbay.pms.web.bean.request.userbehavior.UserOperationConfigSearch;
 import cn.mulanbay.pms.web.bean.request.userbehavior.UserOperationStatSearch;
 import cn.mulanbay.pms.web.bean.request.userbehavior.UserOperationWordCloudSearch;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
+import cn.mulanbay.pms.web.bean.response.chart.ChartWorldCloudData;
+import cn.mulanbay.pms.web.bean.response.chart.ChartWorldCloudDetailData;
 import cn.mulanbay.pms.web.bean.response.user.UserOperationResponse;
 import cn.mulanbay.pms.web.bean.response.user.UserOperationVo;
 import cn.mulanbay.web.bean.response.ResultBean;
@@ -32,7 +34,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.io.File;
 import java.text.MessageFormat;
 import java.util.*;
 
@@ -55,6 +56,9 @@ public class UserOperationConfigController extends BaseController {
 
     @Autowired
     AhaNLPHandler ahaNLPHandler;
+
+    @Autowired
+    SystemConfigHandler systemConfigHandler;
 
     /**
      * 获取用户操作习惯树
@@ -222,25 +226,34 @@ public class UserOperationConfigController extends BaseController {
      */
     @RequestMapping(value = "/wordCloudStat", method = RequestMethod.GET)
     public ResultBean wordCloudStat(@Valid UserOperationWordCloudSearch sf) {
-        try {
-            //不分页
-            sf.setPage(0);
-            List<UserOperationResponse> res = this.getUserOperationList(sf);
-            StringBuffer sb = new StringBuffer();
-            for (UserOperationResponse uo : res) {
-                List<UserOperationVo> operations = uo.getOperations();
-                for (UserOperationVo op : operations) {
-                    sb.append(op.getTitle());
+        //不分页
+        sf.setPage(0);
+        List<UserOperationResponse> res = this.getUserOperationList(sf);
+        Map<String,Long> statData = new HashMap<>();
+        Integer num = systemConfigHandler.getIntegerConfig("nlp.userOperation.ekNum");
+        for (UserOperationResponse uo : res) {
+            List<UserOperationVo> operations = uo.getOperations();
+            for (UserOperationVo op : operations) {
+                //先分词
+                List<String> list = ahaNLPHandler.extractKeyword(op.getTitle(),num);
+                for(String s : list){
+                    Long n = statData.get(s);
+                    if(n==null){
+                        statData.put(s,1L);
+                    }else{
+                        statData.put(s,n+1);
+                    }
                 }
             }
-            String picPath = ahaNLPHandler.wordCloud(sb.toString(), sf.getPicWidth(), sf.getPicHeight());
-            String imgBase64 = FileUtil.encodeImageTOBase64(picPath);
-            //删除
-            new File(picPath).delete();
-            return callback(imgBase64);
-        } catch (Exception e) {
-            logger.error("生成词云异常", e);
-            return callbackErrorInfo("生成词云异常:" + e.getMessage());
         }
+        ChartWorldCloudData chartData = new ChartWorldCloudData();
+        for(String key : statData.keySet()){
+            ChartWorldCloudDetailData dd = new ChartWorldCloudDetailData();
+            dd.setName(key);
+            dd.setValue(statData.get(key));
+            chartData.addData(dd);
+        }
+        chartData.setTitle("我的词云");
+        return callback(chartData);
     }
 }

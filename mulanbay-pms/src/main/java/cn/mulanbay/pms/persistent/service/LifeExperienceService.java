@@ -8,10 +8,7 @@ import cn.mulanbay.persistent.common.BaseException;
 import cn.mulanbay.persistent.dao.BaseHibernateDao;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.pms.persistent.domain.*;
-import cn.mulanbay.pms.persistent.dto.LifeExperienceCostStat;
-import cn.mulanbay.pms.persistent.dto.LifeExperienceDateStat;
-import cn.mulanbay.pms.persistent.dto.LifeExperienceMapStat;
-import cn.mulanbay.pms.persistent.dto.TransferMapStat;
+import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.ExperienceType;
 import cn.mulanbay.pms.persistent.enums.MapType;
@@ -589,14 +586,22 @@ public class LifeExperienceService extends BaseHibernateDao {
      * @param sf
      * @return
      */
-    public List<String> getTagsList(LifeExperienceWouldCloudStatSearch sf) {
+    public List<NameCountDto> statTags(LifeExperienceWouldCloudStatSearch sf) {
         try {
             PageRequest pr = sf.buildQuery();
             StringBuffer sb = new StringBuffer();
-            sb.append("select tags from life_experience");
+            sb.append("select name,count(0) as counts from ");
+            sb.append("( ");
+            sb.append("select (substring_index(substring_index(a.col,',',b.help_topic_id+1),',',-1)) as name ");
+            sb.append("from ");
+            sb.append(" (select tags as col from life_experience  ");
             sb.append(pr.getParameterString());
-            sb.append(" and tags is not null ");
-            List<String> list = this.getEntityListNoPageSQL(sb.toString(), pr.getParameterValue());
+            sb.append("    ) as a ");
+            sb.append("join ");
+            sb.append("mysql.help_topic as b ");
+            sb.append("on b.help_topic_id < (char_length(a.col) - char_length(replace(a.col,',',''))+1) ");
+            sb.append(") as res group by name ");
+            List<NameCountDto> list = this.getEntityListWithClassSQL(sb.toString(),0,0,NameCountDto.class, pr.getParameterValue());
             return list;
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
