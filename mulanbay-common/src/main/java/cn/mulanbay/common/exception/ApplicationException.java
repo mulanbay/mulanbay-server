@@ -1,7 +1,5 @@
 package cn.mulanbay.common.exception;
 
-import java.io.PrintStream;
-
 /**
  * 系统自定义的运行期异常
  * 统一定义了错误代码

@@ -3,7 +3,6 @@ package cn.mulanbay.common.thread;
 import cn.mulanbay.common.config.OSType;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.exception.MessageNotify;
-import cn.mulanbay.common.http.HttpUtil;
 import cn.mulanbay.common.util.CommandUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

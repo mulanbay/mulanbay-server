@@ -29,6 +29,10 @@ public class LifeExperienceDetailSearch extends PageSearch implements BindUser, 
     @Query(fieldName = "mapStat", op = Parameter.Operator.EQ)
     private Boolean mapStat;
 
+    //国际线路
+    @Query(fieldName = "international", op = Parameter.Operator.EQ)
+    private Boolean international;
+
     public Long getLifeExperienceId() {
         return lifeExperienceId;
     }
@@ -79,5 +83,13 @@ public class LifeExperienceDetailSearch extends PageSearch implements BindUser, 
 
     public void setMapStat(Boolean mapStat) {
         this.mapStat = mapStat;
+    }
+
+    public Boolean getInternational() {
+        return international;
+    }
+
+    public void setInternational(Boolean international) {
+        this.international = international;
     }
 }

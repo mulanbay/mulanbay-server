@@ -10,7 +10,6 @@ import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.*;
 import cn.mulanbay.pms.persistent.util.MysqlUtil;
 import cn.mulanbay.pms.web.bean.request.diet.*;
-import cn.mulanbay.pms.web.bean.request.life.LifeExperienceWouldCloudStatSearch;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

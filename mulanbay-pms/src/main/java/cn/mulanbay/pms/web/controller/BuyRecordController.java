@@ -898,33 +898,33 @@ public class BuyRecordController extends BaseController {
     public ResultBean statWordCloud(@Valid BuyRecordWordCloudSearch sf) {
         List<BuyRecord> list = buyRecordService.getBuyRecordWordCloudStat(sf);
         List<String> words = new ArrayList<>();
-        Map<String,Long> statData = new HashMap<>();
+        Map<String,Integer> statData = new HashMap<>();
         Integer num = systemConfigHandler.getIntegerConfig("nlp.buyRecord.goodsName.ekNum");
         for (BuyRecord d : list) {
             if ("goodsName".equals(sf.getField())) {
                 //先分词
                 List<String> keywords = ahaNLPHandler.extractKeyword(d.getGoodsName(),num);
                 for(String s : keywords){
-                    Long n = statData.get(s);
+                    Integer n = statData.get(s);
                     if(n==null){
-                        statData.put(s,1L);
+                        statData.put(s,1);
                     }else{
                         statData.put(s,n+1);
                     }
                 }
             } else if ("shopName".equals(sf.getField())&&StringUtil.isNotEmpty(d.getShopName())) {
                 String s = d.getShopName();
-                Long n = statData.get(s);
+                Integer n = statData.get(s);
                 if(n==null){
-                    statData.put(s,1L);
+                    statData.put(s,1);
                 }else{
                     statData.put(s,n+1);
                 }
             } else if ("brand".equals(sf.getField())&&StringUtil.isNotEmpty(d.getBrand())) {
                 String s = d.getBrand();
-                Long n = statData.get(s);
+                Integer n = statData.get(s);
                 if(n==null){
-                    statData.put(s,1L);
+                    statData.put(s,1);
                 }else{
                     statData.put(s,n+1);
                 }
@@ -933,7 +933,7 @@ public class BuyRecordController extends BaseController {
 
         ChartWorldCloudData chartData = new ChartWorldCloudData();
         for(String key : statData.keySet()){
-            ChartWorldCloudDetailData dd = new ChartWorldCloudDetailData();
+            ChartNameValueVo dd = new ChartNameValueVo();
             dd.setName(key);
             dd.setValue(statData.get(key));
             chartData.addData(dd);

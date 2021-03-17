@@ -4,23 +4,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @Description:
+ * @Description:词云
  * @Author: fenghong
  * @Create : 2021/3/14
  */
 public class ChartWorldCloudData extends BaseChartData{
 
-    List<ChartWorldCloudDetailData> dataList = new ArrayList<>();
+    List<ChartNameValueVo> dataList = new ArrayList<>();
 
-    public void addData(ChartWorldCloudDetailData data){
+    public void addData(ChartNameValueVo data){
         this.dataList.add(data);
     }
 
-    public List<ChartWorldCloudDetailData> getDataList() {
+    public List<ChartNameValueVo> getDataList() {
         return dataList;
     }
 
-    public void setDataList(List<ChartWorldCloudDetailData> dataList) {
+    public void setDataList(List<ChartNameValueVo> dataList) {
         this.dataList = dataList;
     }
 

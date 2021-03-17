@@ -11,9 +11,7 @@ public enum MapType {
     CHINA(0, "中国"),
     WORLD(1, "世界"),
     LOCATION(2, "地点(中国)"),
-    TRANSFER_DOUBLE(3, "双向地图"),
-    TRANSFER_SINGLE(4, "单向向地图"),
-    LC_NAME(5, "经历(中国)");
+    LC_NAME(3, "经历(中国)");
 
     private int value;
 

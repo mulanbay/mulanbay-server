@@ -725,9 +725,9 @@ public class DietController extends BaseController {
         List<NameCountDto> tagsList = dietService.statTags(sf);
         ChartWorldCloudData chartData = new ChartWorldCloudData();
         for(NameCountDto s : tagsList){
-            ChartWorldCloudDetailData dd = new ChartWorldCloudDetailData();
+            ChartNameValueVo dd = new ChartNameValueVo();
             dd.setName(s.getName());
-            dd.setValue(s.getCounts().longValue());
+            dd.setValue(s.getCounts().intValue());
             chartData.addData(dd);
         }
         chartData.setTitle("饮食词云统计");

@@ -120,30 +120,6 @@ public class LifeExperienceService extends BaseHibernateDao {
      * @param sf
      * @return
      */
-    public List<TransferMapStat> statTransMap(LifeExperienceMapStatSearch sf) {
-        try {
-            PageRequest pr = sf.buildQuery();
-            StringBuffer sb = new StringBuffer();
-            sb.append("select start_city as startCity,arrive_city as arriveCity,count(0) as totalCount");
-            sb.append(" from life_experience_detail ");
-            sb.append(pr.getParameterString());
-            sb.append(" and map_stat=1  and international=0 ");
-            sb.append(" group by startCity,arriveCity ");
-            List<TransferMapStat> list = this.getEntityListWithClassSQL(sb.toString(),
-                    pr.getPage(), pr.getPageSize(), TransferMapStat.class, pr.getParameterValue());
-            return list;
-        } catch (BaseException e) {
-            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
-                    "人生经历地图统计", e);
-        }
-    }
-
-    /**
-     * 获取迁徙地图的数据
-     *
-     * @param sf
-     * @return
-     */
     public List<WorldTransferMapStat> statWorldTransMap(LifeExperienceMapStatSearch sf) {
         try {
             PageRequest pr = sf.buildQuery();

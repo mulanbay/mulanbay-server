@@ -1,7 +1,6 @@
 package cn.mulanbay.schedule.impl;
 
 import cn.mulanbay.schedule.NotifiableProcessor;
-import cn.mulanbay.schedule.handler.ScheduleHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

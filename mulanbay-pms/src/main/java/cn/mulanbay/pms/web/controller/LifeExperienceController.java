@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.*;
 
 /**
@@ -522,22 +521,11 @@ public class LifeExperienceController extends BaseController {
         Sort s = new Sort("occurDate", Sort.ASC);
         pr.addSort(s);
         pr.setBeanClass(LifeExperienceDetail.class);
+        pr.setPage(PageRequest.NO_PAGE);
         List<LifeExperienceDetail> detailList = baseService.getBeanList(pr);
-        TransferMapDoubleStatChartData response = new TransferMapDoubleStatChartData();
-        response.setTitle(lifeExperience.getName() + "线路");
-        response.setSubTitle("");
-        response.setGeoCoordMapData(getGeoMapData(lifeExperience.getUserId(), lifeExperience.getStartDate(), lifeExperience.getEndDate()));
-        List<TransferMapStat> list = new ArrayList<>();
-        BigInteger totalCount = BigInteger.valueOf(1L);
-        for (LifeExperienceDetail detail : detailList) {
-            TransferMapStat tms = new TransferMapStat();
-            tms.setStartCity(detail.getStartCity());
-            tms.setArriveCity(detail.getArriveCity());
-            tms.setTotalCount(totalCount);
-            list.add(tms);
-        }
-        response.setStatData(list);
-        return callback(response);
+        ChinaTransferChartData chartData = this.createChinaTransferMap(detailList);
+        chartData.setTitle("["+lifeExperience.getName()+"]地图");
+        return callback(chartData);
     }
 
     /**
@@ -549,15 +537,66 @@ public class LifeExperienceController extends BaseController {
     @RequestMapping(value = "/transferMapStat")
     public ResultBean transferMapStat(LifeExperienceMapStatSearch sf) {
         switch (sf.getMapType()){
-            case TRANSFER_DOUBLE:
-                return callback(this.createDoubleTransferMap(sf));
-            case TRANSFER_SINGLE:
-                return callback(this.createSingleTransferMap(sf));
+            case CHINA:
+                return callback(this.createChinaTransferMap(sf));
             case WORLD:
                 return callback(this.createWorldTransferMap(sf));
             default:
                 return callbackErrorInfo("无效的地图类型");
         }
+    }
+
+    /**
+     * 中国迁移地图数据封装
+     *
+     * @param sf
+     * @return
+     */
+    private ChinaTransferChartData createChinaTransferMap(LifeExperienceMapStatSearch sf) {
+        LifeExperienceDetailSearch ds = new LifeExperienceDetailSearch();
+        ds.setStartDate(sf.getStartDate());
+        ds.setEndDate(sf.getEndDate());
+        ds.setUserId(sf.getUserId());
+        ds.setInternational(false);
+        PageRequest pr = ds.buildQuery();
+        pr.setPage(PageRequest.NO_PAGE);
+        pr.setBeanClass(LifeExperienceDetail.class);
+        Sort s = new Sort("occurDate", Sort.ASC);
+        pr.addSort(s);
+        List<LifeExperienceDetail> list = baseService.getBeanList(pr);
+        ChinaTransferChartData chartData = this.createChinaTransferMap(list);
+        return chartData;
+    }
+
+    /**
+     * 中国迁移地图数据封装
+     *
+     * @param list
+     * @return
+     */
+    private ChinaTransferChartData createChinaTransferMap(List<LifeExperienceDetail> list) {
+        Map<String, double[]> geoMap = new HashMap<>();
+        ChinaTransferChartData chartData = new ChinaTransferChartData();
+        chartData.setTitle("人生经历线路统计");
+        LifeExperienceDetailSearch ds = new LifeExperienceDetailSearch();
+        for(LifeExperienceDetail dd : list){
+            String year = DateUtil.getFormatDate(dd.getOccurDate(),"yyyy");
+            chartData.addDetail(year,dd.getStartCity(),dd.getArriveCity(),1);
+            double[] scGeo = geoMap.get(dd.getStartCity());
+            if(scGeo==null){
+                String[] geo = dd.getScLocation().split(",");
+                geoMap.put(dd.getStartCity(), new double[]{Double.valueOf(geo[0]), Double.valueOf(geo[1])});
+            }
+            double[] acGeo = geoMap.get(dd.getArriveCity());
+            if(acGeo==null){
+                String[] geo = dd.getAcLocation().split(",");
+                geoMap.put(dd.getArriveCity(), new double[]{Double.valueOf(geo[0]), Double.valueOf(geo[1])});
+            }
+        }
+
+        chartData.setGeoCoordMapData(geoMap);
+        chartData.setUnit("次");
+        return chartData;
     }
 
     /**
@@ -592,54 +631,6 @@ public class LifeExperienceController extends BaseController {
         chartData.setGeoCoordMapData(geoMap);
         chartData.setUnit("次");
         return chartData;
-    }
-
-    /**
-     * 单向迁移地图数据封装
-     *
-     * @param sf
-     * @return
-     */
-    private TransferMapStatChartData createDoubleTransferMap(LifeExperienceMapStatSearch sf) {
-        TransferMapDoubleStatChartData response = new TransferMapDoubleStatChartData();
-        response.setTitle("人生经历线路统计");
-        response.setSubTitle(this.getDateTitle(sf));
-        response.setGeoCoordMapData(getGeoMapData(sf.getUserId(), sf.getStartDate(), sf.getEndDate()));
-        //sf.setUserId(this.getCurrentUserId());
-        List<TransferMapStat> list = lifeExperienceService.statTransMap(sf);
-        response.setStatData(list);
-        return response;
-    }
-
-    /**
-     * 单向迁移地图数据封装
-     *
-     * @param sf
-     * @return
-     */
-    private TransferMapStatChartData createSingleTransferMap(LifeExperienceMapStatSearch sf) {
-        TransferMapSingleStatChartData response = new TransferMapSingleStatChartData();
-        response.setTitle("人生经历线路统计");
-        response.setSubTitle(this.getDateTitle(sf));
-        response.setGeoCoordMapData(getGeoMapData(sf.getUserId(), sf.getStartDate(), sf.getEndDate()));
-        //sf.setUserId(this.getCurrentUserId());
-        List<String> startCitys = null;
-        if (StringUtil.isEmpty(sf.getStartCity())) {
-            //获取全部
-            startCitys = lifeExperienceService.getStartCityList(sf.getUserId());
-        } else {
-            startCitys = new ArrayList<>();
-            startCitys.add(sf.getStartCity());
-        }
-        response.setLegendData(startCitys);
-        for (String s : startCitys) {
-            List<TransferMapStat> list = lifeExperienceService.statTransMap(sf);
-            if (StringUtil.isNotEmpty(list)) {
-                sf.setStartCity(s);
-                response.getStatData().add(list);
-            }
-        }
-        return response;
     }
 
     /**
@@ -784,9 +775,9 @@ public class LifeExperienceController extends BaseController {
         List<NameCountDto> tagsList = lifeExperienceService.statTags(sf);
         ChartWorldCloudData chartData = new ChartWorldCloudData();
         for(NameCountDto s : tagsList){
-            ChartWorldCloudDetailData dd = new ChartWorldCloudDetailData();
+            ChartNameValueVo dd = new ChartNameValueVo();
             dd.setName(s.getName());
-            dd.setValue(s.getCounts().longValue());
+            dd.setValue(s.getCounts().intValue());
             chartData.addData(dd);
         }
         chartData.setTitle("人生经历词云统计");

@@ -20,8 +20,8 @@ import cn.mulanbay.pms.web.bean.request.userbehavior.UserOperationConfigSearch;
 import cn.mulanbay.pms.web.bean.request.userbehavior.UserOperationStatSearch;
 import cn.mulanbay.pms.web.bean.request.userbehavior.UserOperationWordCloudSearch;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
+import cn.mulanbay.pms.web.bean.response.chart.ChartNameValueVo;
 import cn.mulanbay.pms.web.bean.response.chart.ChartWorldCloudData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartWorldCloudDetailData;
 import cn.mulanbay.pms.web.bean.response.user.UserOperationResponse;
 import cn.mulanbay.pms.web.bean.response.user.UserOperationVo;
 import cn.mulanbay.web.bean.response.ResultBean;
@@ -229,7 +229,7 @@ public class UserOperationConfigController extends BaseController {
         //不分页
         sf.setPage(0);
         List<UserOperationResponse> res = this.getUserOperationList(sf);
-        Map<String,Long> statData = new HashMap<>();
+        Map<String,Integer> statData = new HashMap<>();
         Integer num = systemConfigHandler.getIntegerConfig("nlp.userOperation.ekNum");
         for (UserOperationResponse uo : res) {
             List<UserOperationVo> operations = uo.getOperations();
@@ -237,9 +237,9 @@ public class UserOperationConfigController extends BaseController {
                 //先分词
                 List<String> list = ahaNLPHandler.extractKeyword(op.getTitle(),num);
                 for(String s : list){
-                    Long n = statData.get(s);
+                    Integer n = statData.get(s);
                     if(n==null){
-                        statData.put(s,1L);
+                        statData.put(s,1);
                     }else{
                         statData.put(s,n+1);
                     }
@@ -248,9 +248,9 @@ public class UserOperationConfigController extends BaseController {
         }
         ChartWorldCloudData chartData = new ChartWorldCloudData();
         for(String key : statData.keySet()){
-            ChartWorldCloudDetailData dd = new ChartWorldCloudDetailData();
+            ChartNameValueVo dd = new ChartNameValueVo();
             dd.setName(key);
-            dd.setValue(statData.get(key));
+            dd.setValue(statData.get(key).intValue());
             chartData.addData(dd);
         }
         chartData.setTitle("我的词云");
