@@ -674,4 +674,42 @@ public class LifeExperienceService extends BaseHibernateDao {
                     "获取标签列表异常", e);
         }
     }
+
+    /**
+     * 统计城市列表
+     *
+     * @param userId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public List<String> statCityList(Long userId, Date startDate, Date endDate) {
+        try {
+            List args = new ArrayList();
+            args.add(userId);
+
+
+            StringBuffer sb = new StringBuffer();
+            int index=0;
+            sb.append("select start_city,arrive_city from life_experience_detail where user_id=?"+(index++));
+            if(startDate!=null){
+                sb.append(" and occur_date>=?"+(index++));
+                args.add(startDate);
+            }
+            if(endDate!=null){
+                sb.append(" and occur_date<=?"+(index++));
+                args.add(endDate);
+            }
+            List<Object[]> list = this.getEntityListNoPageSQL(sb.toString(),args.toArray());
+            List<String> res = new ArrayList<>();
+            for(Object[] oo:list){
+                res.add(oo[0].toString());
+                res.add(oo[1].toString());
+            }
+            return res;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "统计城市列表异常", e);
+        }
+    }
 }

@@ -897,7 +897,6 @@ public class BuyRecordController extends BaseController {
     @RequestMapping(value = "/statWordCloud", method = RequestMethod.GET)
     public ResultBean statWordCloud(@Valid BuyRecordWordCloudSearch sf) {
         List<BuyRecord> list = buyRecordService.getBuyRecordWordCloudStat(sf);
-        List<String> words = new ArrayList<>();
         Map<String,Integer> statData = new HashMap<>();
         Integer num = systemConfigHandler.getIntegerConfig("nlp.buyRecord.goodsName.ekNum");
         for (BuyRecord d : list) {

@@ -21,6 +21,8 @@ public class LifeExperienceWouldCloudStatSearch extends QueryBuilder implements 
     @Query(fieldName = "type", op = Parameter.Operator.IN)
     private String types;
 
+    private String field;
+
     private int picWidth = 500;
 
     private int picHeight = 400;
@@ -57,6 +59,14 @@ public class LifeExperienceWouldCloudStatSearch extends QueryBuilder implements 
 
     public void setTypes(String types) {
         this.types = types;
+    }
+
+    public String getField() {
+        return field;
+    }
+
+    public void setField(String field) {
+        this.field = field;
     }
 
     public int getPicWidth() {

@@ -746,7 +746,7 @@ public class BuyRecordService extends BaseHibernateDao {
             PageRequest pr = sf.buildQuery();
             pr.setPage(PageRequest.NO_PAGE);
             StringBuffer sb = new StringBuffer();
-            sb.append("select new BuyRecord(goodsName,skuInfo ,shopName,brand) from BuyRecord ");
+            sb.append("select new BuyRecord(goodsName, shopName, brand, skuInfo) from BuyRecord ");
             sb.append(pr.getParameterString());
             List<BuyRecord> list = this.getEntityListNoPageHQL(sb.toString(), pr.getParameterValue());
             return list;

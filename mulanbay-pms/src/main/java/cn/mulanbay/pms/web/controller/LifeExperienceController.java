@@ -772,6 +772,23 @@ public class LifeExperienceController extends BaseController {
      */
     @RequestMapping(value = "/wordCloudStat", method = RequestMethod.GET)
     public ResultBean wordCloudStat(@Valid LifeExperienceWouldCloudStatSearch sf) {
+        switch (sf.getField()){
+            case "tags" :
+                return callback(this.createTagsWordCloud(sf));
+            case "city" :
+                return callback(this.createCityWordCloud(sf));
+            default:
+                return callbackErrorInfo("暂时不支持该分组");
+        }
+
+    }
+
+    /**
+     * 以标签统计
+     * @param sf
+     * @return
+     */
+    private ChartWorldCloudData createTagsWordCloud(LifeExperienceWouldCloudStatSearch sf){
         List<NameCountDto> tagsList = lifeExperienceService.statTags(sf);
         ChartWorldCloudData chartData = new ChartWorldCloudData();
         for(NameCountDto s : tagsList){
@@ -780,8 +797,34 @@ public class LifeExperienceController extends BaseController {
             dd.setValue(s.getCounts().intValue());
             chartData.addData(dd);
         }
-        chartData.setTitle("人生经历词云统计");
-        return callback(chartData);
+        chartData.setTitle("人生经历标签词云统计");
+        return chartData;
     }
 
+    /**
+     * 以城市分组
+     * @param sf
+     * @return
+     */
+    private ChartWorldCloudData createCityWordCloud(LifeExperienceWouldCloudStatSearch sf){
+        List<String> cityList = lifeExperienceService.statCityList(sf.getUserId(),sf.getStartDate(),sf.getEndDate());
+        Map<String,Integer> statData = new HashMap<>();
+        for(String s : cityList){
+            Integer n = statData.get(s);
+            if(n==null){
+                statData.put(s,1);
+            }else{
+                statData.put(s,n+1);
+            }
+        }
+        ChartWorldCloudData chartData = new ChartWorldCloudData();
+        for(String key : statData.keySet()){
+            ChartNameValueVo dd = new ChartNameValueVo();
+            dd.setName(key);
+            dd.setValue(statData.get(key));
+            chartData.addData(dd);
+        }
+        chartData.setTitle("人生经历城市词云统计");
+        return chartData;
+    }
 }
