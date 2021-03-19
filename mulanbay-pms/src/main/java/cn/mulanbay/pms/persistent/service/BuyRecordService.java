@@ -741,14 +741,15 @@ public class BuyRecordService extends BaseHibernateDao {
      * @param sf
      * @return
      */
-    public List<BuyRecord> getBuyRecordWordCloudStat(BuyRecordWordCloudSearch sf) {
+    public List<String> getBuyRecordWordCloudStat(BuyRecordWordCloudSearch sf) {
         try {
             PageRequest pr = sf.buildQuery();
             pr.setPage(PageRequest.NO_PAGE);
             StringBuffer sb = new StringBuffer();
-            sb.append("select new BuyRecord(goodsName, shopName, brand, skuInfo) from BuyRecord ");
+            sb.append("select "+sf.getField()+" from BuyRecord ");
             sb.append(pr.getParameterString());
-            List<BuyRecord> list = this.getEntityListNoPageHQL(sb.toString(), pr.getParameterValue());
+            sb.append(" and "+sf.getField()+" is not null ");
+            List<String> list = this.getEntityListNoPageHQL(sb.toString(), pr.getParameterValue());
             return list;
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,

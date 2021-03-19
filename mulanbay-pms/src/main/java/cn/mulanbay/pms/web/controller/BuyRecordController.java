@@ -896,13 +896,14 @@ public class BuyRecordController extends BaseController {
      */
     @RequestMapping(value = "/statWordCloud", method = RequestMethod.GET)
     public ResultBean statWordCloud(@Valid BuyRecordWordCloudSearch sf) {
-        List<BuyRecord> list = buyRecordService.getBuyRecordWordCloudStat(sf);
+        List<String> list = buyRecordService.getBuyRecordWordCloudStat(sf);
         Map<String,Integer> statData = new HashMap<>();
         Integer num = systemConfigHandler.getIntegerConfig("nlp.buyRecord.goodsName.ekNum");
-        for (BuyRecord d : list) {
-            if ("goodsName".equals(sf.getField())) {
+        String field = sf.getField();
+        for (String d : list) {
+            if("goodsName".equals(field)||"skuInfo".equals(field)){
                 //先分词
-                List<String> keywords = ahaNLPHandler.extractKeyword(d.getGoodsName(),num);
+                List<String> keywords = ahaNLPHandler.extractKeyword(d,num);
                 for(String s : keywords){
                     Integer n = statData.get(s);
                     if(n==null){
@@ -911,23 +912,25 @@ public class BuyRecordController extends BaseController {
                         statData.put(s,n+1);
                     }
                 }
-            } else if ("shopName".equals(sf.getField())&&StringUtil.isNotEmpty(d.getShopName())) {
-                String s = d.getShopName();
-                Integer n = statData.get(s);
+            }else if("shopName".equals(field)||"brand".equals(field)){
+                Integer n = statData.get(d);
                 if(n==null){
-                    statData.put(s,1);
+                    statData.put(d,1);
                 }else{
-                    statData.put(s,n+1);
+                    statData.put(d,n+1);
                 }
-            } else if ("brand".equals(sf.getField())&&StringUtil.isNotEmpty(d.getBrand())) {
-                String s = d.getBrand();
-                Integer n = statData.get(s);
-                if(n==null){
-                    statData.put(s,1);
-                }else{
-                    statData.put(s,n+1);
+            }else if("keywords".equals(field)){
+                String[] keywords = d.split(",");
+                for(String s : keywords){
+                    Integer n = statData.get(s);
+                    if(n==null){
+                        statData.put(s,1);
+                    }else{
+                        statData.put(s,n+1);
+                    }
                 }
             }
+
         }
 
         ChartWorldCloudData chartData = new ChartWorldCloudData();

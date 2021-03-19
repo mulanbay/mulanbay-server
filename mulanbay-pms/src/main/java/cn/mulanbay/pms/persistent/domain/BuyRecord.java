@@ -73,9 +73,11 @@ public class BuyRecord implements java.io.Serializable {
     public BuyRecord() {
     }
 
-    public BuyRecord(String goodsName, String shopName, String brand, String skuInfo) {
+
+    public BuyRecord(String goodsName, String shopName, String keywords, String brand, String skuInfo) {
         this.goodsName = goodsName;
         this.shopName = shopName;
+        this.keywords = keywords;
         this.brand = brand;
         this.skuInfo = skuInfo;
     }
