@@ -68,6 +68,39 @@ mulanbay-server
 
 ```
 
+### 项目运行与部署
+``` lua
+# Step 1：初始化数据库
+
+1. 下载源代码
+2. 在mysql中创建数据库，比如:mulanbay_db
+3. 初始化数据库,执行mulanbay-pms工程docs目录下的sql文件：mulanbay_init.sql
+
+# Step 2：修改配置文件
+
+1. 在mulanbay-pms/src/main/resources/目录下新建application-local.properties文件，设置本地配置。
+   其中Mysql数据库配置、Redis配置为必须配置，如果需要使用微信公众号的消息发送功能，需要配置.
+2. 智能客服、词云、商品重复度、饮食重复度等需要用到AHANLP的自然语言处理，需要配置hanlp.properties，ahanlp.properties
+  * hanlp.properties文件中需要设置根路径，如：root=D:/ws/AHANLP_base-1.3
+  * ahanlp.properties文件中需要设置里面的各个配置项
+  * 词云模块需要使用Python的wordcloud插件，安装命令：
+    pip3 install wordcloud -i https://pypi.tuna.tsinghua.edu.cn/simple
+  * NLP所需要的ahanlpData文件包，请到百度网盘下载：（链接：https://pan.baidu.com/s/101vlabHehB71va82G9U-9A 提取码：yaqm ）
+    或者直接去原作者项目处下载：https://github.com/jsksxs360/AHANLP
+
+# Step 3：打包&运行
+
+1. 开发环境
+  运行mulanbay-pms子工程下的cn.mulanbay.pms.web.Application
+
+2. 正式环境
+  * 进入到mulanbay-server目录，运行mvn clean package
+  * 运行mulanbay-pms/target下的mulanbay-pms-3.0.jar文件
+
+后端项目默认的端口是：8080
+
+```
+
 ### 软件要求
 | 软件                    | 版本          |
 | ---------------------- | ------------- |
