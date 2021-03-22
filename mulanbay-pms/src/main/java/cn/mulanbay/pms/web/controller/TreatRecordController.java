@@ -225,7 +225,7 @@ public class TreatRecordController extends BaseController {
             sf.setGroupTags(NullType.NOT_NULL);
         }
         List<TreatRecordAnalyseStat> list = treatService.treatRecordAnalyseStat(sf);
-        if (sf.getChartType() == ChartType.BAR) {
+        if (sf.getChartType() == ChartType.MIX_LINE_BAR) {
             return callback(this.createAnalyseStatBarData(list, sf));
         } else {
             return callback(this.createAnalyseStatPieData(list, sf));
@@ -278,19 +278,22 @@ public class TreatRecordController extends BaseController {
     private ChartData createAnalyseStatBarData(List<TreatRecordAnalyseStat> list, TreatRecordAnalyseStatSearch sf) {
         ChartData chartData = new ChartData();
         chartData.setTitle("看病记录分析");
-        chartData.setLegendData(new String[]{"次数", "费用"});
+        chartData.setLegendData(new String[]{"费用","次数"});
         ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
+        yData1.setName("费用");
         ChartYData yData2 = new ChartYData();
-        yData2.setName("费用");
+        yData2.setName("次数");
+        //混合图形下使用
+        chartData.addYAxis("费用","元");
+        chartData.addYAxis("次数","次");
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
         for (TreatRecordAnalyseStat bean : list) {
             chartData.getXdata().add(bean.getName());
-            yData1.getData().add(bean.getTotalCount());
-            yData2.getData().add(bean.getTotalFee());
+            yData1.getData().add(bean.getTotalFee());
+            yData2.getData().add(bean.getTotalCount());
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount()));
             totalValue = totalValue.add(bean.getTotalFee());
         }
