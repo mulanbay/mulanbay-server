@@ -12,7 +12,6 @@ import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.handler.qa.QaHandler;
 import cn.mulanbay.pms.handler.qa.bean.QaResult;
 import cn.mulanbay.pms.persistent.domain.QaConfig;
-import cn.mulanbay.pms.persistent.enums.QaMessageSource;
 import cn.mulanbay.pms.persistent.enums.QaResultType;
 import cn.mulanbay.pms.util.TreeBeanUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
@@ -60,44 +59,37 @@ public class QaConfigController extends BaseController {
     public ResultBean getQaConfigTree(CommonTreeSearch cts) {
 
         try {
-            QaConfigSearch sf = new QaConfigSearch();
-            sf.setPage(PageRequest.NO_PAGE);
-            PageResult<QaConfig> pr = this.getResult(sf);
-            List<TreeBean> list = getQaTree(pr.getBeanList());
-            return callback(TreeBeanUtil.addRoot(list, cts.getNeedRoot()));
+            List<QaConfig> qaList = baseService.getBeanList(beanClass,0,0,null);
+            //构建
+            CopyOnWriteArrayList<QaConfig> newList = new CopyOnWriteArrayList();
+            newList.addAll(qaList);
+            List<TreeBean> tbList = this.getTreeChildren(newList,-1L);
+            return callback(TreeBeanUtil.addRoot(tbList, cts.getNeedRoot()));
         } catch (Exception e) {
             throw new ApplicationException(ErrorCode.SYSTEM_ERROR, "获取QA配置树异常",
                     e);
         }
     }
 
-    private List<TreeBean> getQaTree(List<QaConfig> qaList) {
-        List<TreeBean> list = new ArrayList<TreeBean>();
-        for (QaConfig qc : qaList) {
-            if (qc.getParentId() == null) {
-                TreeBean tb = new TreeBean();
-                tb.setId(qc.getId().toString());
-                tb.setText(qc.getName());
-                setTreeChildren(tb, qaList);
-                list.add(tb);
-            }
-        }
-        return list;
-    }
-
-    private void setTreeChildren(TreeBean tb, List<QaConfig> qaList) {
-        for (QaConfig qc : qaList) {
-            Long parentId = qc.getParentId();
-            if (parentId == null) {
-                continue;
-            } else if (tb.getId().equals(parentId.toString())) {
+    /**
+     * 构建
+     * @param list
+     * @return
+     */
+    private List<TreeBean> getTreeChildren(CopyOnWriteArrayList<QaConfig> list, long pid) {
+        List<TreeBean> children = new LinkedList<>();
+        for (QaConfig qa : list) {
+            long p = qa.getParentId()==null ? -1L:qa.getParentId().longValue();
+            if(p==pid){
                 TreeBean child = new TreeBean();
-                child.setId(qc.getId().toString());
-                child.setText(qc.getName());
-                tb.addChild(child);
-                setTreeChildren(child, qaList);
+                child.setId(qa.getId().toString());
+                child.setText(qa.getName());
+                children.add(child);
+                list.remove(qa);
+                child.setChildren(this.getTreeChildren(list,qa.getId()));
             }
         }
+        return children;
     }
 
     /**
@@ -113,6 +105,8 @@ public class QaConfigController extends BaseController {
     private PageResult<QaConfig> getResult(QaConfigSearch sf) {
         PageRequest pr = sf.buildQuery();
         pr.setBeanClass(beanClass);
+        Sort sort1 = new Sort("parentId", Sort.ASC);
+        pr.addSort(sort1);
         Sort sort = new Sort("orderIndex", Sort.ASC);
         pr.addSort(sort);
         PageResult<QaConfig> qr = baseService.getBeanResult(pr);
@@ -212,7 +206,7 @@ public class QaConfigController extends BaseController {
     @RequestMapping(value = "/textReq", method = RequestMethod.POST)
     public ResultBean textReq(@RequestBody QaTestReq tr) {
         String sessionId = request.getRequestedSessionId();
-        QaResult cr = qaHandler.handleMessage(QaMessageSource.WECHAT, tr.getContent(), tr.getUserId(), sessionId);
+        QaResult cr = qaHandler.handleMessage(tr.getSource(), tr.getContent(), tr.getUserId(), sessionId);
         return callback(cr);
     }
 
@@ -234,18 +228,12 @@ public class QaConfigController extends BaseController {
      */
     @RequestMapping(value = "/stat", method = RequestMethod.GET)
     public ResultBean ration() {
-        QaConfigSearch sf = new QaConfigSearch();
-        PageRequest pr = sf.buildQuery();
-        pr.setBeanClass(beanClass);
-        pr.setPage(0);
-        Sort sort = new Sort("parentId", Sort.ASC);
-        pr.addSort(sort);
-        List<QaConfig> list = baseService.getBeanList(pr);
-        ChartRelationDetailData root = new ChartRelationDetailData(0,"根");
+        List<QaConfig> qaList = baseService.getBeanList(beanClass,0,0,null);
+        ChartRelationDetailData root = new ChartRelationDetailData(-1,"根");
         //构建
         CopyOnWriteArrayList<QaConfig> newList = new CopyOnWriteArrayList();
-        newList.addAll(list);
-        List<ChartRelationDetailData> children = this.getChildren(newList,0L);
+        newList.addAll(qaList);
+        List<ChartRelationDetailData> children = this.getChildren(newList,-1L);
         root.setChildren(children);
         ChartRelationData chartData = new ChartRelationData();
         chartData.addData(root);
@@ -260,7 +248,7 @@ public class QaConfigController extends BaseController {
     private List<ChartRelationDetailData> getChildren(CopyOnWriteArrayList<QaConfig> list, long pid) {
         List<ChartRelationDetailData> children = new LinkedList<>();
         for (QaConfig qa : list) {
-            long p = qa.getParentId()==null ? 0L:qa.getParentId().longValue();
+            long p = qa.getParentId()==null ? -1:qa.getParentId().longValue();
             if(p==pid){
                 ChartRelationDetailData child = new ChartRelationDetailData(qa.getId(),qa.getName());
                 children.add(child);

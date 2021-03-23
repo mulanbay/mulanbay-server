@@ -400,7 +400,7 @@ public class BaseService extends BaseHibernateDao {
 			hql += pr.getParameterString();
 			Object[] values = pr.getParameterValue();
 			if (pr.getPage() > 0&&pr.isNeedTotal()) {
-				long maxRow = this.getCount("select count(*) " + hql,
+				long maxRow = this.getCount("select count(0) " + hql,
 						values);
 				qb.setMaxRow(maxRow);
 			}

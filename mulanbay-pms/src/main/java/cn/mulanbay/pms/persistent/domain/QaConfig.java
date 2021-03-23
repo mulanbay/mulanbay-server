@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.persistent.domain;
 
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
+import cn.mulanbay.pms.persistent.enums.FunctionDataType;
 import cn.mulanbay.pms.persistent.enums.QaResultType;
 
 import javax.persistence.*;
@@ -213,5 +214,14 @@ public class QaConfig implements Serializable {
     @Transient
     public String getResultTypeName() {
         return resultType == null ? null : resultType.getName();
+    }
+
+    /**
+     * 树形菜单使用
+     * @return
+     */
+    @Transient
+    public Boolean getHasChildren() {
+        return true;
     }
 }

@@ -8,14 +8,17 @@ import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.persistent.service.BaseService;
 import cn.mulanbay.pms.common.CacheKey;
 import cn.mulanbay.pms.handler.CacheHandler;
+import cn.mulanbay.pms.handler.ThreadPoolHandler;
 import cn.mulanbay.pms.handler.qa.bean.QaConfigBean;
 import cn.mulanbay.pms.handler.qa.bean.QaMatch;
 import cn.mulanbay.pms.handler.qa.bean.QaMatchDetail;
 import cn.mulanbay.pms.handler.qa.bean.QaResult;
 import cn.mulanbay.pms.persistent.domain.QaConfig;
+import cn.mulanbay.pms.persistent.domain.UserQa;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.QaMessageSource;
 import cn.mulanbay.pms.persistent.enums.QaResultType;
+import cn.mulanbay.pms.thread.UserQaThread;
 import cn.mulanbay.pms.web.bean.request.system.QaConfigSearch;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +54,9 @@ public class QaHandler extends BaseHandler {
 
     @Autowired
     CacheHandler cacheHandler;
+
+    @Autowired
+    ThreadPoolHandler threadPoolHandler;
 
     @Autowired
     List<AbstractQaMessageHandler> messageHandlerList;
@@ -121,14 +127,13 @@ public class QaHandler extends BaseHandler {
             match.setSource(source);
             match.setUserId(userId);
             match.setSessionId(sessionId);
-            logMatch(match);
+            //logMatch(match);
             //获取第一个匹配
             QaConfig qa = match.getFirstMathQa();
             if (qa == null) {
                 //切换到默认的Qa
                 qa = getQaConfig(0L);
             }
-            //logger.debug("NLPMatch:"+qa.getId()+","+qa.getName());
             //跳转到指定QA
             if (qa.getReferQaId() != null) {
                 //切换到具体的处理类
@@ -136,8 +141,9 @@ public class QaHandler extends BaseHandler {
             }
             cr.setQa(qa);
             QaResultType resultType = qa.getResultType();
+            String replyContent=null;
             if (resultType == QaResultType.DIRECT) {
-                cr.setRes(qa.getReplayContent());
+                replyContent = qa.getReplayContent();
             } else {
                 //找到具体的处理类（以第一级匹配到的QA）
                 AbstractQaMessageHandler messageHandler = this.getMessageHandler(qa.getHandleCode());
@@ -145,15 +151,44 @@ public class QaHandler extends BaseHandler {
                     //采用默认处理器
                     messageHandler = this.getMessageHandler("default");
                 }
-                String reply = messageHandler.handleMatch(match);
-                cr.setRes(reply);
-                return cr;
+                replyContent = messageHandler.handleMatch(match);
             }
+            cr.setRes(replyContent);
+            this.addUserQa(source,content,userId,sessionId,match,qa.getId(),replyContent);
+            return cr;
         } catch (Exception e) {
-            logger.error("处理请求异常", e);
-            cr.setRes("处理请求异常");
+            String replyContent="处理请求异常";
+            logger.error(replyContent, e);
+            this.addUserQa(source,content,userId,sessionId,null,null,replyContent);
+            cr.setRes(replyContent);
         }
         return cr;
+    }
+
+    /**
+     * 新增日志
+     * @param source
+     * @param content
+     * @param userId
+     * @param sessionId
+     * @param match
+     * @param replyQaId
+     * @param replyContent
+     */
+    private void addUserQa(QaMessageSource source, String content, Long userId, String sessionId,QaMatch match,Long replyQaId,String replyContent){
+        try {
+            UserQa userQa = new UserQa();
+            userQa.setSource(source);
+            userQa.setRequestContent(content);
+            userQa.setUserId(userId);
+            userQa.setSessionId(sessionId);
+            userQa.setReplyQaId(replyQaId);
+            userQa.setReplyContent(replyContent);
+            UserQaThread thread = new UserQaThread(userQa,match);
+            threadPoolHandler.pushThread(thread);
+        } catch (Exception e) {
+            logger.error("添加用户Qa日志线程异常",e);
+        }
     }
 
     /**

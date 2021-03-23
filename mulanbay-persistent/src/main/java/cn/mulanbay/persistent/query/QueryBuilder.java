@@ -78,6 +78,7 @@ public class QueryBuilder {
                     Parameter p = new Parameter(fieldName, op);
                     p.setValue(v);
                     p.setCrossType(q.crossType());
+                    p.setSupportNullValue(q.supportNullValue());
                     pr.addParameter(p);
                 }
             }

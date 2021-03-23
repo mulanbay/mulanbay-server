@@ -69,6 +69,8 @@ public class Parameter {
 	 */
 	private int paras=1;
 
+	private boolean supportNullValue;
+
 	public int getParas() {
 		return paras;
 	}
@@ -99,6 +101,14 @@ public class Parameter {
 
 	public void setCrossType(CrossType crossType) {
 		this.crossType = crossType;
+	}
+
+	public boolean isSupportNullValue() {
+		return supportNullValue;
+	}
+
+	public void setSupportNullValue(boolean supportNullValue) {
+		this.supportNullValue = supportNullValue;
 	}
 
 	public Parameter(String fieldName, Operator condition) {
@@ -227,6 +237,10 @@ public class Parameter {
 			value = NULL_VALUE;
 			paras=0;
 			return s;
+		}else if(condition==Operator.EQ&&supportNullValue&&value==null){
+			//不能加入变量绑定中
+			value = NULL_VALUE;
+			return " is null ";
 		}else{
 			paras=1;
 			return condition.getSymbol()+" ?"+(index++)+" ";

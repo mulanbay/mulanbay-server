@@ -159,7 +159,7 @@ public class SystemFunctionController extends BaseController {
     @RequestMapping(value = "/getList", method = RequestMethod.GET)
     public ResultBean getList(SystemFunctionSearch sf) {
         PageRequest pr = sf.buildQuery();
-        pr.setPage(0);
+        pr.setPage(PageRequest.NO_PAGE);
         pr.setBeanClass(beanClass);
         Sort sort1 = new Sort("parent.id", Sort.ASC);
         pr.addSort(sort1);

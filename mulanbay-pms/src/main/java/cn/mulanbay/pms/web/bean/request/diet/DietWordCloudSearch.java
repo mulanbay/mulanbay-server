@@ -5,11 +5,12 @@ import cn.mulanbay.common.aop.FullEndDateTime;
 import cn.mulanbay.persistent.query.CrossType;
 import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Query;
+import cn.mulanbay.persistent.query.QueryBuilder;
 import cn.mulanbay.web.bean.request.PageSearch;
 
 import java.util.Date;
 
-public class DietWordCloudSearch extends PageSearch implements BindUser, FullEndDateTime {
+public class DietWordCloudSearch extends QueryBuilder implements BindUser, FullEndDateTime {
 
     @Query(fieldName = "occur_time", op = Parameter.Operator.GTE)
     private Date startDate;

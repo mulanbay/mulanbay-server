@@ -14,6 +14,9 @@ public class QaConfigSearch extends PageSearch {
     @Query(fieldName = "status", op = Parameter.Operator.EQ)
     private CommonStatus status;
 
+    @Query(fieldName = "parentId", op = Parameter.Operator.EQ,supportNullValue=true)
+    private Long parentId;
+
     public String getName() {
         return name;
     }
@@ -28,5 +31,14 @@ public class QaConfigSearch extends PageSearch {
 
     public void setStatus(CommonStatus status) {
         this.status = status;
+    }
+
+    @Query(fieldName = "parentId", op = Parameter.Operator.EQ)
+    public Long getParentId() {
+        return parentId;
+    }
+
+    public void setParentId(Long parentId) {
+        this.parentId = parentId;
     }
 }
