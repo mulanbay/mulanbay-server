@@ -21,8 +21,8 @@ import cn.mulanbay.pms.web.bean.request.system.QaConfigFormRequest;
 import cn.mulanbay.pms.web.bean.request.system.QaConfigSearch;
 import cn.mulanbay.pms.web.bean.request.system.QaTestReq;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
-import cn.mulanbay.pms.web.bean.response.chart.ChartRelationData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartRelationDetailData;
+import cn.mulanbay.pms.web.bean.response.chart.ChartGraphData;
+import cn.mulanbay.pms.web.bean.response.system.QaConfigVo;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,10 +31,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -228,35 +225,43 @@ public class QaConfigController extends BaseController {
      */
     @RequestMapping(value = "/stat", method = RequestMethod.GET)
     public ResultBean ration() {
-        List<QaConfig> qaList = baseService.getBeanList(beanClass,0,0,null);
-        ChartRelationDetailData root = new ChartRelationDetailData(-1,"根");
-        //构建
-        CopyOnWriteArrayList<QaConfig> newList = new CopyOnWriteArrayList();
-        newList.addAll(qaList);
-        List<ChartRelationDetailData> children = this.getChildren(newList,-1L);
-        root.setChildren(children);
-        ChartRelationData chartData = new ChartRelationData();
-        chartData.addData(root);
-        return callback(chartData);
-    }
-
-    /**
-     * 构建
-     * @param list
-     * @return
-     */
-    private List<ChartRelationDetailData> getChildren(CopyOnWriteArrayList<QaConfig> list, long pid) {
-        List<ChartRelationDetailData> children = new LinkedList<>();
-        for (QaConfig qa : list) {
-            long p = qa.getParentId()==null ? -1:qa.getParentId().longValue();
-            if(p==pid){
-                ChartRelationDetailData child = new ChartRelationDetailData(qa.getId(),qa.getName());
-                children.add(child);
-                list.remove(qa);
-                child.setChildren(this.getChildren(list,qa.getId()));
+        Sort sort = new Sort("parentId", Sort.ASC);
+        List<QaConfig> qaList = baseService.getBeanList(beanClass,0,0,sort);
+        int n = qaList.size();
+        Map<String, QaConfigVo> qcMap = new HashMap<>();
+        for(int i=0;i<n;i++){
+            QaConfig qc = qaList.get(i);
+            QaConfigVo vo = new QaConfigVo();
+            vo.setId(qc.getId());
+            vo.setName(qc.getName());
+            qcMap.put(qc.getId().toString(),vo);
+        }
+        ChartGraphData chartGraphData = new ChartGraphData();
+        chartGraphData.addItem("根",0);
+        for(int i=0;i<n;i++){
+            QaConfig qc = qaList.get(i);
+            Long parentId  = qc.getParentId();
+            int level = 1;
+            if(parentId==null){
+                chartGraphData.addLink("根",qc.getName());
+            }else{
+                QaConfigVo parent = qcMap.get(parentId.toString());
+                chartGraphData.addLink(parent.getName(),qc.getName());
+                int pl = parent.getLevel();
+                //增加级数
+                QaConfigVo my = qcMap.get(qc.getId().toString());
+                level = parent.getLevel()+1;
+                my.setLevel(level);
+                qcMap.put(qc.getId().toString(),my);
+            }
+            chartGraphData.addItem(qc.getName(),level);
+            if(qc.getReferQaId()!=null){
+                QaConfigVo refer = qcMap.get(qc.getReferQaId().toString());
+                chartGraphData.addLink(qc.getName(),refer.getName(),"跳转",1);
             }
         }
-        return children;
+        chartGraphData.setTitle("QA拓扑结构");
+        return callback(chartGraphData);
     }
 
 }
