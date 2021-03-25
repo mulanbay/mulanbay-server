@@ -268,7 +268,7 @@
             <artifactId>ahanlp</artifactId>
             <scope>system</scope>
             <version>1.2</version>
-            <systemPath>${basedir}/src/main/lib/ahanlp-1.2-beta2.jar</systemPath>
+            <systemPath>${basedir}/src/main/lib/ahanlp-1.2.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
