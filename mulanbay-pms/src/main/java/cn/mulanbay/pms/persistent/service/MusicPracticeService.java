@@ -196,7 +196,7 @@ public class MusicPracticeService extends BaseHibernateDao {
             sb.append(MysqlUtil.dateTypeMethod("practice_start_time", sf.getYgroupType()) + " as yValue ");
             sb.append(" from music_practice ");
             sb.append(pr.getParameterString());
-            sb.append(" and music_instrument_id = ?" + pr.getFirstIndex());
+            sb.append(" and music_instrument_id = ?" + pr.getNextIndex());
             List args = pr.getParameterValueList();
             args.add(musicInstrumentId);
             List<MusicPracticeCompareStat> list = this.getEntityListWithClassSQL(sb.toString(), pr.getPage(), pr.getPageSize(), MusicPracticeCompareStat.class, args.toArray());

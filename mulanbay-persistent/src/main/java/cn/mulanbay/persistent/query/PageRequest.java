@@ -75,10 +75,18 @@ public class PageRequest {
 		this.dataRule = dataRule;
 	}
 
-	public int getFirstIndex() {
+	/**
+	 * 获取下一个的索引值，一般是给外层额外的SQL拼接语句
+	 * @return
+	 */
+	public int getNextIndex() {
 		return firstIndex;
 	}
 
+	/**
+	 * 设置参数绑定的第一个索引值，默认0
+	 * @param firstIndex
+	 */
 	public void setFirstIndex(int firstIndex) {
 		this.firstIndex = firstIndex;
 	}

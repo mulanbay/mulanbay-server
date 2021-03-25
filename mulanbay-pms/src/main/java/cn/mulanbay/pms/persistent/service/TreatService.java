@@ -270,7 +270,7 @@ public class TreatService extends BaseHibernateDao {
             }
             sb.append(",last_days,occur_date from body_abnormal_record ");
             sb.append(pr.getParameterString());
-            int lastIndex = pr.getFirstIndex();
+            int lastIndex = pr.getNextIndex();
             if (!StringUtil.isEmpty(sf.getName())) {
                 //添加检索
                 sb.append(" and " + groupField.getField() + " like ?" + lastIndex);
@@ -404,7 +404,7 @@ public class TreatService extends BaseHibernateDao {
             statSql.append(paraString);
             TreatRecordAnalyseDetailStat stat = (TreatRecordAnalyseDetailStat) this.getEntityListWithClassSQLForOne(statSql.toString(), TreatRecordAnalyseDetailStat.class, args.toArray());
             //获取详情
-            int lastIndex = pr.getFirstIndex();
+            int lastIndex = pr.getNextIndex();
             if (stat.getMinTreatDate() != null) {
                 String hql = "from TreatRecord " + paraString + " and treatDate = ?" + lastIndex;
                 List newArgs = new ArrayList();
@@ -765,12 +765,12 @@ public class TreatService extends BaseHibernateDao {
             List paras = pr.getParameterValueList();
             if(mergeSameName){
                 TreatDrug tt = (TreatDrug) this.getEntityById(TreatDrug.class,treatDrugId);
-                int nextIndex = pr.getFirstIndex();
+                int nextIndex = pr.getNextIndex();
                 sb.append(" and treatDrug.id in (select id from TreatDrug where name=?"+(nextIndex++)+" and userId=?"+(nextIndex++)+")");
                 paras.add(tt.getName());
                 paras.add(sf.getUserId());
             }else{
-                sb.append(" and treatDrug.id=?"+pr.getFirstIndex());
+                sb.append(" and treatDrug.id=?"+pr.getNextIndex());
                 paras.add(treatDrugId);
             }
             List<TreatDrugDetail> list = this.getEntityListNoPageHQL(sb.toString(), paras.toArray());

@@ -183,7 +183,7 @@ public class SportExerciseService extends BaseHibernateDao {
             sb.append("(select " + method + "(" + sf.getGroupType().getField() + ") from SportExercise ");
             PageRequest pr2 = sf.buildQuery();
             //下标需要重新计算
-            pr2.setFirstIndex(pr.getFirstIndex());
+            pr2.setFirstIndex(pr.getNextIndex());
             sb.append(pr2.getParameterString() + ") ");
             List newArgs = new ArrayList();
             //需要两遍，因为前面的条件在父查询、子查询中都有包含
