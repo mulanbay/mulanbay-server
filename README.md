@@ -224,8 +224,8 @@ mulanbay-server
 
 <table>
     <tr>
-        <td><img src="https://images.gitee.com/uploads/images/2020/1116/154050_af85354a_352331.jpeg "Screenshot_20201015_150843_com.tencent.mm.jpg"/></td>
-        <td><img src="https://images.gitee.com/uploads/images/2020/1116/154104_31b29a07_352331.jpeg "Screenshot_20201015_150911_com.tencent.mm.jpg"/></td>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/154050_af85354a_352331.jpeg"/></td>
+        <td><img src="https://images.gitee.com/uploads/images/2020/1116/154104_31b29a07_352331.jpeg"/></td>
     </tr>
 
 </table>
