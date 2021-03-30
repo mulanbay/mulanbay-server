@@ -79,6 +79,33 @@ public class OperationLogController extends BaseController {
 
 
     /**
+     * 获取流水列表数据
+     *
+     * @return
+     */
+    @RequestMapping(value = "/flow", method = RequestMethod.GET)
+    public ResultBean flow(@Valid OperationLogFlowSearch sf) {
+        PageRequest pr = sf.buildQuery();
+        pr.setPageSize(sf.getPageSize());
+        pr.setBeanClass(beanClass);
+        Sort s = new Sort("occurEndTime", Sort.ASC);
+        pr.addSort(s);
+        PageResult<OperationLog> qr = baseService.getBeanResult(pr);
+        return callbackDataGrid(qr);
+    }
+
+    /**
+     * 获取详情
+     *
+     * @return
+     */
+    @RequestMapping(value = "/get", method = RequestMethod.GET)
+    public ResultBean get(Long id) {
+        OperationLog br = baseService.getObject(beanClass, id);
+        return callback(br);
+    }
+
+    /**
      * 获取请求参数
      *
      * @return
