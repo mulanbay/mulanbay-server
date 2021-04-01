@@ -75,6 +75,9 @@ public class AccountFlowController extends BaseController {
         chartData.setTitle("[" + account.getName() + "]账户变化分析");
         chartData.setUnit("元");
         chartData.setLegendData(new String[]{"账户余额", "账户变化值"});
+        //混合图形下使用
+        chartData.addYAxis("余额","元");
+        chartData.addYAxis("变化值","元");
         ChartYData yData = new ChartYData("账户余额");
         ChartYData y2Data = new ChartYData("账户变化值");
         for (AccountFlow bean : qr.getBeanList()) {
@@ -100,6 +103,9 @@ public class AccountFlowController extends BaseController {
         chartData.setTitle("总账户变化分析(有效账户)");
         chartData.setUnit("元");
         chartData.setLegendData(new String[]{"账户总额", "账户变化值"});
+        //混合图形下使用
+        chartData.addYAxis("余额","元");
+        chartData.addYAxis("变化值","元");
         ChartYData yData = new ChartYData("账户总额");
         ChartYData y2Data = new ChartYData("账户变化值");
         int n = list.size();
