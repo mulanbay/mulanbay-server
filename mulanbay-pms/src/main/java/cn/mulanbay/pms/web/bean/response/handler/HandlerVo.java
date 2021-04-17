@@ -2,11 +2,21 @@ package cn.mulanbay.pms.web.bean.response.handler;
 
 public class HandlerVo {
 
+    private Long id;
+
     private String handlerName;
 
     private String className;
 
     private int hash;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public String getHandlerName() {
         return handlerName;

@@ -57,6 +57,7 @@ public class HandlerController extends BaseController {
         for (int i = fromIndex; i < toIndex; i++) {
             HandlerVo tb = new HandlerVo();
             BaseHandler bh = handlerList.get(i);
+            tb.setId(i+1L);
             tb.setHandlerName(bh.getHandlerName());
             tb.setClassName(bh.getClass().getName());
             tb.setHash(bh.hashCode());
