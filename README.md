@@ -78,7 +78,7 @@ mulanbay-server
 
 # Step 2：修改配置文件
 
-1. 在mulanbay-pms/src/main/resources/目录下新建application-local.properties文件，设置本地配置。
+1. 在mulanbay-pms/src/main/resources/目录下复制application-local-template.properties文件并重命名为application-local.properties，设置本地配置。
    其中Mysql数据库配置、Redis配置为必须配置，如果需要使用微信公众号的消息发送功能，需要配置.
 2. 智能客服、词云、商品重复度、饮食重复度等需要用到AHANLP的自然语言处理，需要配置hanlp.properties，ahanlp.properties
   * hanlp.properties文件中需要设置根路径，如：root=D:/ws/AHANLP_base-1.3
