@@ -8,7 +8,11 @@ package cn.mulanbay.pms.persistent.enums;
  */
 public enum TreatType {
 
-    TREAT(0, "看病"), BUY_DRUG(1, "买药"), CHECK_UP(2, "体检"), TEETH(3, "看牙");
+    TREAT(0, "看病"),
+    BUY_DRUG(1, "买药"),
+    CHECK_UP(2, "体检"),
+    TEETH(3, "看牙"),
+    VACCINATE(3, "疫苗接种");
 
     private int value;
 
