@@ -10,6 +10,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
+import org.hibernate.query.internal.NativeQueryImpl;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -460,7 +461,9 @@ public class BaseHibernateDao {
 				logger.debug("参数：page=" + pageNum + ",pageSize=" + pageSize
 						+ ",变量=" + JsonUtil.beanToJson(objects));
 			}
-			Query query = getSession().createQuery(hql).setResultTransformer(Transformers.aliasToBean(clazz));
+			Query query = getSession().createQuery(hql);
+			query.unwrap(NativeQueryImpl.class)
+					.setResultTransformer(Transformers.aliasToBean(clazz));
 			int i = 0;
 			for (Object object : objects) {
 				query.setParameter(i++, object);
@@ -504,7 +507,8 @@ public class BaseHibernateDao {
 				logger.debug("参数：page=" + pageNum + ",pageSize=" + pageSize
 						+ ",变量=" + JsonUtil.beanToJson(objects));
 			}
-			NativeQuery query = (NativeQuery) getSession().createSQLQuery(sql)
+			NativeQuery query =  getSession().createSQLQuery(sql);
+			query.unwrap(NativeQueryImpl.class)
 					.setResultTransformer(Transformers.aliasToBean(clazz));
 			int i = 0;
 			for (Object object : objects) {
