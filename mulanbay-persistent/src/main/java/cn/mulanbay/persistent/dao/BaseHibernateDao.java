@@ -11,6 +11,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.query.NativeQuery;
 import org.hibernate.query.Query;
 import org.hibernate.query.internal.NativeQueryImpl;
+import org.hibernate.query.internal.QueryImpl;
 import org.hibernate.transform.Transformers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -462,7 +463,7 @@ public class BaseHibernateDao {
 						+ ",变量=" + JsonUtil.beanToJson(objects));
 			}
 			Query query = getSession().createQuery(hql);
-			query.unwrap(NativeQueryImpl.class)
+			query.unwrap(QueryImpl.class)
 					.setResultTransformer(Transformers.aliasToBean(clazz));
 			int i = 0;
 			for (Object object : objects) {
