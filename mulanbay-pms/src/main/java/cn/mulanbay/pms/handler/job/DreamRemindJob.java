@@ -1,9 +1,9 @@
 package cn.mulanbay.pms.handler.job;
 
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.util.BeanFactoryUtil;
 import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.pms.common.PmsErrorCode;
-import cn.mulanbay.pms.handler.CacheHandler;
 import cn.mulanbay.pms.handler.PmsNotifyHandler;
 import cn.mulanbay.pms.handler.RewardPointsHandler;
 import cn.mulanbay.pms.persistent.domain.Dream;

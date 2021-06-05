@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.handler;
 
 import cn.mulanbay.business.handler.BaseHandler;
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.pms.common.CacheKey;
 import cn.mulanbay.pms.persistent.domain.UserNotify;
 import cn.mulanbay.pms.persistent.dto.NotifyResult;

@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.handler;
 
 import cn.mulanbay.business.handler.BaseHandler;
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.Md5Util;

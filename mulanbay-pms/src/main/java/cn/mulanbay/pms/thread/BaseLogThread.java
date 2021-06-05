@@ -3,7 +3,7 @@ package cn.mulanbay.pms.thread;
 import cn.mulanbay.common.util.BeanFactoryUtil;
 import cn.mulanbay.common.util.MapUtil;
 import cn.mulanbay.common.util.StringUtil;
-import cn.mulanbay.persistent.service.BaseService;
+import cn.mulanbay.pms.handler.CommonCacheHandler;
 import cn.mulanbay.pms.handler.PmsNotifyHandler;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.persistent.domain.ErrorCodeDefine;
@@ -99,8 +99,8 @@ public class BaseLogThread extends Thread {
             return "";
         } else {
             String s = "操作人UserId:" + userId;
-            BaseService baseService = BeanFactoryUtil.getBean(BaseService.class);
-            User user = baseService.getObject(User.class, userId);
+            CommonCacheHandler commonCacheHandler = BeanFactoryUtil.getBean(CommonCacheHandler.class);
+            User user = commonCacheHandler.getBean(User.class, userId);
             if (user != null) {
                 s += ",手机号:" + user.getPhone();
             }

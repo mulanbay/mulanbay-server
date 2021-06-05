@@ -1,6 +1,6 @@
 package cn.mulanbay.pms.web.controller;
 
-import cn.mulanbay.pms.handler.CacheHandler;
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.pms.web.bean.response.chart.ChartPieData;
 import cn.mulanbay.pms.web.bean.response.chart.ChartPieSerieData;
 import cn.mulanbay.pms.web.bean.response.chart.ChartPieSerieDetailData;

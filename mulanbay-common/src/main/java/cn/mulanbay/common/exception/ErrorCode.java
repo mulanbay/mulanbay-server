@@ -42,14 +42,17 @@ public class ErrorCode {
 
 	public final static int FUNCTION_UN_DEFINE =15;
 
+	public final static int BEAN_GET_CACHE_ERROR =16;
+
+	public final static int GET_CACHE_ERROR =17;
 	// 系统级别 end
 
 	public final static int FIELD_VALIDATE_ERROR = 10000;
 
 	public final static int USER_NOTFOUND = 10001;
-	
+
 	public final static int USER_IS_STOP = 10002;
-	
+
 	public final static int USER_EXPIRED = 10003;
 
 	public final static int USER_NOT_LOGIN = 10004;
@@ -57,17 +60,17 @@ public class ErrorCode {
 	public final static int USER_TOKEN_ERROR = 10005;
 
 	public final static int USER_PASSWORD_ERROR = 10006;
-	
+
 	public final static int USER_NOT_AUTH = 10007;
-	
+
 	public final static int EXECUTE_CMD_ERROR = 10008;
-	
+
 	public final static int IP_NOT_ALLOWED = 10009;
-	
+
 	public final static int FILE_PATH_NOT_EXIT = 10010;
-	
+
 	public final static int JSON_PARSE_ERROR =10011;
-	
+
 	public final static int THREAD_CAN_ONLY_DO_ONCE =10012;
 
 	public final static int CREATE_CUSTOM_SSL_ERROR=10013;

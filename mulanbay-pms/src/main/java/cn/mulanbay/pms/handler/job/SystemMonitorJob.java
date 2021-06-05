@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.handler.job;
 
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.queue.LimitQueue;
 import cn.mulanbay.common.server.Cpu;
 import cn.mulanbay.common.server.Mem;
@@ -11,7 +12,6 @@ import cn.mulanbay.common.util.PriceUtil;
 import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.pms.common.CacheKey;
 import cn.mulanbay.pms.common.PmsErrorCode;
-import cn.mulanbay.pms.handler.CacheHandler;
 import cn.mulanbay.pms.handler.PmsNotifyHandler;
 import cn.mulanbay.pms.handler.PmsScheduleHandler;
 import cn.mulanbay.schedule.ParaCheckResult;

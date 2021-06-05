@@ -1,9 +1,9 @@
 package cn.mulanbay.pms.web.interceptor;
 
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.util.*;
 import cn.mulanbay.pms.common.CacheKey;
-import cn.mulanbay.pms.handler.CacheHandler;
 import cn.mulanbay.pms.handler.LogHandler;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.handler.TokenHandler;

@@ -1,12 +1,9 @@
-package cn.mulanbay.pms.handler;
+package cn.mulanbay.business.handler;
 
-import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.StringUtil;
-import cn.mulanbay.persistent.cache.CacheProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
@@ -18,10 +15,9 @@ import java.util.concurrent.TimeUnit;
  * 目前由redis方案
  *
  * @author fenghong
- * @create 2017-07-10 21:44
+ * @create 2021-05-11 10:00
  */
-@Component
-public class CacheHandler extends BaseHandler implements CacheProcessor {
+public class CacheHandler extends BaseHandler  {
 
     public static final int DEFAULT_EXPIRE_SECONDS = 300;
 
@@ -88,7 +84,6 @@ public class CacheHandler extends BaseHandler implements CacheProcessor {
      * @param value         需要实现序列化接口
      * @param expireSeconds
      */
-    @Override
     public void set(String key, Object value, int expireSeconds) {
         if (expireSeconds == -1) {
             expireSeconds = DEFAULT_EXPIRE_SECONDS;
@@ -97,6 +92,23 @@ public class CacheHandler extends BaseHandler implements CacheProcessor {
             redisTemplate.opsForValue().set(getFullKey(key), value);
         } else {
             redisTemplate.opsForValue().set(getFullKey(key), value, expireSeconds, TimeUnit.SECONDS);
+        }
+    }
+
+    /**
+     * 相当于SETNX
+     * @param key
+     * @param value         需要实现序列化接口
+     * @param expireSeconds
+     */
+    public boolean setNX(String key, Object value, int expireSeconds) {
+        if (expireSeconds == -1) {
+            expireSeconds = DEFAULT_EXPIRE_SECONDS;
+        }
+        if (expireSeconds == NO_EXPIRE) {
+            return redisTemplate.opsForValue().setIfAbsent(getFullKey(key), value);
+        } else {
+            return redisTemplate.opsForValue().setIfAbsent(getFullKey(key), value, expireSeconds, TimeUnit.SECONDS);
         }
     }
 
@@ -129,7 +141,6 @@ public class CacheHandler extends BaseHandler implements CacheProcessor {
      * @param <T>
      * @return
      */
-    @Override
     public <T> T get(String key, Class<T> cls) {
         return (T) redisTemplate.opsForValue().get(getFullKey(key));
     }
@@ -159,7 +170,6 @@ public class CacheHandler extends BaseHandler implements CacheProcessor {
      *
      * @param key
      */
-    @Override
     public boolean delete(String key) {
         return redisTemplate.delete(getFullKey(key));
     }

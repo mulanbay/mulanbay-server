@@ -1,9 +1,9 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.util.Base64Util;
 import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.pms.common.CacheKey;
-import cn.mulanbay.pms.handler.CacheHandler;
 import cn.mulanbay.pms.web.bean.response.auth.CaptchaImageResponse;
 import cn.mulanbay.web.bean.response.ResultBean;
 import com.google.code.kaptcha.Producer;

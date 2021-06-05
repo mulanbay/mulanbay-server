@@ -1,13 +1,13 @@
 package cn.mulanbay.pms.handler.qa;
 
 import cn.mulanbay.business.handler.BaseHandler;
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.persistent.service.BaseService;
 import cn.mulanbay.pms.common.CacheKey;
-import cn.mulanbay.pms.handler.CacheHandler;
 import cn.mulanbay.pms.handler.ThreadPoolHandler;
 import cn.mulanbay.pms.handler.qa.bean.QaConfigBean;
 import cn.mulanbay.pms.handler.qa.bean.QaMatch;

@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.handler;
 
 import cn.mulanbay.business.handler.BaseHandler;
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.queue.LimitQueue;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.StringUtil;

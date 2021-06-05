@@ -1,5 +1,7 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.business.cache.MCache;
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
@@ -8,7 +10,6 @@ import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.CacheKey;
 import cn.mulanbay.pms.common.PmsErrorCode;
-import cn.mulanbay.pms.handler.CacheHandler;
 import cn.mulanbay.pms.persistent.domain.PlanConfig;
 import cn.mulanbay.pms.persistent.domain.PlanReport;
 import cn.mulanbay.pms.persistent.domain.UserPlan;
@@ -184,9 +185,10 @@ public class UserPlanController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/getStat", method = RequestMethod.GET)
-    public ResultBean getStat(@Valid CommonBeanGetRequest getRequest) {
-        UserPlan userPlan = this.getUserEntity(beanClass, getRequest.getId(), getRequest.getUserId());
-        PlanReport planReport = planService.statPlanReport(userPlan, new Date(), getRequest.getUserId(), PlanReportDataStatFilterType.ORIGINAL);
+    @MCache(key = "'userPlan:stat:'+ #cbr.userId+':'+ #cbr.id")
+    public ResultBean getStat(@Valid CommonBeanGetRequest cbr) {
+        UserPlan userPlan = this.getUserEntity(beanClass, cbr.getId(), cbr.getUserId());
+        PlanReport planReport = planService.statPlanReport(userPlan, new Date(), cbr.getUserId(), PlanReportDataStatFilterType.ORIGINAL);
         return callback(planReport);
     }
 

@@ -1,7 +1,6 @@
 package cn.mulanbay.pms.persistent.domain;
 
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
-import cn.mulanbay.pms.persistent.enums.FunctionDataType;
 import cn.mulanbay.pms.persistent.enums.QaResultType;
 
 import javax.persistence.*;

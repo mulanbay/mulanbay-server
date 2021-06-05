@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.web.config;
 
+import cn.mulanbay.business.cache.CacheAspect;
 import cn.mulanbay.business.handler.HandlerManager;
 import cn.mulanbay.business.handler.MessageHandler;
 import cn.mulanbay.business.handler.lock.RedisDistributedLock;
@@ -82,6 +83,15 @@ public class WebConfig {
     @Bean
     public MessageHandler messageHandler() {
         return new MessageHandler();
+    }
+
+    /**
+     * 缓存操作
+     * @return
+     */
+    @Bean
+    public CacheAspect cacheAspect() {
+        return new CacheAspect();
     }
 
     /**

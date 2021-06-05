@@ -6,7 +6,6 @@ import cn.mulanbay.persistent.query.CrossType;
 import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.persistent.query.QueryBuilder;
-import cn.mulanbay.web.bean.request.PageSearch;
 
 import java.util.Date;
 

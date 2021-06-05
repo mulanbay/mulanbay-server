@@ -13,6 +13,16 @@ public class NumberUtil {
 
 	/**
 	 * 产生随机数
+	 * @param x 随机最大的数
+	 * @return
+	 */
+	public static int getRandom(int x) {
+		int num = (int) (Math.random() * x);
+		return num;
+	}
+
+	/**
+	 * 产生随机数
 	 * @param n 位数
 	 * @return
 	 */

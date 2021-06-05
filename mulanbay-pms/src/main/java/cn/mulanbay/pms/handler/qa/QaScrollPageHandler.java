@@ -1,7 +1,7 @@
 package cn.mulanbay.pms.handler.qa;
 
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.pms.common.CacheKey;
-import cn.mulanbay.pms.handler.CacheHandler;
 import cn.mulanbay.pms.handler.qa.bean.QaConfigBean;
 import cn.mulanbay.pms.handler.qa.bean.QaMatch;
 import cn.mulanbay.pms.handler.qa.bean.QaMatchCache;

@@ -1,11 +1,11 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.PmsErrorCode;
-import cn.mulanbay.pms.handler.CacheHandler;
 import cn.mulanbay.pms.persistent.domain.ReportConfig;
 import cn.mulanbay.pms.persistent.domain.UserReportConfig;
 import cn.mulanbay.pms.persistent.domain.UserReportRemind;

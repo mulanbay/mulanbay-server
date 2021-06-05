@@ -7,8 +7,6 @@ import cn.mulanbay.persistent.dao.BaseHibernateDao;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.pms.persistent.domain.UserQa;
-import cn.mulanbay.pms.persistent.dto.NameCountDto;
-import cn.mulanbay.pms.web.bean.request.diet.DietWordCloudSearch;
 import cn.mulanbay.pms.web.bean.request.system.UserQaSearch;
 import cn.mulanbay.pms.web.bean.request.system.UserQaWordCloudSearch;
 import org.springframework.stereotype.Service;
