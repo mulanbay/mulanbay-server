@@ -21,7 +21,7 @@ public @interface MCache {
      * 缓存可以
      * @return
      */
-    String key() default "yc";
+    String key() default "mulanbay";
 
     /**
      * 进行缓存处理时是否需要加锁

@@ -15,6 +15,6 @@ public @interface MCacheDelete {
      * 缓存可以
      * @return
      */
-    String key() default "yc";
+    String key() default "mulanbay";
 
 }
