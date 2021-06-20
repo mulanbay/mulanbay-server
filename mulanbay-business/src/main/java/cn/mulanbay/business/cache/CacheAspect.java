@@ -5,20 +5,12 @@ import cn.mulanbay.business.handler.lock.DistributedLock;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.NumberUtil;
-import cn.mulanbay.common.util.StringUtil;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
-import org.aspectj.lang.reflect.MethodSignature;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.LocalVariableTableParameterNameDiscoverer;
-import org.springframework.expression.spel.standard.SpelExpression;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.expression.spel.support.StandardEvaluationContext;
-
-import java.lang.reflect.Method;
 
 /**
  * @Description: 缓存
@@ -62,7 +54,7 @@ public class CacheAspect {
         String lockKey = null;
         try {
             logger.debug("开始进行YcCache缓存操作");
-            String key = this.parseExpression(cache.key(), point);
+            String key = KeyParser.parseExpression(cache.key(), point);
             Object object = cacheHandler.get(key);
             if (object != null) {
                 if (object instanceof NullObject) {
@@ -134,32 +126,6 @@ public class CacheAspect {
     @AfterThrowing(value = "pointcut() && @annotation(cache)", throwing = "ex")
     public void afterThrowing(JoinPoint joinPoint, MCache cache, Exception ex) {
         logger.debug("执行了afterThrowing方法");
-    }
-
-    /**
-     * 解析Spel表达式
-     *
-     * @param expression
-     * @param point
-     * @return
-     */
-    private String parseExpression(String expression, JoinPoint point) {
-        Object[] args = point.getArgs();
-        Method method = ((MethodSignature) point.getSignature()).getMethod();
-        //获取被拦截方法参数名列表(使用Spring支持类库)
-        LocalVariableTableParameterNameDiscoverer localVariableTable = new LocalVariableTableParameterNameDiscoverer();
-        String[] parameterNames = localVariableTable.getParameterNames(method);
-        if (StringUtil.isEmpty(expression) || parameterNames == null || args == null
-                || parameterNames.length != args.length) {
-            return expression;
-        }
-        SpelExpression spelExpression = new SpelExpressionParser().parseRaw(expression);
-        StandardEvaluationContext evaluationContext = new StandardEvaluationContext();
-        for (int i = 0; i < parameterNames.length; i++) {
-            evaluationContext.setVariable(parameterNames[i], args[i]);
-        }
-        spelExpression.setEvaluationContext(evaluationContext);
-        return spelExpression.getValue(String.class);
     }
 
 }
