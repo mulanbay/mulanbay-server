@@ -1,8 +1,7 @@
 package cn.mulanbay.persistent.query;
 
-
-import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.exception.PersistentException;
+import cn.mulanbay.common.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -25,8 +24,18 @@ public class Parameter {
 	 * @see NullType
 	 */
 	public enum Operator {
-		EQ("="), NE("!="), LIKE("like"), GT(">"), LT("<"), GTE(">="), LTE("<="),
-		IN("in"), NOTIN("not in"), SQL(""),REFER(""),NULL_NOTNULL;
+		EQ("="),
+		NE("!="),
+		LIKE("like"),
+		GT(">"),
+		LT("<"),
+		GTE(">="),
+		LTE("<="),
+		IN("in"),
+		NOTIN("not in"),
+		SQL(""),
+		REFER(""),
+		NULL_NOTNULL;
 
 		private String symbol;
 
@@ -55,9 +64,9 @@ public class Parameter {
 	private CrossType crossType;
 
 	/**
-	 * 是否计算过
+	 * 请求参数
 	 */
-	private boolean isCaled;
+	private String paraStr;
 
 	/**
 	 * 主要针对like类型需要添加%符号，只有第一次的时候才需要添加
@@ -68,8 +77,6 @@ public class Parameter {
 	 * cross类型的有多个参数
 	 */
 	private int paras=1;
-
-	private boolean supportNullValue;
 
 	public int getParas() {
 		return paras;
@@ -103,14 +110,6 @@ public class Parameter {
 		this.crossType = crossType;
 	}
 
-	public boolean isSupportNullValue() {
-		return supportNullValue;
-	}
-
-	public void setSupportNullValue(boolean supportNullValue) {
-		this.supportNullValue = supportNullValue;
-	}
-
 	public Parameter(String fieldName, Operator condition) {
 		super();
 		this.fieldName = fieldName;
@@ -133,25 +132,27 @@ public class Parameter {
 	 * @return
 	 */
 	public String getParameterString(int firstIndex) {
-		if(isCaled){
-			throw new PersistentException(ErrorCode.PARAMETER_DUPLIDATE_CAL);
+		if(StringUtil.isNotEmpty(paraStr)){
+			return paraStr;
 		}
-		isCaled =true;
-		if(condition==Operator.SQL){
+		if(condition== Operator.SQL){
 			//如果是SQL类型则直接返回，目前没做变量绑定支持
 			String s = value.toString();
 			value=NULL_VALUE;
-			return " and "+s;
-		}else if(crossType==CrossType.NULL){
+			paraStr = " and "+s;
+			return paraStr;
+		}else if(crossType== CrossType.NULL){
 			//普通类型，不需要多个域以前查询
-			return " and " + fieldName + " "+this.getOperateSymbol(firstIndex);
+			paraStr =  " and " + fieldName + " "+this.getOperateSymbol(firstIndex);
+			return paraStr;
 		}else{
 			//跨多个域
 			String[] ss = fieldName.split(",");
 			int n =ss.length;
 			if(n==1){
 				//还是普通类型
-				return " and " + fieldName + this.getOperateSymbol(firstIndex);
+				paraStr = " and " + fieldName + this.getOperateSymbol(firstIndex);
+				return paraStr;
 			}
 			List newValues = new ArrayList();
 			StringBuffer sb = new StringBuffer();
@@ -181,7 +182,8 @@ public class Parameter {
 			paras=n;
 			//重新设置绑定变量
 			this.value =newValues;
-			return sb.toString();
+			paraStr = sb.toString();
+			return paraStr;
 		}
 	}
 
@@ -190,7 +192,7 @@ public class Parameter {
 	 * @return
 	 */
 	private String getOperateSymbol(int index){
-		if(condition==Operator.IN||condition==Operator.NOTIN){
+		if(condition== Operator.IN||condition== Operator.NOTIN){
 			if(value instanceof String){
 				String s = condition.getSymbol()+" (" + value.toString() + ") ";
 				value = NULL_VALUE;
@@ -217,18 +219,18 @@ public class Parameter {
 			}else{
 				throw new PersistentException("无法识别的IN 或者 NOTIN 绑定变量类型");
 			}
-		}else if(condition==Operator.LIKE){
+		}else if(condition== Operator.LIKE){
 			if(!valueChanged){
 				value = "%"+value.toString()+"%";
 				valueChanged=true;
 			}
 			paras=1;
 			return condition.getSymbol()+" ?" +(index++)+" ";
-		}else if(condition==Operator.NULL_NOTNULL){
+		}else if(condition== Operator.NULL_NOTNULL){
 			String s;
 			if(value==null){
 				s = null;
-			}else if(value==NullType.NULL){
+			}else if(value== NullType.NULL){
 				s = " is null ";
 			}else{
 				s = " is not null ";
@@ -237,10 +239,6 @@ public class Parameter {
 			value = NULL_VALUE;
 			paras=0;
 			return s;
-		}else if(condition==Operator.EQ&&supportNullValue&&value==null){
-			//不能加入变量绑定中
-			value = NULL_VALUE;
-			return " is null ";
 		}else{
 			paras=1;
 			return condition.getSymbol()+" ?"+(index++)+" ";
