@@ -103,13 +103,20 @@ public class RedisDistributedLock extends AbstractDistributedLock {
             String result = redisTemplate.execute(new RedisCallback<String>() {
                 @Override
                 public String doInRedis(RedisConnection connection) throws DataAccessException {
-                    JedisCommands commands = (JedisCommands) connection.getNativeConnection();
                     String uuid = UUID.randomUUID().toString();
                     // 为了验证上锁和释放锁是同一个主体
                     lockFlag.set(uuid);
                     SetParams sp = SetParams.setParams();
                     sp.nx().px(expire);
-                    return commands.set(key, uuid, sp);
+                    Object nativeConnection = connection.getNativeConnection();
+                    // 集群模式
+                    if (nativeConnection instanceof JedisCluster) {
+                        JedisCluster cluster = (JedisCluster) nativeConnection;
+                        return cluster.set(key, uuid, sp);
+                    }else {// 单机模式
+                        JedisCommands commands = (JedisCommands) nativeConnection;
+                        return commands.set(key, uuid, sp);
+                    }
                 }
             });
             logger.debug("获取分布式锁,key["+key+"]的结果为:"+result);
