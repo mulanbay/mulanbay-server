@@ -83,7 +83,7 @@ mulanbay-server
 2. 智能客服、词云、商品重复度、饮食重复度等需要用到AHANLP的自然语言处理，需要配置hanlp.properties，ahanlp.properties
   * hanlp.properties文件中需要设置根路径，如：root=D:/ws/AHANLP_base-1.3
   * ahanlp.properties文件中需要设置里面的各个配置项
-  * 词云模块需要使用Python的wordcloud插件，安装命令：
+  * 词云模块需要使用Python的wordcloud插件（3.0版本及以后不需要，词云修改为echarts实现），安装命令：
     pip3 install wordcloud -i https://pypi.tuna.tsinghua.edu.cn/simple
   * NLP所需要的ahanlpData文件包，请到百度网盘下载：（链接：https://pan.baidu.com/s/101vlabHehB71va82G9U-9A 提取码：yaqm ）
     或者直接去原作者项目处下载：https://github.com/jsksxs360/AHANLP
@@ -98,6 +98,12 @@ mulanbay-server
   * 运行mulanbay-pms/target下的mulanbay-pms-3.0.jar文件
 
 后端项目默认的端口是：8080
+
+# Step 4：用户数据初始化
+
+系统默认包含两个用户admin和mulanbay，密码都是123456.admin用户主要是维护使用，一般以mulanbay用户登录。
+
+mulanbay用户默认情况下是没有任何业务数据的，可以在"权限管理/用户管理"里对mulanbay用户进行"初始化数据"，系统可以显示mulanbay用户基础的配置数据。
 
 ```
 
