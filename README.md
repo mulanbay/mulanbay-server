@@ -76,6 +76,8 @@ mulanbay-server
 2. 在mysql中创建数据库，比如:mulanbay_db
 3. 初始化数据库,执行mulanbay-pms工程docs目录下的sql文件：mulanbay_init.sql
 
+(mulanbay_init.sql里面的数据只有原始的空数据，如果想看模拟的数据，可以选择导入mulanbay_init_data.sql)
+
 # Step 2：修改配置文件
 
 1. 在mulanbay-pms/src/main/resources/目录下复制application-local-template.properties文件并重命名为application-local.properties，设置本地配置。
