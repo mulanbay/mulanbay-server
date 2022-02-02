@@ -108,6 +108,14 @@ public class SportMilestoneController extends BaseController {
         bean.setSportType(sportType);
         bean.setCreatedTime(new Date());
         checkSportMilestone(bean);
+        //设置排序号
+        Short orderIndex = sportExerciseService.getMaxOrderIndexOfSportMilestone(bean.getSportType().getId(), bean.getId());
+        if(orderIndex==null){
+            orderIndex =1;
+        }else{
+            orderIndex ++;
+        }
+        bean.setOrderIndex(orderIndex);
         baseService.saveObject(bean);
         return callback(null);
     }
@@ -119,22 +127,22 @@ public class SportMilestoneController extends BaseController {
         } else if (bean.getKilometres() == null && bean.getMinutes() != null) {
             throw new ApplicationException(PmsErrorCode.SPROT_MILESTONE_KM_NULL);
         }
-        if (bean.getId() == null) {
-            //新增
-            // 排序号是否连续
-            Short maxOrderIndex = sportExerciseService.getMaxOrderIndexOfSportMilestone(bean.getSportType().getId(), bean.getId());
-            if (maxOrderIndex == null) {
-                if (bean.getOrderIndex() != 1) {
-                    throw new ApplicationException(PmsErrorCode.SPROT_MILESTONE_ORDER_INDEX_ERROR);
-                }
-            } else {
-                if (bean.getOrderIndex() - 1 != maxOrderIndex.shortValue()) {
-                    throw new ApplicationException(PmsErrorCode.SPROT_MILESTONE_ORDER_INDEX_ERROR);
-                }
-            }
-        } else {
-            //todo 判断是否重复
-        }
+//        if (bean.getId() == null) {
+//            //新增
+//            // 排序号是否连续
+//            Short maxOrderIndex = sportExerciseService.getMaxOrderIndexOfSportMilestone(bean.getSportType().getId(), bean.getId());
+//            if (maxOrderIndex == null) {
+//                if (bean.getOrderIndex() != 1) {
+//                    throw new ApplicationException(PmsErrorCode.SPROT_MILESTONE_ORDER_INDEX_ERROR);
+//                }
+//            } else {
+//                if (bean.getOrderIndex() - 1 != maxOrderIndex.shortValue()) {
+//                    throw new ApplicationException(PmsErrorCode.SPROT_MILESTONE_ORDER_INDEX_ERROR);
+//                }
+//            }
+//        } else {
+//            //todo 判断是否重复
+//        }
 
     }
 

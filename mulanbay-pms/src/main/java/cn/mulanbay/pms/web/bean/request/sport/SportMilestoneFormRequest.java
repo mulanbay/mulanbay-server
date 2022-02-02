@@ -30,7 +30,7 @@ public class SportMilestoneFormRequest implements BindUser {
     private Date toExerciseDate;
     private Integer costDays;
 
-    @NotNull(message = "{validate.sportMilestone.orderIndex.NotNull}")
+    //@NotNull(message = "{validate.sportMilestone.orderIndex.NotNull}")
     private Short orderIndex;
     private String remark;
 
