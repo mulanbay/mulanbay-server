@@ -43,6 +43,10 @@ public class CommonController extends BaseController {
             //最小年份由注册时间决定
             int minYear = Integer.valueOf(DateUtil.getFormatDate(user.getCreatedTime(), "yyyy"));
             int maxYear = Integer.valueOf(DateUtil.getFormatDate(new Date(), "yyyy"));
+            //最大和最小年份之间最少间隔5个
+            if(maxYear-minYear<4){
+                minYear = maxYear-4;
+            }
             List<TreeBean> list = new ArrayList<TreeBean>();
             for (int i = maxYear; i >= minYear; i--) {
                 TreeBean tb = new TreeBean();
