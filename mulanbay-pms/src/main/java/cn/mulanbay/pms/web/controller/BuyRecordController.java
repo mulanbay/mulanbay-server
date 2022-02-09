@@ -905,6 +905,12 @@ public class BuyRecordController extends BaseController {
                 //先分词
                 List<String> keywords = ahaNLPHandler.extractKeyword(d,num);
                 for(String s : keywords){
+                    //忽略分词后为词长度为1的
+                    if(sf.getIgnoreShort()!=null&&sf.getIgnoreShort()){
+                        if(s.length()<2){
+                            continue;
+                        }
+                    }
                     Integer n = statData.get(s);
                     if(n==null){
                         statData.put(s,1);

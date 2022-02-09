@@ -50,6 +50,11 @@ public class BuyRecordWordCloudSearch extends PageSearch implements BindUser, Fu
 
     private int picHeight = 400;
 
+    /**
+     * 是否忽略短语
+     */
+    private Boolean ignoreShort;
+
     @Override
     public Long getUserId() {
         return userId;
@@ -149,5 +154,13 @@ public class BuyRecordWordCloudSearch extends PageSearch implements BindUser, Fu
 
     public void setPicHeight(int picHeight) {
         this.picHeight = picHeight;
+    }
+
+    public Boolean getIgnoreShort() {
+        return ignoreShort;
+    }
+
+    public void setIgnoreShort(Boolean ignoreShort) {
+        this.ignoreShort = ignoreShort;
     }
 }
