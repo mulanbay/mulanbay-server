@@ -149,11 +149,11 @@ public class Parameter {
 			//如果是SQL类型则直接返回，目前没做变量绑定支持
 			String s = value.toString();
 			value=NULL_VALUE;
-			paraStr = " and "+s;
+			paraStr = s;
 			return paraStr;
 		}else if(crossType== CrossType.NULL){
 			//普通类型，不需要多个域以前查询
-			paraStr =  " and " + fieldName + " "+this.getOperateSymbol(firstIndex);
+			paraStr =  fieldName + " "+this.getOperateSymbol(firstIndex);
 			return paraStr;
 		}else{
 			//跨多个域
@@ -161,12 +161,12 @@ public class Parameter {
 			int n =ss.length;
 			if(n==1){
 				//还是普通类型
-				paraStr = " and " + fieldName + this.getOperateSymbol(firstIndex);
+				paraStr = fieldName + this.getOperateSymbol(firstIndex);
 				return paraStr;
 			}
 			List newValues = new ArrayList();
 			StringBuffer sb = new StringBuffer();
-			sb.append(" and (");
+			sb.append(" (");
 			for(int i=0;i<n;i++){
 				int valueCount =1;
 				//对于in () 这种类型，下标索引值需要在这里添加，根据值的个数添加

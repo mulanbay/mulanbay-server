@@ -1,5 +1,7 @@
 package cn.mulanbay.persistent.query;
 
+import cn.mulanbay.common.util.StringUtil;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -161,19 +163,27 @@ public class PageRequest {
 
 	public String getParameterString() {
 		StringBuffer sb = new StringBuffer();
-		if(needWhere){
-			sb.append(" where 1=1 ");
+		boolean hasPara = this.hasParameter();
+		if(needWhere&&hasPara){
+			sb.append(" where ");
 		}
-		if (hasParameter()) {
+		if (hasPara) {
 			int n = parameterList.size();
 			for (int i = 0; i < n; i++) {
 				Parameter pp = parameterList.get(i);
+				if(n>1&&i>0){
+					sb.append(" and ");
+				}
 				sb.append(pp.getParameterString(firstIndex));
 				firstIndex+=pp.getParas();
 			}
 		}
-		if (dataRule!=null&&!"".equals(dataRule)) {
-			sb.append("and " + dataRule);
+		if (StringUtil.isNotEmpty(dataRule)) {
+			if(needWhere&&hasPara){
+				sb.append(" " + dataRule);
+			}else{
+				sb.append(" and " + dataRule);
+			}
 		}
 
 		return sb.toString();
