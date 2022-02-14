@@ -185,8 +185,11 @@ public class PageRequest {
 				sb.append(" and " + dataRule);
 			}
 		}
-
-		return sb.toString();
+		if(needWhere){
+			return sb.toString();
+		}else{
+			return " and "+ sb.toString();
+		}
 	}
 
 	public Object[] getParameterValue() {
