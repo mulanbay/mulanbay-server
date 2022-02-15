@@ -700,5 +700,24 @@ public class PlanService extends BaseHibernateDao {
         }
     }
 
+    /**
+     * 保存计划配置模板
+     * @param bean
+     * @param configList
+     */
+    public void savePlanConfig(PlanConfig bean,List<StatValueConfig> configList) {
+        try {
+            this.saveEntity(bean);
+            if(StringUtil.isNotEmpty(configList)){
+                for(StatValueConfig c : configList) {
+                    c.setFid(bean.getId());
+                }
+                this.saveEntities(configList.toArray());
+            }
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_ADD_ERROR,
+                    "保存计划配置模板异常", e);
+        }
+    }
 
 }

@@ -175,4 +175,20 @@ public class StatValueConfigService extends BaseHibernateDao {
         List<StatValueConfigDetail> res = JsonUtil.jsonToBeanList(jsonData, StatValueConfigDetail.class);
         return res;
     }
+
+    /**
+     * 获取配置列表
+     * @param fid
+     * @param type
+     * @return
+     */
+    public List<StatValueConfig> getConfigList(Long fid,StatValueType type) {
+        try {
+            String hql = "from StatValueConfig where fid=?0 and type =?1 order by orderIndex";
+            return this.getEntityListNoPageHQL(hql,fid,type);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取配置列表异常", e);
+        }
+    }
 }

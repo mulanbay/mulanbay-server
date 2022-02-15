@@ -57,6 +57,16 @@ public class NotifyConfigFormRequest {
 
     private String remark;
 
+    /**
+     * 模板编号
+     */
+    private Long tmpNotifyConfigId;
+
+    /**
+     * 新增时是否拷贝配置项
+     */
+    private Boolean copyItems;
+
     public Long getId() {
         return id;
     }
@@ -207,5 +217,21 @@ public class NotifyConfigFormRequest {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Long getTmpNotifyConfigId() {
+        return tmpNotifyConfigId;
+    }
+
+    public void setTmpNotifyConfigId(Long tmpNotifyConfigId) {
+        this.tmpNotifyConfigId = tmpNotifyConfigId;
+    }
+
+    public Boolean getCopyItems() {
+        return copyItems;
+    }
+
+    public void setCopyItems(Boolean copyItems) {
+        this.copyItems = copyItems;
     }
 }

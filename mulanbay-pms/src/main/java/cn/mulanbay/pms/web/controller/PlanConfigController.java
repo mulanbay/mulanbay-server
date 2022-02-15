@@ -9,9 +9,12 @@ import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.persistent.domain.PlanConfig;
+import cn.mulanbay.pms.persistent.domain.StatValueConfig;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.PlanType;
+import cn.mulanbay.pms.persistent.enums.StatValueType;
 import cn.mulanbay.pms.persistent.service.PlanService;
+import cn.mulanbay.pms.persistent.service.StatValueConfigService;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.plan.PlanConfigForUserTreeSearch;
@@ -49,6 +52,9 @@ public class PlanConfigController extends BaseController {
 
     @Autowired
     PlanService planService;
+
+    @Autowired
+    StatValueConfigService statValueConfigService;
 
     /**
      * 需要绑定用户级别
@@ -152,7 +158,22 @@ public class PlanConfigController extends BaseController {
         BeanCopy.copyProperties(formRequest, bean);
         checkPlanConfig(bean);
         bean.setCreatedTime(new Date());
-        baseService.saveObject(bean);
+        List<StatValueConfig> configList = new ArrayList<>();
+        Long tmpPlanConfigId = formRequest.getTmpPlanConfigId();
+        if(tmpPlanConfigId!=null&&formRequest.getCopyItems()!=null&&formRequest.getCopyItems()==true){
+            //加载配置项
+            List<StatValueConfig> tmpConfigList = statValueConfigService.getConfigList(tmpPlanConfigId, StatValueType.PLAN);
+            if(StringUtil.isNotEmpty(tmpConfigList)){
+                for(StatValueConfig svc : tmpConfigList){
+                    StatValueConfig config = new StatValueConfig();
+                    BeanCopy.copyProperties(svc,config);
+                    config.setFid(null);
+                    config.setId(null);
+                    configList.add(config);
+                }
+            }
+        }
+        planService.savePlanConfig(bean,configList);
         return callback(bean);
     }
 

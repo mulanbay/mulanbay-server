@@ -75,6 +75,11 @@ public class PlanConfigFormRequest implements BindUser {
 
     private String remark;
 
+    /**
+     * 新增时是否拷贝配置项
+     */
+    private Boolean copyItems;
+
     public Long getId() {
         return id;
     }
@@ -259,5 +264,13 @@ public class PlanConfigFormRequest implements BindUser {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Boolean getCopyItems() {
+        return copyItems;
+    }
+
+    public void setCopyItems(Boolean copyItems) {
+        this.copyItems = copyItems;
     }
 }

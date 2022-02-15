@@ -6,6 +6,7 @@ import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.common.BaseException;
 import cn.mulanbay.persistent.dao.BaseHibernateDao;
 import cn.mulanbay.pms.persistent.domain.NotifyConfig;
+import cn.mulanbay.pms.persistent.domain.StatValueConfig;
 import cn.mulanbay.pms.persistent.domain.UserNotify;
 import cn.mulanbay.pms.persistent.domain.UserNotifyRemind;
 import cn.mulanbay.pms.persistent.dto.CommonSqlDto;
@@ -299,4 +300,23 @@ public class NotifyService extends BaseHibernateDao {
         }
     }
 
+    /**
+     * 保存提醒配置模板
+     * @param bean
+     * @param configList
+     */
+    public void saveNotifyConfig(NotifyConfig bean,List<StatValueConfig> configList) {
+        try {
+            this.saveEntity(bean);
+            if(StringUtil.isNotEmpty(configList)){
+                for(StatValueConfig c : configList) {
+                    c.setFid(bean.getId());
+                }
+                this.saveEntities(configList.toArray());
+            }
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_ADD_ERROR,
+                    "保存提醒配置模板异常", e);
+        }
+    }
 }

@@ -229,7 +229,7 @@ public class UserNotifyController extends BaseController {
         } else {
             //大于类型
             if (userNotify.getWarningValue() < userNotify.getAlertValue()) {
-                throw new ApplicationException(PmsErrorCode.NOTIFY_WARNING_VALUE_LESS_ALERT);
+                throw new ApplicationException(PmsErrorCode.NOTIFY_WARNING_VALUE_MORE_ALERT);
             }
         }
     }

@@ -3,12 +3,16 @@ package cn.mulanbay.pms.web.controller;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
+import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.persistent.domain.NotifyConfig;
+import cn.mulanbay.pms.persistent.domain.StatValueConfig;
 import cn.mulanbay.pms.persistent.enums.BussType;
+import cn.mulanbay.pms.persistent.enums.StatValueType;
 import cn.mulanbay.pms.persistent.service.NotifyService;
+import cn.mulanbay.pms.persistent.service.StatValueConfigService;
 import cn.mulanbay.pms.util.TreeBeanUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
@@ -43,6 +47,9 @@ public class NotifyConfigController extends BaseController {
 
     @Autowired
     NotifyService notifyService;
+
+    @Autowired
+    StatValueConfigService statValueConfigService;
 
     /**
      * 提醒配置模板选项列表(用户使用，需要判断用户级别)
@@ -147,8 +154,24 @@ public class NotifyConfigController extends BaseController {
         NotifyConfig bean = new NotifyConfig();
         BeanCopy.copyProperties(formRequest, bean);
         checkNotifyConfig(bean);
-        bean.setCreatedTime(new Date());
-        baseService.saveObject(bean);
+        Date now = new Date();
+        bean.setCreatedTime(now);
+        List<StatValueConfig> configList = new ArrayList<>();
+        Long tmpNotifyConfigId = formRequest.getTmpNotifyConfigId();
+        if(tmpNotifyConfigId!=null&&formRequest.getCopyItems()!=null&&formRequest.getCopyItems()==true){
+            //加载配置项
+            List<StatValueConfig> tmpConfigList = statValueConfigService.getConfigList(tmpNotifyConfigId,StatValueType.NOTIFY);
+            if(StringUtil.isNotEmpty(tmpConfigList)){
+                for(StatValueConfig svc : tmpConfigList){
+                    StatValueConfig config = new StatValueConfig();
+                    BeanCopy.copyProperties(svc,config);
+                    config.setFid(null);
+                    config.setId(null);
+                    configList.add(config);
+                }
+            }
+        }
+        notifyService.saveNotifyConfig(bean,configList);
         return callback(bean);
     }
 
