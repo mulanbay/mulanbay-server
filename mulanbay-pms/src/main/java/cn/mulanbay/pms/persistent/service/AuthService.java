@@ -717,4 +717,21 @@ public class AuthService extends BaseHibernateDao {
         }
     }
 
+    /**
+     * 删除功能点
+     * @param rootId
+     */
+    public void deleteFunctions(Long rootId) {
+        try {
+            StringBuffer sb = new StringBuffer();
+            sb.append("delete FROM system_function WHERE id in ");
+            sb.append("(select id from ");
+            sb.append("(SELECT id FROM system_function WHERE FIND_IN_SET(id, getFunctionChild("+rootId+"))) as aa ");
+            sb.append(") ");
+            this.execSqlUpdate(sb.toString());
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_DELETE_ERROR,
+                    "删除功能点异常", e);
+        }
+    }
 }

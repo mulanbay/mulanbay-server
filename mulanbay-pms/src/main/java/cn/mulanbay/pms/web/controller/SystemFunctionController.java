@@ -13,6 +13,7 @@ import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.persistent.domain.Account;
 import cn.mulanbay.pms.persistent.domain.SystemFunction;
 import cn.mulanbay.pms.persistent.dto.common.SystemFunctionBean;
+import cn.mulanbay.pms.persistent.service.AuthService;
 import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.LogService;
 import cn.mulanbay.pms.util.TreeBeanUtil;
@@ -53,6 +54,9 @@ public class SystemFunctionController extends BaseController {
 
     @Autowired
     LogService logService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     SystemConfigHandler systemConfigHandler;
@@ -259,7 +263,10 @@ public class SystemFunctionController extends BaseController {
      */
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     public ResultBean delete(@RequestBody @Valid CommonBeanDeleteRequest deleteRequest) {
-        baseService.deleteObjects(beanClass, NumberUtil.stringArrayToLongArray(deleteRequest.getIds().split(",")));
+        Long[] ids = NumberUtil.stringArrayToLongArray(deleteRequest.getIds().split(","));
+        for(Long id : ids){
+            authService.deleteFunctions(id);
+        }
         return callback(null);
     }
 
