@@ -97,7 +97,7 @@ public class ScheduleHandler extends BaseHandler {
                     TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>(200),
                     threadFactory,new ThreadPoolExecutor.AbortPolicy());
             //添加启动信息
-            updateTaskServerStart();
+            //updateTaskServerStart();
         }else {
             logger.debug("该应用设置为不启动调度服务");
         }
