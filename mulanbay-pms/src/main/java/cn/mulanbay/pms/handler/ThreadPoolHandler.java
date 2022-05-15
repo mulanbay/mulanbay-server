@@ -9,10 +9,7 @@ import org.springframework.scheduling.concurrent.CustomizableThreadFactory;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * 线程池
@@ -77,6 +74,17 @@ public class ThreadPoolHandler extends BaseHandler {
     public void pushThread(Runnable runnable) {
         threadPool.execute(runnable);
         logger.debug("往线程池中添加了一个线程:" + runnable.toString());
+    }
+
+    /**
+     * Callable线程
+     * @param task
+     * @param <T>
+     * @return
+     */
+    public <T> Future<T> submit(Callable<T> task) {
+        logger.debug("往线程池中添加了一个Callable线程:" + task.toString());
+        return threadPool.submit(task);
     }
 
     @Override

@@ -83,7 +83,7 @@ public class PlanService extends BaseHibernateDao {
      * @param bean
      * @return
      */
-    public Date getFirstStatDay(PlanConfig bean,Long userId) {
+    public Date getFirstStatDay(PlanConfig bean, Long userId) {
         try {
             String dateField = bean.getDateField();
             int index = dateField.lastIndexOf(".");
@@ -242,30 +242,27 @@ public class PlanService extends BaseHibernateDao {
     /**
      * 重新统计计划报告
      *
-     * @param ids
+     * @param id
      */
-    public void reStatPlanReports(String ids, PlanReportReStatCompareType reStatCompareType, Integer compareYear) {
+    public void reStatPlanReports(Long id, PlanReportReStatCompareType reStatCompareType, Integer compareYear) {
         try {
-            Long[] idArr = NumberUtil.stringArrayToLongArray(ids.split(","));
-            for (Long id : idArr) {
-                PlanReport planReport = (PlanReport) this.getEntityById(PlanReport.class, id);
-                Integer year;
-                if (reStatCompareType == PlanReportReStatCompareType.ORIGINAL) {
-                    year = planReport.getPlanConfigYear();
-                } else if (reStatCompareType == PlanReportReStatCompareType.ORIGINAL_LATEST) {
-                    year = DateUtil.getYear(planReport.getBussStatDate());
-                } else if (reStatCompareType == PlanReportReStatCompareType.SPECIFY) {
-                    year = compareYear;
-                } else {
-                    year = DateUtil.getYear(new Date());
-                }
-                if (year == null) {
-                    year = DateUtil.getYear(planReport.getBussStatDate());
-                }
-                //
-                UserPlanConfigValue pcv = this.getNearestUserPlanConfigValue(year, planReport.getUserPlan().getId());
-                saveOrUpdatePlanReport(planReport.getUserPlan(), planReport.getBussDay(), planReport.getUserId(), pcv, planReport.getBussStatDate());
+            PlanReport planReport = (PlanReport) this.getEntityById(PlanReport.class, id);
+            Integer year;
+            if (reStatCompareType == PlanReportReStatCompareType.ORIGINAL) {
+                year = planReport.getPlanConfigYear();
+            } else if (reStatCompareType == PlanReportReStatCompareType.ORIGINAL_LATEST) {
+                year = DateUtil.getYear(planReport.getBussStatDate());
+            } else if (reStatCompareType == PlanReportReStatCompareType.SPECIFY) {
+                year = compareYear;
+            } else {
+                year = DateUtil.getYear(new Date());
             }
+            if (year == null) {
+                year = DateUtil.getYear(planReport.getBussStatDate());
+            }
+            //
+            UserPlanConfigValue pcv = this.getNearestUserPlanConfigValue(year, planReport.getUserPlan().getId());
+            saveOrUpdatePlanReport(planReport.getUserPlan(), planReport.getBussDay(), planReport.getUserId(), pcv, planReport.getBussStatDate());
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_UPDATE_ERROR,
                     "重新统计计划报告异常", e);
@@ -284,8 +281,8 @@ public class PlanService extends BaseHibernateDao {
     private void saveOrUpdatePlanReport(UserPlan userPlan, int bussDay, Long userId, UserPlanConfigValue currentPcv, Date currentCaldate) {
         try {
             // 删除数据库里数据
-            String deletesql = "delete from plan_report where user_plan_id=?0 and user_id=?1 and buss_day=?2";
-            this.execSqlUpdate(deletesql, userPlan.getId(), userId, bussDay);
+            String deleteHql = "delete from PlanReport where userPlan.id=?0 and userId=?1 and bussDay=?2";
+            this.updateEntities(deleteHql, userPlan.getId(), userId, bussDay);
             PlanReport pr = this.statPlanReport(userPlan, bussDay, userId, currentPcv, currentCaldate, PlanReportDataStatFilterType.ORIGINAL);
             if (pr != null) {
                 this.saveEntity(pr);
@@ -323,7 +320,7 @@ public class PlanService extends BaseHibernateDao {
                 Object[] oo = rr.get(0);
                 if (oo[0] == null && oo[1] == null) {
                     //可能出现全部没有数据
-                    PlanReport pr = this.createEmptyPlanReport(userPlan,bussDay,userPlanConfigValue,currentCalDate);
+                    PlanReport pr = this.createEmptyPlanReport(userPlan, bussDay, userPlanConfigValue, currentCalDate);
                     return pr;
                 }
                 PlanReport pr = new PlanReport();
@@ -379,7 +376,7 @@ public class PlanService extends BaseHibernateDao {
                 return pr;
             } else {
                 //空报告
-                PlanReport pr = this.createEmptyPlanReport(userPlan,bussDay,userPlanConfigValue,currentCalDate);
+                PlanReport pr = this.createEmptyPlanReport(userPlan, bussDay, userPlanConfigValue, currentCalDate);
                 return pr;
             }
         } catch (BaseException e) {
@@ -390,13 +387,14 @@ public class PlanService extends BaseHibernateDao {
 
     /**
      * 创建空报告
+     *
      * @param userPlan
      * @param bussDay
      * @param userPlanConfigValue
      * @param currentCalDate
      * @return
      */
-    private PlanReport createEmptyPlanReport(UserPlan userPlan,Integer bussDay,UserPlanConfigValue userPlanConfigValue,Date currentCalDate){
+    private PlanReport createEmptyPlanReport(UserPlan userPlan, Integer bussDay, UserPlanConfigValue userPlanConfigValue, Date currentCalDate) {
         PlanReport pr = new PlanReport();
         pr.setUserId(userPlan.getUserId());
         pr.setBussDay(bussDay);
@@ -689,10 +687,10 @@ public class PlanService extends BaseHibernateDao {
     /**
      * 重新保存计划报告时间线
      */
-    public void reSavePlanReportTimeline(List<PlanReportTimeline> datas, Integer bussDay, Long userId,Long userPlanId) {
+    public void reSavePlanReportTimeline(List<PlanReportTimeline> datas, Integer bussDay, Long userId, Long userPlanId) {
         try {
             String hql = "delete from PlanReportTimeline where bussDay=?0 and userId=?1 and userPlan.id=?2";
-            this.updateEntities(hql, bussDay, userId,userPlanId);
+            this.updateEntities(hql, bussDay, userId, userPlanId);
             this.saveEntities(datas.toArray());
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
@@ -702,14 +700,15 @@ public class PlanService extends BaseHibernateDao {
 
     /**
      * 保存计划配置模板
+     *
      * @param bean
      * @param configList
      */
-    public void savePlanConfig(PlanConfig bean,List<StatValueConfig> configList) {
+    public void savePlanConfig(PlanConfig bean, List<StatValueConfig> configList) {
         try {
             this.saveEntity(bean);
-            if(StringUtil.isNotEmpty(configList)){
-                for(StatValueConfig c : configList) {
+            if (StringUtil.isNotEmpty(configList)) {
+                for (StatValueConfig c : configList) {
                     c.setFid(bean.getId());
                 }
                 this.saveEntities(configList.toArray());

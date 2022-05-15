@@ -10,6 +10,7 @@ import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.PmsErrorCode;
+import cn.mulanbay.pms.handler.ThreadPoolHandler;
 import cn.mulanbay.pms.persistent.domain.PlanReport;
 import cn.mulanbay.pms.persistent.domain.PlanReportTimeline;
 import cn.mulanbay.pms.persistent.domain.UserPlan;
@@ -56,6 +57,9 @@ public class PlanReportController extends BaseController {
     @Autowired
     PlanService planService;
 
+    @Autowired
+    ThreadPoolHandler threadPoolHandler;
+
     /**
      * 计划报告树
      *
@@ -95,8 +99,10 @@ public class PlanReportController extends BaseController {
         PageRequest pr = sf.buildQuery();
         pr.setBeanClass(beanClass);
         if (StringUtil.isEmpty(sf.getSortField())) {
-            Sort s = new Sort("bussStatDate", Sort.DESC);
-            pr.addSort(s);
+            Sort s1 = new Sort("bussStatDate", Sort.DESC);
+            Sort s2 = new Sort("createdTime", Sort.DESC);
+            pr.addSort(s1);
+            pr.addSort(s2);
         } else {
             Sort s = new Sort(sf.getSortField(), sf.getSortType());
             pr.addSort(s);
@@ -126,7 +132,13 @@ public class PlanReportController extends BaseController {
         if (sf.getReStatCompareType() == PlanReportReStatCompareType.SPECIFY && sf.getYear() == null) {
             throw new ApplicationException(PmsErrorCode.PLAN_REPORT_RE_STAT_YEAR_NULL);
         }
-        planService.reStatPlanReports(sf.getIds(), sf.getReStatCompareType(), sf.getYear());
+        //因为支持多个计划报告重新统计，可能会比较费时
+        threadPoolHandler.pushThread(() -> {
+            Long[] idArr = NumberUtil.stringArrayToLongArray(sf.getIds().split(","));
+            for (Long id : idArr){
+                planService.reStatPlanReports(id, sf.getReStatCompareType(), sf.getYear());
+            }
+        });
         return callback(null);
     }
 
