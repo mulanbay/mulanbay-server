@@ -190,7 +190,7 @@ public class SportExerciseService extends BaseHibernateDao {
             newArgs.addAll(pr.getParameterValueList());
             newArgs.addAll(pr2.getParameterValueList());
             List<SportExercise> list = this.getEntityListHQL(sb.toString(), sf.getIndex(), 1, newArgs.toArray());
-            return list.get(0);
+            return list.isEmpty() ? null:list.get(0);
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "获取锻炼的最大值的统计异常", e);
