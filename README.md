@@ -76,7 +76,7 @@ mulanbay-server
 2. 在mysql中创建数据库，比如:mulanbay_db
 3. 初始化数据库,执行mulanbay-pms工程docs目录下的sql文件：mulanbay_init.sql
 
-(mulanbay_init.sql里面的数据只有原始的空数据，如果想看模拟的数据，可以选择导入mulanbay_init_data.sql)
+(mulanbay_init.sql里面的数据只有原始的空数据，如果想看模拟的数据，可以选择导入mulanbay_init_data.sql(同时包含表结构和初始化数据))
 
 # Step 2：修改配置文件
 
@@ -99,7 +99,7 @@ mulanbay-server
   * 进入到mulanbay-server目录，运行mvn clean package
   * 运行mulanbay-pms/target下的mulanbay-pms-3.0.jar文件
 
-后端项目默认的端口是：8080
+后端项目默认的端口是：8080，项目路径为api，完整的路径地址：http://localhost:8080/api/
 
 # Step 4：用户数据初始化
 
