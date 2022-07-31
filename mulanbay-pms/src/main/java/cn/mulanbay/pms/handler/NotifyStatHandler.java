@@ -83,4 +83,16 @@ public class NotifyStatHandler extends BaseHandler {
         String cacheKeys = CacheKey.getKey(CacheKey.USER_NOTIFY_STAT, userId.toString(), "*");
         return cacheHandler.deleteByPattern(cacheKeys);
     }
+
+    /**
+     * 清理缓存
+     *
+     * @param userId
+     * @param userNotifyId
+     * @return
+     */
+    public boolean deleteCache(Long userId,Long userNotifyId) {
+        String cacheKey = CacheKey.getKey(CacheKey.USER_NOTIFY_STAT, userId.toString(), userNotifyId.toString());
+        return cacheHandler.delete(cacheKey);
+    }
 }
