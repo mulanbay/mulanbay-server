@@ -11,7 +11,7 @@ import java.util.Date;
 
 public class TreatDrugSearch extends PageSearch implements BindUser, FullEndDateTime {
 
-    @Query(fieldName = "treatRecord.hospital,treatRecord.department,treatRecord.organ,treatRecord.disease",
+    @Query(fieldName = "name,disease",
             op = Parameter.Operator.LIKE, crossType = CrossType.OR)
     private String keywords;
 
