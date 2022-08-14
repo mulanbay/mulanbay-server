@@ -331,9 +331,13 @@ public class SportExerciseController extends BaseController {
         BigDecimal totalCount = new BigDecimal(0);
         BigDecimal totalKilometres = new BigDecimal(0);
         DateGroupType dateGroupType = sf.getDateGroupType();
-        SportType sportType = baseService.getObject(SportType.class, sf.getSportTypeId());
-        String totalKey = "总" + sportType.getUnit() + "数";
-        String averKey = "平均" + sportType.getUnit() + "数";
+        String unit="";
+        if(sf.getSportTypeId()!=null){
+            SportType sportType = baseService.getObject(SportType.class, sf.getSportTypeId());
+            unit = sportType.getUnit();
+        }
+        String totalKey = "总" + unit + "数";
+        String averKey = "平均" + unit + "数";
         //详细统计才加各种统计信息
         if (sf.getFullStat()) {
             if (dateGroupType == DateGroupType.DAY) {
@@ -367,7 +371,7 @@ public class SportExerciseController extends BaseController {
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount()));
             totalKilometres = totalKilometres.add(bean.getTotalKilometres());
         }
-        String totalString = totalCount.longValue() + "(次)," + totalKilometres.doubleValue() + "(" + sportType.getUnit() + ")";
+        String totalString = totalCount.longValue() + "(次)," + totalKilometres.doubleValue() + "(" + unit + ")";
         chartData.setSubTitle(this.getDateTitle(sf, totalString));
         chartData.getYdata().add(kilometresData);
         if (sf.getFullStat()) {

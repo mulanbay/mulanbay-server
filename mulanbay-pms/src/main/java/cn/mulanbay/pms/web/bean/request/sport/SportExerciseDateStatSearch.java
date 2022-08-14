@@ -22,7 +22,7 @@ public class SportExerciseDateStatSearch extends QueryBuilder implements DateSta
     @Query(fieldName = "user_id", op = Parameter.Operator.EQ)
     public Long userId;
 
-    @NotNull(message = "{validate.sportExercise.sportTypeId.NotNull}")
+    //@NotNull(message = "{validate.sportExercise.sportTypeId.NotNull}")
     @Query(fieldName = "sport_type_id", op = Parameter.Operator.EQ)
     private Integer sportTypeId;
 
