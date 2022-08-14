@@ -17,7 +17,7 @@ public class ScatterChartData extends BaseChartData {
 
     private String vUnit = "次";
 
-    private double minValue = Double.MAX_VALUE;
+    private double minValue = Double.MIN_VALUE;
 
     private double maxValue;
 

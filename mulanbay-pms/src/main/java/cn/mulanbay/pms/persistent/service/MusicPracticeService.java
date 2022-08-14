@@ -286,6 +286,21 @@ public class MusicPracticeService extends BaseHibernateDao {
     }
 
     /**
+     * 获取乐器列表
+     *
+     * @return
+     */
+    public List<MusicInstrument> getActiveMusicInstrument(Long userId) {
+        try {
+            String hql = "from MusicInstrument where userId=?0 order by orderIndex desc";
+            return this.getEntityListNoPageHQL(hql, userId);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取乐器列表异常", e);
+        }
+    }
+
+    /**
      * 获取音乐练习曲子记录
      *
      * @return
@@ -366,4 +381,32 @@ public class MusicPracticeService extends BaseHibernateDao {
                     "基于水平的统计异常", e);
         }
     }
+
+    /**
+     * 获取音乐练习总体统计
+     *
+     * @param sf
+     * @return
+     */
+    public List<MusicPracticeOverallStat> statOverallMusicPractice(MusicPracticeOverallStatSearch sf) {
+        try {
+            PageRequest pr = sf.buildQuery();
+            pr.setNeedWhere(true);
+            DateGroupType dateGroupType = sf.getDateGroupType();
+            StringBuffer sb = new StringBuffer();
+            sb.append("select indexValue,music_instrument_id as musicInstrumentId,count(0) as totalCount,sum(minutes) as totalMinutes ");
+            sb.append("from (");
+            sb.append("select music_instrument_id,minutes," + MysqlUtil.dateTypeMethod("practice_start_time", dateGroupType) + "as indexValue ");
+            sb.append("from music_practice ");
+            sb.append(pr.getParameterString());
+            sb.append(") as res group by music_instrument_id,indexValue ");
+            sb.append(" order by indexValue");
+            List<MusicPracticeOverallStat> list = this.getEntityListWithClassSQL(sb.toString(), pr.getPage(), pr.getPageSize(), MusicPracticeOverallStat.class, pr.getParameterValue());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取音乐练习总体统计异常", e);
+        }
+    }
+
 }

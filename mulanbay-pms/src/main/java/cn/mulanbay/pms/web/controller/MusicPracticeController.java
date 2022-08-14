@@ -34,9 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 音乐练习记录
@@ -431,7 +429,7 @@ public class MusicPracticeController extends BaseController {
             serieData.getData().add(dataDetail);
             totalValue = totalValue.add(new BigDecimal(bean.getTotalCount()));
         }
-        String subTitle = this.getDateTitle(sf, String.valueOf(totalValue.doubleValue()) + "次");
+        String subTitle = this.getDateTitle(sf, totalValue.longValue() + "次");
         chartPieData.setSubTitle(subTitle);
         chartPieData.getDetailData().add(serieData);
         return callback(chartPieData);
@@ -462,7 +460,7 @@ public class MusicPracticeController extends BaseController {
         }
         chartData.getYdata().add(yData1);
         chartData = ChartUtil.completeDate(chartData, sf);
-        String subTitle = this.getDateTitle(sf, String.valueOf(totalValue.doubleValue()));
+        String subTitle = this.getDateTitle(sf, totalValue.longValue()+ "次");
         chartData.setSubTitle(subTitle);
         return callback(chartData);
     }
@@ -514,6 +512,58 @@ public class MusicPracticeController extends BaseController {
             detailData.setxAxisAverage(totalX / n);
             chartData.addSeriesData(detailData);
         }
+        return callback(chartData);
+    }
+
+    /**
+     * 总体统计
+     *
+     * @return
+     */
+    @RequestMapping(value = "/overallStat")
+    public ResultBean overallStat(@Valid MusicPracticeOverallStatSearch sf) {
+        ChartHeatmapData chartData = new ChartHeatmapData();
+        chartData.setTitle("音乐练习统计");
+        DateGroupType dateGroupType = sf.getDateGroupType();
+        int[] minMax = ChartUtil.getMinMax(dateGroupType,sf.getStartDate(),sf.getEndDate());
+        int min = minMax[0];
+        int max = minMax[1];
+        List<String> xdata = ChartUtil.getStringXdataList(dateGroupType,min, max);
+        chartData.setXdata(xdata);
+        //Y轴
+        List<MusicInstrument> miLIst = musicPracticeService.getActiveMusicInstrument(sf.getUserId());
+        Map<String,OverallYIndex> yMap = new HashMap<>();
+        int stn = miLIst.size();
+        for(int i=0;i<stn;i++){
+            MusicInstrument st = miLIst.get(i);
+            yMap.put(st.getId().toString(),new OverallYIndex(st.getId().toString(),st.getName(),"分钟",i));
+            chartData.addYData(st.getName());
+        }
+        List<MusicPracticeOverallStat> list = musicPracticeService.statOverallMusicPractice(sf);
+        GroupType valueType = sf.getValueType();
+        ChartHeatmapSerieData serieData = new ChartHeatmapSerieData(valueType.getName());
+        int vn = list.size();
+        for (int i=0;i<vn;i++) {
+            MusicPracticeOverallStat seos = list.get(i);
+            int indexValue = seos.getIndexValue();
+            if(dateGroupType==DateGroupType.DAY){
+                indexValue = DateUtil.getDayOfYear(DateUtil.getDate(indexValue+"","yyyyMMdd"));
+            }
+            int xIndex = ChartUtil.getXIndex(dateGroupType,indexValue,min,xdata) ;
+            OverallYIndex yi = yMap.get(seos.getMusicInstrumentId().toString());
+            int yIndex = yi.getIndex();
+            double value =0;
+            String unit ="次";
+            if(valueType==GroupType.COUNT){
+                value = seos.getTotalCount().doubleValue();
+            }else if(valueType==GroupType.MINUTES){
+                value = NumberUtil.getDoubleValue(seos.getTotalMinutes().doubleValue()/60.0,1);
+                unit ="小时";
+            }
+            chartData.updateMinMaxValue(value);
+            serieData.addData(new Object[]{xIndex,yIndex,value,unit});
+        }
+        chartData.addSerieData(serieData);
         return callback(chartData);
     }
 

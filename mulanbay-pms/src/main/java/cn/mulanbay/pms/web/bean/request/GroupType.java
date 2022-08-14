@@ -25,7 +25,9 @@ public enum GroupType {
     SHOPNAME(15, "店铺"),
     MAXSPEED(16, "最佳速度", "maxSpeed","公里/小时"),
     MAXPACE(17, "最佳配速", "maxPace","分钟/公里"),
-    EXERCISEDATE(18, "锻炼日期", "exerciseDate");
+    EXERCISEDATE(18, "锻炼日期", "exerciseDate"),
+    //通用
+    VALUE(19, "值", "value");
 
     private int value;
     private String name;

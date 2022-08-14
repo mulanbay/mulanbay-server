@@ -6,11 +6,11 @@ import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.persistent.query.QueryBuilder;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
-import cn.mulanbay.pms.web.bean.request.DateStatSearch;
+import cn.mulanbay.pms.web.bean.request.GroupType;
 
 import java.util.Date;
 
-public class SportExerciseDateStatSearch extends QueryBuilder implements DateStatSearch, BindUser, FullEndDateTime {
+public class SportExerciseOverallStatSearch extends QueryBuilder implements BindUser, FullEndDateTime {
 
     @Query(fieldName = "exercise_date", op = Parameter.Operator.GTE)
     private Date startDate;
@@ -21,22 +21,13 @@ public class SportExerciseDateStatSearch extends QueryBuilder implements DateSta
     @Query(fieldName = "user_id", op = Parameter.Operator.EQ)
     public Long userId;
 
-    //@NotNull(message = "{validate.sportExercise.sportTypeId.NotNull}")
-    @Query(fieldName = "sport_type_id", op = Parameter.Operator.EQ)
-    private Integer sportTypeId;
-
     private DateGroupType dateGroupType;
 
-    // 是否补全日期
-    private Boolean compliteDate;
+    /**
+     * 是次数还是数值
+     */
+    private GroupType valueType;
 
-    //获取最佳的记录（绘制图使用）
-    private String bestField;
-
-    // 是否统计更详细的信息
-    private Boolean fullStat;
-
-    @Override
     public Date getStartDate() {
         return startDate;
     }
@@ -56,7 +47,6 @@ public class SportExerciseDateStatSearch extends QueryBuilder implements DateSta
         this.endDate = endDate;
     }
 
-    @Override
     public DateGroupType getDateGroupType() {
         return dateGroupType;
     }
@@ -65,25 +55,12 @@ public class SportExerciseDateStatSearch extends QueryBuilder implements DateSta
         this.dateGroupType = dateGroupType;
     }
 
-    public Boolean getCompliteDate() {
-        return compliteDate;
+    public GroupType getValueType() {
+        return valueType;
     }
 
-    @Override
-    public Boolean isCompliteDate() {
-        return compliteDate;
-    }
-
-    public void setCompliteDate(Boolean compliteDate) {
-        this.compliteDate = compliteDate;
-    }
-
-    public Integer getSportTypeId() {
-        return sportTypeId;
-    }
-
-    public void setSportTypeId(Integer sportTypeId) {
-        this.sportTypeId = sportTypeId;
+    public void setValueType(GroupType valueType) {
+        this.valueType = valueType;
     }
 
     @Override
@@ -96,19 +73,4 @@ public class SportExerciseDateStatSearch extends QueryBuilder implements DateSta
         this.userId = userId;
     }
 
-    public String getBestField() {
-        return bestField;
-    }
-
-    public void setBestField(String bestField) {
-        this.bestField = bestField;
-    }
-
-    public Boolean getFullStat() {
-        return fullStat;
-    }
-
-    public void setFullStat(Boolean fullStat) {
-        this.fullStat = fullStat;
-    }
 }

@@ -29,8 +29,8 @@ public class MysqlUtil {
                 method = "hour";
                 break;
             case DAYOFMONTH:
-                //统计都是哪些小时点练习的
-                method = "hour";
+                //在这个月中的那一天
+                method = "day";
                 break;
             case DAYOFWEEK:
                 //星期索引，周一=1，周二=2，周日=7

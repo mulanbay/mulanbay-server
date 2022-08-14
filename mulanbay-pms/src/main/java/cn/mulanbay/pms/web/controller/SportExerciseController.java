@@ -15,6 +15,7 @@ import cn.mulanbay.pms.persistent.domain.SportType;
 import cn.mulanbay.pms.persistent.domain.User;
 import cn.mulanbay.pms.persistent.dto.SportExerciseDateStat;
 import cn.mulanbay.pms.persistent.dto.SportExerciseMultiStat;
+import cn.mulanbay.pms.persistent.dto.SportExerciseOverallStat;
 import cn.mulanbay.pms.persistent.dto.SportExerciseStat;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.NextMilestoneType;
@@ -26,10 +27,7 @@ import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.GroupType;
 import cn.mulanbay.pms.web.bean.request.sport.*;
-import cn.mulanbay.pms.web.bean.response.chart.ChartCalendarData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartCalendarMultiData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartYData;
+import cn.mulanbay.pms.web.bean.response.chart.*;
 import cn.mulanbay.pms.web.bean.response.sport.SportExerciseResponse;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +40,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 运动锻炼管理
@@ -491,5 +487,61 @@ public class SportExerciseController extends BaseController {
             return 0;
         }
     }
+
+    /**
+     * 总体统计
+     *
+     * @return
+     */
+    @RequestMapping(value = "/overallStat")
+    public ResultBean overallStat(@Valid SportExerciseOverallStatSearch sf) {
+        ChartHeatmapData chartData = new ChartHeatmapData();
+        chartData.setTitle("锻炼统计");
+        DateGroupType dateGroupType = sf.getDateGroupType();
+        int[] minMax = ChartUtil.getMinMax(dateGroupType,sf.getStartDate(),sf.getEndDate());
+        int min = minMax[0];
+        int max = minMax[1];
+        List<String> xdata = ChartUtil.getStringXdataList(dateGroupType,min, max);
+        chartData.setXdata(xdata);
+        //Y轴
+        List<SportType> sportTypeList = sportExerciseService.getAchieveSportTypes(sf.getUserId());
+        Map<String,OverallYIndex> yMap = new HashMap<>();
+        int stn = sportTypeList.size();
+        for(int i=0;i<stn;i++){
+            SportType st = sportTypeList.get(i);
+            yMap.put(st.getId().toString(),new OverallYIndex(st.getId().toString(),st.getName(),st.getUnit(),i));
+            chartData.addYData(st.getName());
+        }
+        List<SportExerciseOverallStat> list = sportExerciseService.statOverallSportExercise(sf);
+        GroupType valueType = sf.getValueType();
+        ChartHeatmapSerieData serieData = new ChartHeatmapSerieData(valueType.getName());
+        int vn = list.size();
+        for (int i=0;i<vn;i++) {
+            SportExerciseOverallStat seos = list.get(i);
+            int indexValue = seos.getIndexValue();
+            if(dateGroupType==DateGroupType.DAY){
+                indexValue = DateUtil.getDayOfYear(DateUtil.getDate(indexValue+"","yyyyMMdd"));
+            }
+            int xIndex = ChartUtil.getXIndex(dateGroupType,indexValue,min,xdata) ;
+            OverallYIndex yi = yMap.get(seos.getSportTypeId().toString());
+            int yIndex = yi.getIndex();
+            double value =0;
+            String unit ="次";
+            if(valueType==GroupType.COUNT){
+                value = seos.getTotalCount().doubleValue();
+            }else if(valueType==GroupType.MINUTES){
+                value = NumberUtil.getDoubleValue(seos.getTotalMinutes().doubleValue()/60.0,1);
+                unit ="小时";
+            }else if(valueType==GroupType.KILOMETRES){
+                value = seos.getTotalKilometres().doubleValue();
+                unit = yi.getUnit();
+            }
+            chartData.updateMinMaxValue(value);
+            serieData.addData(new Object[]{xIndex,yIndex,value,unit});
+        }
+        chartData.addSerieData(serieData);
+        return callback(chartData);
+    }
+
 
 }

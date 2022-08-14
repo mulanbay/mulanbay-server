@@ -844,4 +844,34 @@ public class TreatService extends BaseHibernateDao {
                     "获取用药详情列表异常", e);
         }
     }
+
+    /**
+     * 获取看病记录的总体统计
+     *
+     * @param sf
+     * @return
+     */
+    public List<TreatRecordOverallStat> statOverallTreatRecord(TreatRecordOverallStatSearch sf) {
+        try {
+            PageRequest pr = sf.buildQuery();
+            pr.setNeedWhere(true);
+            DateGroupType dateGroupType = sf.getDateGroupType();
+            String feeField = sf.getFeeField();
+            StringBuffer sb = new StringBuffer();
+            sb.append("select indexValue,name,count(0) as totalCount, ");
+            sb.append("sum(" + feeField + ") as totalFee ");
+            sb.append("from (");
+            sb.append("select " + MysqlUtil.dateTypeMethod("treat_date", dateGroupType) + "as indexValue, ");
+            sb.append(sf.getGroupField()+" as name,"+feeField);
+            sb.append(" from treat_record ");
+            sb.append(pr.getParameterString());
+            sb.append(") as res group by name,indexValue ");
+            sb.append(" order by indexValue");
+            List<TreatRecordOverallStat> list = this.getEntityListWithClassSQL(sb.toString(), pr.getPage(), pr.getPageSize(), TreatRecordOverallStat.class, pr.getParameterValue());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取看病记录的总体统计异常", e);
+        }
+    }
 }

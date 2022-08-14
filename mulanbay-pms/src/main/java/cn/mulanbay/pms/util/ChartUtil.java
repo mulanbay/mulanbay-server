@@ -11,6 +11,7 @@ import cn.mulanbay.pms.web.bean.response.chart.ChartCalendarData;
 import cn.mulanbay.pms.web.bean.response.chart.ChartData;
 import cn.mulanbay.pms.web.bean.response.chart.ChartYData;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -116,6 +117,77 @@ public class ChartUtil {
     }
 
     /**
+     * 获取X轴索引
+     * @param dateGroupType
+     * @param indexValue
+     * @param min
+     * @param xdata
+     * @return
+     */
+    public static int getXIndex(DateGroupType dateGroupType,int indexValue,int min,List<String> xdata){
+        if(dateGroupType==DateGroupType.DAY){
+            //循环
+            for(int i =0; i<xdata.size();i++){
+                if(xdata.get(i).equals(String.valueOf(indexValue))){
+                    return i;
+                }
+            }
+            return 0;
+        }
+        return indexValue-min;
+    }
+    /**
+     * 获取最大最小值
+     * @param dateGroupType
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public static int[] getMinMax(DateGroupType dateGroupType, Date startDate,Date endDate){
+        int min =1;
+        int max =1;
+        if(dateGroupType==DateGroupType.MONTH){
+            min = 1;
+            max = Constant.MAX_MONTH;
+        }else if(dateGroupType==DateGroupType.DAY){
+            min = 1;
+            max = Constant.MAX_DAY;
+        }else if(dateGroupType==DateGroupType.HOUR){
+            min = 1;
+            max = Constant.MAX_HOUR;
+        }else if(dateGroupType==DateGroupType.DAYOFMONTH){
+            min = 1;
+            max = Constant.MAX_MONTH_DAY;
+        }else if(dateGroupType==DateGroupType.WEEK){
+            min = 1;
+            max = Constant.MAX_WEEK;
+        }else if(dateGroupType==DateGroupType.DAYOFWEEK){
+            min = 1;
+            max = Constant.DAYS_WEEK;
+        }else if(dateGroupType==DateGroupType.YEAR){
+            min = Integer.valueOf(DateUtil.getFormatDate(startDate,"yyyy"));
+            max = Integer.valueOf(DateUtil.getFormatDate(endDate,"yyyy"));
+        }
+        return new int[]{min,max};
+    }
+
+    /**
+     * 获取X轴的字符值列表
+     * @param dateGroupType
+     * @param min
+     * @param max
+     * @return
+     */
+    public static List<String> getStringXdataList(DateGroupType dateGroupType, int min,int max){
+        List<String> res = new ArrayList<>();
+        for(int i=min;i<=max;i++){
+            String s = getStringXdata(dateGroupType,i);
+            res.add(s);
+        }
+        return res;
+    }
+
+    /**
      * 获取X轴的字符值
      *
      * @param dateGroupType
@@ -128,6 +200,7 @@ public class ChartUtil {
         } else if (dateGroupType == DateGroupType.MINUTE) {
             return value + "分钟";
         } else if (dateGroupType == DateGroupType.HOUR) {
+            //return value+":00~" +(value)+":59";
             return value + "点";
         } else if (dateGroupType == DateGroupType.WEEK) {
             return "第" + value + "周";

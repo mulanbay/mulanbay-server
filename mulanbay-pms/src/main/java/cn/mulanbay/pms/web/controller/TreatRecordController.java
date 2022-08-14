@@ -11,10 +11,7 @@ import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.persistent.domain.TreatRecord;
-import cn.mulanbay.pms.persistent.dto.TreatRecordAnalyseStat;
-import cn.mulanbay.pms.persistent.dto.TreatRecordDateStat;
-import cn.mulanbay.pms.persistent.dto.TreatRecordFullStat;
-import cn.mulanbay.pms.persistent.dto.TreatRecordSummaryStat;
+import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.ChartType;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.service.DataService;
@@ -531,5 +528,62 @@ public class TreatRecordController extends BaseController {
         }
         return callbackDataGrid(res);
     }
+
+    /**
+     * 总体统计
+     *
+     * @return
+     */
+    @RequestMapping(value = "/overallStat")
+    public ResultBean overallStat(@Valid TreatRecordOverallStatSearch sf) {
+        ChartHeatmapData chartData = new ChartHeatmapData();
+        chartData.setTitle("看病统计");
+        DateGroupType dateGroupType = sf.getDateGroupType();
+        int[] minMax = ChartUtil.getMinMax(dateGroupType,sf.getStartDate(),sf.getEndDate());
+        int min = minMax[0];
+        int max = minMax[1];
+        List<String> xdata = ChartUtil.getStringXdataList(dateGroupType,min, max);
+        chartData.setXdata(xdata);
+        List<TreatRecordOverallStat> list = treatService.statOverallTreatRecord(sf);
+        int stn = list.size();
+        //Y轴
+        Map<String,OverallYIndex> yMap = new HashMap<>();
+        int yxi =0;
+        for(int i=0;i<stn;i++){
+            TreatRecordOverallStat tros = list.get(i);
+            String key = tros.getName();
+            if(yMap.get(key)!=null){
+                continue;
+            }
+            yMap.put(key,new OverallYIndex(key,key,"次",(yxi++)));
+            chartData.addYData(key);
+        }
+        GroupType groupType = sf.getGroupType();
+        ChartHeatmapSerieData serieData = new ChartHeatmapSerieData(groupType.getName());
+        for (int i=0;i<stn;i++) {
+            TreatRecordOverallStat seos = list.get(i);
+            int indexValue = seos.getIndexValue();
+            if(dateGroupType==DateGroupType.DAY){
+                indexValue = DateUtil.getDayOfYear(DateUtil.getDate(indexValue+"","yyyyMMdd"));
+            }
+            int xIndex = ChartUtil.getXIndex(dateGroupType,indexValue,min,xdata) ;
+            OverallYIndex yi = yMap.get(seos.getName());
+            int yIndex = yi.getIndex();
+            double value =0;
+            String unit ="次";
+            if(groupType==GroupType.COUNT){
+                value = seos.getTotalCount().doubleValue();
+            }else{
+                value = seos.getTotalFee().doubleValue();
+                unit = "元";
+            }
+            chartData.updateMinMaxValue(value);
+            serieData.addData(new Object[]{xIndex,yIndex,value,unit});
+        }
+        chartData.addSerieData(serieData);
+        return callback(chartData);
+    }
+
+
 
 }

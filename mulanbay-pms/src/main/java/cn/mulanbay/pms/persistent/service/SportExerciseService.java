@@ -11,16 +11,14 @@ import cn.mulanbay.pms.persistent.domain.SportMilestone;
 import cn.mulanbay.pms.persistent.domain.SportType;
 import cn.mulanbay.pms.persistent.dto.SportExerciseDateStat;
 import cn.mulanbay.pms.persistent.dto.SportExerciseMultiStat;
+import cn.mulanbay.pms.persistent.dto.SportExerciseOverallStat;
 import cn.mulanbay.pms.persistent.dto.SportExerciseStat;
 import cn.mulanbay.pms.persistent.enums.BestType;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.NextMilestoneType;
 import cn.mulanbay.pms.persistent.util.MysqlUtil;
 import cn.mulanbay.pms.web.bean.request.GroupType;
-import cn.mulanbay.pms.web.bean.request.sport.SportExerciseByMultiStatSearch;
-import cn.mulanbay.pms.web.bean.request.sport.SportExerciseDateStatSearch;
-import cn.mulanbay.pms.web.bean.request.sport.SportExerciseMultiStatSearch;
-import cn.mulanbay.pms.web.bean.request.sport.SportExerciseStatSearch;
+import cn.mulanbay.pms.web.bean.request.sport.*;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -276,6 +274,22 @@ public class SportExerciseService extends BaseHibernateDao {
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "保存锻炼异常", e);
+        }
+    }
+
+    /**
+     * 锻炼类型列表
+     *
+     * @param userId
+     */
+    public List<SportType> getAchieveSportTypes(Long userId) {
+        try {
+            String hql = "from SportType where userId=?0 order by orderIndex desc";
+            List<SportType> list = this.getEntityListNoPageHQL(hql, userId);
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "锻炼类型列表异常", e);
         }
     }
 
@@ -536,4 +550,32 @@ public class SportExerciseService extends BaseHibernateDao {
                     "获取最佳的锻炼异常", e);
         }
     }
+
+    /**
+     * 获取按锻炼类型是时间的统计
+     *
+     * @param sf
+     * @return
+     */
+    public List<SportExerciseOverallStat> statOverallSportExercise(SportExerciseOverallStatSearch sf) {
+        try {
+            PageRequest pr = sf.buildQuery();
+            pr.setNeedWhere(true);
+            DateGroupType dateGroupType = sf.getDateGroupType();
+            StringBuffer sb = new StringBuffer();
+            sb.append("select indexValue,sport_type_id as sportTypeId,count(0) as totalCount,sum(kilometres) as totalKilometres,sum(minutes) as totalMinutes ");
+            sb.append("from (");
+            sb.append("select sport_type_id,kilometres,minutes," + MysqlUtil.dateTypeMethod("exercise_date", dateGroupType) + "as indexValue ");
+            sb.append("from sport_exercise ");
+            sb.append(pr.getParameterString());
+            sb.append(") as res group by sport_type_id,indexValue ");
+            sb.append(" order by indexValue");
+            List<SportExerciseOverallStat> list = this.getEntityListWithClassSQL(sb.toString(), pr.getPage(), pr.getPageSize(), SportExerciseOverallStat.class, pr.getParameterValue());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取按锻炼类型是时间的统计异常", e);
+        }
+    }
+
 }

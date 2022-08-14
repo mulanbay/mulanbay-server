@@ -12,6 +12,16 @@ public class Constant {
     public static final int MAX_MONTH = 12;
 
     /**
+     * 最大天数
+     */
+    public static final int MAX_DAY = 366;
+
+    /**
+     * 一个月最大天数
+     */
+    public static final int MAX_MONTH_DAY = 31;
+
+    /**
      * 最大周数
      */
     public static final int MAX_WEEK = 53;
@@ -26,4 +36,8 @@ public class Constant {
      */
     public static final int DAYS_WEEK = 7;
 
+    /**
+     * 小时
+     */
+    public static final int MAX_HOUR = 24;
 }
