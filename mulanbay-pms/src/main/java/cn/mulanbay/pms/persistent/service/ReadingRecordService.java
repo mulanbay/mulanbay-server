@@ -8,16 +8,15 @@ import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.pms.persistent.domain.BookCategory;
 import cn.mulanbay.pms.persistent.domain.ReadingRecord;
 import cn.mulanbay.pms.persistent.domain.ReadingRecordDetail;
+import cn.mulanbay.pms.persistent.domain.SportType;
 import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.BookLanguage;
 import cn.mulanbay.pms.persistent.enums.BookType;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.ReadingStatus;
 import cn.mulanbay.pms.persistent.util.MysqlUtil;
-import cn.mulanbay.pms.web.bean.request.read.ReadingRecordAnalyseStatSearch;
-import cn.mulanbay.pms.web.bean.request.read.ReadingRecordDateStatSearch;
-import cn.mulanbay.pms.web.bean.request.read.ReadingRecordDetailDateStatSearch;
-import cn.mulanbay.pms.web.bean.request.read.ReadingRecordStatSearch;
+import cn.mulanbay.pms.web.bean.request.read.*;
+import cn.mulanbay.pms.web.bean.request.sport.SportExerciseOverallStatSearch;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -356,4 +355,75 @@ public class ReadingRecordService extends BaseHibernateDao {
         }
     }
 
+    /**
+     * 图书类型列表
+     *
+     * @param userId
+     */
+    public List<BookCategory> getAchieveBookCategory(Long userId) {
+        try {
+            String hql = "from BookCategory where userId=?0 order by orderIndex desc";
+            List<BookCategory> list = this.getEntityListNoPageHQL(hql, userId);
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取图书类型列表异常", e);
+        }
+    }
+
+    /**
+     * 获取按图书类型的统计
+     *
+     * @param sf
+     * @return
+     */
+    public List<ReadingRecordOverallStat> statOverallReadingRecord(ReadingRecordOverallStatSearch sf) {
+        try {
+            PageRequest pr = sf.buildQuery();
+            pr.setNeedWhere(false);
+            DateGroupType dateGroupType = sf.getDateGroupType();
+            StringBuffer sb = new StringBuffer();
+            sb.append("select indexValue,book_category_id as bookCategoryId,count(0) as totalCount ");
+            sb.append("from (");
+            sb.append("select book_category_id," + MysqlUtil.dateTypeMethod("finished_date", dateGroupType) + "as indexValue ");
+            sb.append("from reading_record ");
+            sb.append("where status="+ReadingStatus.READED.ordinal()+" ");
+            sb.append(pr.getParameterString());
+            sb.append(") as res group by book_category_id,indexValue ");
+            sb.append(" order by indexValue");
+            List<ReadingRecordOverallStat> list = this.getEntityListWithClassSQL(sb.toString(), pr.getPage(), pr.getPageSize(), ReadingRecordOverallStat.class, pr.getParameterValue());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取按图书类型的统计异常", e);
+        }
+    }
+
+    /**
+     * 获取按图书类型阅读明细的统计
+     *
+     * @param sf
+     * @return
+     */
+    public List<ReadingRecordDetailOverallStat> statOverallReadingRecordDetail(ReadingRecordDetailOverallStatSearch sf) {
+        try {
+            PageRequest pr = sf.buildQuery();
+            pr.setNeedWhere(false);
+            DateGroupType dateGroupType = sf.getDateGroupType();
+            StringBuffer sb = new StringBuffer();
+            sb.append("select indexValue,book_category_id as bookCategoryId,sum(minutes) as totalMinutes ");
+            sb.append("from (");
+            sb.append("select rd.book_category_id,rrd.minutes," + MysqlUtil.dateTypeMethod("rrd.read_time", dateGroupType) + "as indexValue ");
+            sb.append("from reading_record_detail rrd ,reading_record rd ");
+            sb.append("where rrd.reading_record_id=rd.id ");
+            sb.append(pr.getParameterString());
+            sb.append(") as res group by book_category_id,indexValue ");
+            sb.append(" order by indexValue");
+            List<ReadingRecordDetailOverallStat> list = this.getEntityListWithClassSQL(sb.toString(), pr.getPage(), pr.getPageSize(), ReadingRecordDetailOverallStat.class, pr.getParameterValue());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取按图书类型阅读明细的统计异常", e);
+        }
+    }
 }

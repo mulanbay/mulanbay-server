@@ -12,16 +12,15 @@ import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.persistent.domain.BookCategory;
 import cn.mulanbay.pms.persistent.domain.ReadingRecord;
 import cn.mulanbay.pms.persistent.domain.ReadingRecordDetail;
-import cn.mulanbay.pms.persistent.dto.ReadingRecordAnalyseStat;
-import cn.mulanbay.pms.persistent.dto.ReadingRecordDateStat;
-import cn.mulanbay.pms.persistent.dto.ReadingRecordReadedStat;
-import cn.mulanbay.pms.persistent.dto.ReadingRecordTimeStat;
+import cn.mulanbay.pms.persistent.dto.*;
+import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.ReadingStatus;
 import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.ReadingRecordService;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
+import cn.mulanbay.pms.web.bean.request.GroupType;
 import cn.mulanbay.pms.web.bean.request.read.*;
 import cn.mulanbay.pms.web.bean.response.chart.*;
 import cn.mulanbay.web.bean.response.ResultBean;
@@ -417,5 +416,113 @@ public class ReadingRecordController extends BaseController {
         chartPieData.getDetailData().add(serieData);
         return chartPieData;
     }
+
+    /**
+     * 总体统计
+     *
+     * @return
+     */
+    @RequestMapping(value = "/overallStat")
+    public ResultBean overallStat(@Valid ReadingRecordOverallStatSearch sf) {
+        GroupType groupType = sf.getValueType();
+        if(groupType==GroupType.COUNT){
+            //阅读本数
+            return this.overallStatReadingRecord(sf);
+        }else{
+            //阅读时间
+            ReadingRecordDetailOverallStatSearch df = new ReadingRecordDetailOverallStatSearch();
+            BeanCopy.copyProperties(sf,df);
+            return this.overallStatReadingRecordDetail(df);
+        }
+    }
+
+     /**
+     * @param sf
+     * @return
+     */
+    public ResultBean overallStatReadingRecord(ReadingRecordOverallStatSearch sf) {
+        ChartHeatmapData chartData = new ChartHeatmapData();
+        chartData.setTitle("阅读统计");
+        DateGroupType dateGroupType = sf.getDateGroupType();
+        int[] minMax = ChartUtil.getMinMax(dateGroupType,sf.getStartDate(),sf.getEndDate());
+        int min = minMax[0];
+        int max = minMax[1];
+        List<String> xdata = ChartUtil.getStringXdataList(dateGroupType,min, max);
+        chartData.setXdata(xdata);
+        //Y轴
+        List<BookCategory> bookCategoryList = readingRecordService.getAchieveBookCategory(sf.getUserId());
+        Map<String,OverallYIndex> yMap = new HashMap<>();
+        int stn = bookCategoryList.size();
+        for(int i=0;i<stn;i++){
+            BookCategory st = bookCategoryList.get(i);
+            yMap.put(st.getId().toString(),new OverallYIndex(st.getId().toString(),st.getName(),"本",i));
+            chartData.addYData(st.getName());
+        }
+        List<ReadingRecordOverallStat> list = readingRecordService.statOverallReadingRecord(sf);
+        GroupType valueType = sf.getValueType();
+        ChartHeatmapSerieData serieData = new ChartHeatmapSerieData(valueType.getName());
+        int vn = list.size();
+        for (int i=0;i<vn;i++) {
+            ReadingRecordOverallStat seos = list.get(i);
+            int indexValue = seos.getIndexValue();
+            if(dateGroupType==DateGroupType.DAY){
+                indexValue = DateUtil.getDayOfYear(DateUtil.getDate(indexValue+"","yyyyMMdd"));
+            }
+            int xIndex = ChartUtil.getXIndex(dateGroupType,indexValue,min,xdata) ;
+            OverallYIndex yi = yMap.get(seos.getBookCategoryId().toString());
+            int yIndex = yi.getIndex();
+            double value = seos.getTotalCount().doubleValue();
+            String unit ="本";
+            chartData.updateMinMaxValue(value);
+            serieData.addData(new Object[]{xIndex,yIndex,value,unit});
+        }
+        chartData.addSerieData(serieData);
+        return callback(chartData);
+    }
+
+    /**
+     * @param sf
+     * @return
+     */
+    public ResultBean overallStatReadingRecordDetail(ReadingRecordDetailOverallStatSearch sf) {
+        ChartHeatmapData chartData = new ChartHeatmapData();
+        chartData.setTitle("阅读统计");
+        DateGroupType dateGroupType = sf.getDateGroupType();
+        int[] minMax = ChartUtil.getMinMax(dateGroupType,sf.getStartDate(),sf.getEndDate());
+        int min = minMax[0];
+        int max = minMax[1];
+        List<String> xdata = ChartUtil.getStringXdataList(dateGroupType,min, max);
+        chartData.setXdata(xdata);
+        //Y轴
+        List<BookCategory> bookCategoryList = readingRecordService.getAchieveBookCategory(sf.getUserId());
+        Map<String,OverallYIndex> yMap = new HashMap<>();
+        int stn = bookCategoryList.size();
+        for(int i=0;i<stn;i++){
+            BookCategory st = bookCategoryList.get(i);
+            yMap.put(st.getId().toString(),new OverallYIndex(st.getId().toString(),st.getName(),"本",i));
+            chartData.addYData(st.getName());
+        }
+        List<ReadingRecordDetailOverallStat> list = readingRecordService.statOverallReadingRecordDetail(sf);
+        GroupType valueType = sf.getValueType();
+        ChartHeatmapSerieData serieData = new ChartHeatmapSerieData(valueType.getName());
+        int vn = list.size();
+        for (int i=0;i<vn;i++) {
+            ReadingRecordDetailOverallStat seos = list.get(i);
+            int indexValue = seos.getIndexValue();
+            if(dateGroupType==DateGroupType.DAY){
+                indexValue = DateUtil.getDayOfYear(DateUtil.getDate(indexValue+"","yyyyMMdd"));
+            }
+            int xIndex = ChartUtil.getXIndex(dateGroupType,indexValue,min,xdata) ;
+            OverallYIndex yi = yMap.get(seos.getBookCategoryId().toString());
+            int yIndex = yi.getIndex();
+            double value = NumberUtil.getDoubleValue(seos.getTotalMinutes().doubleValue()/60,1);
+            String unit ="小时";
+            chartData.updateMinMaxValue(value);
+            serieData.addData(new Object[]{xIndex,yIndex,value,unit});
+        }
+        chartData.addSerieData(serieData);
+        return callback(chartData);
+    }
+
 
 }
