@@ -7,6 +7,7 @@ import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
+import cn.mulanbay.pms.common.ConfigKey;
 import cn.mulanbay.pms.handler.RewardPointsHandler;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.persistent.domain.SportExercise;
@@ -90,7 +91,7 @@ public class SportExerciseController extends BaseController {
             birthYear = 1970;
         }
         List<SportExerciseResponse> beanList = new ArrayList<>();
-        int baseMaxHeartRate = systemConfigHandler.getIntegerConfig("system.maxHeartRate.base");
+        int baseMaxHeartRate = systemConfigHandler.getIntegerConfig(ConfigKey.SYSTEM_MAXHEARTRATE_BASE);
         for (SportExercise se : qr.getBeanList()) {
             //根据年龄计算最大心率范围
             int myAge = DateUtil.getYear(se.getExerciseDate()) - birthYear + 1;

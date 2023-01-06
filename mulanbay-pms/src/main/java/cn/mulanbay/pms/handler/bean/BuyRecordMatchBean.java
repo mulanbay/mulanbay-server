@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.handler.bean;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 消费记录匹配
@@ -31,6 +32,8 @@ public class BuyRecordMatchBean implements Serializable {
     private String shopName;
 
     private String brand;
+
+    private List<String> keywords;
 
     public String getGoodsName() {
         return goodsName;
@@ -102,5 +105,13 @@ public class BuyRecordMatchBean implements Serializable {
 
     public void setBrand(String brand) {
         this.brand = brand;
+    }
+
+    public List<String> getKeywords() {
+        return keywords;
+    }
+
+    public void setKeywords(List<String> keywords) {
+        this.keywords = keywords;
     }
 }

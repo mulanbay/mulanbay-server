@@ -6,6 +6,7 @@ import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
+import cn.mulanbay.pms.common.ConfigKey;
 import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.persistent.domain.LevelConfig;
@@ -179,7 +180,7 @@ public class LevelConfigController extends BaseController {
     }
 
     private LevelConfig matchLevel(int maxLevel, Long userId) {
-        int days = systemConfigHandler.getIntegerConfig("user.level.maxCompareDays");
+        int days = systemConfigHandler.getIntegerConfig(ConfigKey.USER_LEVEL_MAXCOMPAREDAYS);
         List<UserScore> usList = userScoreService.getList(userId, days);
         List<UserRewardPointRecord> urList = authService.getUserRewardPointRecordList(userId, days);
         for (int i = maxLevel; i >= 1; i--) {

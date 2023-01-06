@@ -6,6 +6,7 @@ import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Sort;
+import cn.mulanbay.pms.common.ConfigKey;
 import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.handler.BudgetHandler;
 import cn.mulanbay.pms.handler.ConsumeHandler;
@@ -898,7 +899,7 @@ public class BuyRecordController extends BaseController {
     public ResultBean statWordCloud(@Valid BuyRecordWordCloudSearch sf) {
         List<String> list = buyRecordService.getBuyRecordWordCloudStat(sf);
         Map<String,Integer> statData = new HashMap<>();
-        Integer num = systemConfigHandler.getIntegerConfig("nlp.buyRecord.goodsName.ekNum");
+        Integer num = systemConfigHandler.getIntegerConfig(ConfigKey.NLP_BUYRECORD_GOODSNAME_EKNUM);
         String field = sf.getField();
         for (String d : list) {
             if("goodsName".equals(field)||"skuInfo".equals(field)){
@@ -959,6 +960,9 @@ public class BuyRecordController extends BaseController {
     @RequestMapping(value = "/aiMatch", method = RequestMethod.POST)
     public ResultBean aiMatch(@RequestBody @Valid GoodsNameAiMatchRequest mr) {
         BuyRecordMatchBean bean = consumeHandler.match(mr.getUserId(),mr.getGoodsName());
+        Integer num = systemConfigHandler.getIntegerConfig(ConfigKey.NLP_BUYRECORD_GOODSNAME_EKNUM);
+        List<String> keywords = ahaNLPHandler.extractKeyword(mr.getGoodsName(),num);
+        bean.setKeywords(keywords);
         return callback(bean);
     }
 }

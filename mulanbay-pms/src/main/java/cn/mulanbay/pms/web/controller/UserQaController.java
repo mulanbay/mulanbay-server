@@ -3,6 +3,7 @@ package cn.mulanbay.pms.web.controller;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.query.PageResult;
+import cn.mulanbay.pms.common.ConfigKey;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.User;
@@ -88,7 +89,7 @@ public class UserQaController extends BaseController {
     public ResultBean statWordCloud(@Valid UserQaWordCloudSearch sf) {
         List<String> reList = qaService.getRequestList(sf);
         Map<String,Integer> statData = new HashMap<>();
-        Integer num = systemConfigHandler.getIntegerConfig("nlp.userQa.requestContent.ekNum");
+        Integer num = systemConfigHandler.getIntegerConfig(ConfigKey.NLP_USERQA_REQUESTCONTENT_EKNUM);
         for(String req : reList){
             //先分词
             List<String> keywords = ahaNLPHandler.extractKeyword(req,num);

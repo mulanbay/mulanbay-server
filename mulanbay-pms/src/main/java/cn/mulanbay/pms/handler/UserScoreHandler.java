@@ -4,6 +4,7 @@ import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.common.util.StringUtil;
+import cn.mulanbay.pms.common.ConfigKey;
 import cn.mulanbay.pms.persistent.domain.ScoreConfig;
 import cn.mulanbay.pms.persistent.domain.UserScore;
 import cn.mulanbay.pms.persistent.domain.UserScoreDetail;
@@ -56,7 +57,7 @@ public class UserScoreHandler extends BaseHandler {
 
     public Date[] getDays(Date bussDay) {
         Date endTime = DateUtil.getTodayTillMiddleNightDate(bussDay);
-        int userScoreDays = systemConfigHandler.getIntegerConfig("user.score.days");
+        int userScoreDays = systemConfigHandler.getIntegerConfig(ConfigKey.USER_SCORE_DAYS);
         Date startTime = DateUtil.getDate(0 - userScoreDays, bussDay);
         return new Date[]{startTime, endTime};
     }
@@ -77,7 +78,7 @@ public class UserScoreHandler extends BaseHandler {
     public List<UserScoreDetail> getUseScore(Long userId, String scoreGroup, Date startTime, Date endTime) {
         List<ScoreConfig> scList = userScoreService.selectActiveScoreConfigList(scoreGroup);
         List<UserScoreDetail> list = new ArrayList<>();
-        int userScoreDays = systemConfigHandler.getIntegerConfig("user.score.days");
+        int userScoreDays = systemConfigHandler.getIntegerConfig(ConfigKey.USER_SCORE_DAYS);
         for (ScoreConfig sc : scList) {
             double vv = userScoreService.getScoreValue(sc.getSqlContent(), userId, startTime, endTime);
             vv = NumberUtil.getDoubleValue(vv / userScoreDays, 2);

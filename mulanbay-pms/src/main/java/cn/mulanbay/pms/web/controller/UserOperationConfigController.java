@@ -7,6 +7,7 @@ import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
+import cn.mulanbay.pms.common.ConfigKey;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.UserOperationConfig;
@@ -230,7 +231,7 @@ public class UserOperationConfigController extends BaseController {
         sf.setPage(0);
         List<UserOperationResponse> res = this.getUserOperationList(sf);
         Map<String,Integer> statData = new HashMap<>();
-        Integer num = systemConfigHandler.getIntegerConfig("nlp.userOperation.ekNum");
+        Integer num = systemConfigHandler.getIntegerConfig(ConfigKey.NLP_USEROPERATION_EKNUM);
         for (UserOperationResponse uo : res) {
             List<UserOperationVo> operations = uo.getOperations();
             for (UserOperationVo op : operations) {
