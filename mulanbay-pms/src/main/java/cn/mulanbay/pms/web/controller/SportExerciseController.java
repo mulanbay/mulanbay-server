@@ -452,7 +452,7 @@ public class SportExerciseController extends BaseController {
             SportExerciseDateStatSearch dateSearch = generateSearch(sf.getYears().get(i), sf);
             List<SportExerciseDateStat> list = sportExerciseService.statDateSportExercise(dateSearch);
             for (SportExerciseDateStat bean : list) {
-                String dateString = DateUtil.getFormatDateString(bean.getIndexValue().toString(), "yyyyMMdd", "yyyy-MM-dd");
+                String dateString = DateUtil.getFormatDateString(bean.getDateIndexValue().toString(), "yyyyMMdd", "yyyy-MM-dd");
                 data.addData(sf.getYears().get(i), dateString, this.getStatValue(sf.getGroupType(), bean, cc));
             }
         }

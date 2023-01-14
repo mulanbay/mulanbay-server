@@ -184,7 +184,7 @@ public class UserRewardPointRecordController extends BaseController {
         chartData.setUnit("次");
         chartData.setYear(year);
         for (UserPointsDateStat stat : list) {
-            String dd = DateUtil.getFormatDateString(String.valueOf(stat.getDateIndexValue()), "yyyyMMdd", DateUtil.FormatDay1);
+            String dd = DateUtil.getFormatDateString(String.valueOf(stat.getDayIndexValue()), "yyyyMMdd", DateUtil.FormatDay1);
             double vv = stat.getCalendarStatValue();
             if (vv >= 0) {
                 chartData.addSerieData(dd, vv, false, 1, 1);
@@ -258,7 +258,7 @@ public class UserRewardPointRecordController extends BaseController {
         ChartYData yData3 = new ChartYData();
         yData3.setName("平均积分");
         for (UserPointsDateStat bean : list) {
-            chartData.getXdata().add(bean.getIndexValue().toString());
+            chartData.getXdata().add(bean.getDateIndexValue().toString());
             yData1.getData().add(bean.getTotalCount().longValue());
             yData2.getData().add(bean.getTotalRewardPoints().longValue());
             yData3.getData().add(NumberUtil.getAverageValue(bean.getTotalRewardPoints().longValue(), bean.getTotalCount().intValue(), 2));

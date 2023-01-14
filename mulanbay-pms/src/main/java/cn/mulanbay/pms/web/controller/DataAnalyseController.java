@@ -140,7 +140,7 @@ public class DataAnalyseController extends BaseController {
                 chartData.addSeriesData(detailData);
                 chartData.addLegent(stat.getName());
             }
-            detailData.addData(new Object[]{stat.getIndexValue(), DateUtil.minutesToHours(stat.getTotalTime().doubleValue()), stat.getTotalCountValue()});
+            detailData.addData(new Object[]{stat.getDateIndexValue(), DateUtil.minutesToHours(stat.getTotalTime().doubleValue()), stat.getTotalCountValue()});
             chartData.valueCompare(stat.getTotalCountValue());
         }
         return chartData;

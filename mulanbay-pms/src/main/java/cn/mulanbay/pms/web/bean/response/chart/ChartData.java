@@ -83,8 +83,8 @@ public class ChartData extends BaseChartData {
      * @param dateGroupType
      */
     public void addXData(DateStat dateStat, DateGroupType dateGroupType) {
-        this.getIntXData().add(dateStat.getIndexValue());
-        this.getXdata().add(ChartUtil.getStringXdata(dateGroupType, dateStat.getIndexValue()));
+        this.getIntXData().add(dateStat.getDateIndexValue());
+        this.getXdata().add(ChartUtil.getStringXdata(dateGroupType, dateStat.getDateIndexValue()));
     }
 
     /**

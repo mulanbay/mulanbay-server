@@ -41,7 +41,7 @@ public class IncomeTypeStat implements CalendarDateStat {
     }
 
     @Override
-    public int getDateIndexValue() {
+    public int getDayIndexValue() {
         return indexValue.intValue();
     }
 }

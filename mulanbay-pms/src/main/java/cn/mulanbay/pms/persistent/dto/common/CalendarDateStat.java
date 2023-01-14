@@ -20,5 +20,5 @@ public interface CalendarDateStat {
      *
      * @return
      */
-    int getDateIndexValue();
+    int getDayIndexValue();
 }

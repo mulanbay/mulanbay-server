@@ -257,7 +257,7 @@ public class ChartUtil {
             chartData.setSubTitle("总次数：" + list.size());
             for (Object oo : list) {
                 CalendarDateStat stat = (CalendarDateStat) oo;
-                String dateString = DateUtil.getFormatDateString(String.valueOf(stat.getDateIndexValue()), "yyyyMMdd", DateUtil.FormatDay1);
+                String dateString = DateUtil.getFormatDateString(String.valueOf(stat.getDayIndexValue()), "yyyyMMdd", DateUtil.FormatDay1);
                 double vv = stat.getCalendarStatValue();
                 chartData.addSerieData(new Object[]{dateString, vv});
             }

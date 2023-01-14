@@ -178,18 +178,18 @@ public class WorkOvertimeController extends BaseController {
         double yearWorkDays = systemConfigHandler.getDoubleConfig("work.days.of.year");
         List<WorkOvertimeDateStat> list = workService.statDateWorkOvertime(sf);
         for (WorkOvertimeDateStat bean : list) {
-            chartData.getIntXData().add(bean.getIndexValue());
+            chartData.getIntXData().add(bean.getDateIndexValue());
             if (sf.getDateGroupType() == DateGroupType.MONTH) {
-                chartData.getXdata().add(bean.getIndexValue() + "月份");
+                chartData.getXdata().add(bean.getDateIndexValue() + "月份");
                 yData3.getData().add(getAverageHours(bean.getTotalHours().doubleValue(), monthWorkDays));
             } else if (sf.getDateGroupType() == DateGroupType.YEAR) {
-                chartData.getXdata().add(bean.getIndexValue() + "年");
+                chartData.getXdata().add(bean.getDateIndexValue() + "年");
                 yData3.getData().add(getAverageHours(bean.getTotalHours().doubleValue(), yearWorkDays));
             } else if (sf.getDateGroupType() == DateGroupType.WEEK) {
-                chartData.getXdata().add("第" + bean.getIndexValue() + "周");
+                chartData.getXdata().add("第" + bean.getDateIndexValue() + "周");
                 yData3.getData().add(getAverageHours(bean.getTotalHours().doubleValue(), weekWorkDays));
             } else {
-                chartData.getXdata().add(bean.getIndexValue().toString());
+                chartData.getXdata().add(bean.getDateIndexValue().toString());
                 yData3.getData().add(getAverageHours(bean.getTotalHours().doubleValue(), 1.0));
             }
             yData1.getData().add(bean.getTotalCount());

@@ -8,7 +8,7 @@ public class AfterEightHourStat implements DateStat {
 
     private String groupName;
 
-    private Integer indexValue;
+    private Number indexValue;
 
     private Object totalCount;
 
@@ -32,11 +32,15 @@ public class AfterEightHourStat implements DateStat {
     }
 
     @Override
-    public Integer getIndexValue() {
+    public Integer getDateIndexValue() {
+        return indexValue==null ? null : indexValue.intValue();
+    }
+
+    public Number getIndexValue() {
         return indexValue;
     }
 
-    public void setIndexValue(Integer indexValue) {
+    public void setIndexValue(Number indexValue) {
         this.indexValue = indexValue;
     }
 

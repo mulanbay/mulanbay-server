@@ -9,7 +9,7 @@ public class BuyRecordRadarStat implements DateStat {
     private Object groupId;
 
     // 可以为天(20100101),周(1-36),月(1-12),年(2014)
-    private Integer indexValue;
+    private Number indexValue;
 
     private BigInteger totalCount;
 
@@ -25,11 +25,15 @@ public class BuyRecordRadarStat implements DateStat {
     }
 
     @Override
-    public Integer getIndexValue() {
+    public Integer getDateIndexValue() {
+        return indexValue==null ? null : indexValue.intValue();
+    }
+
+    public Number getIndexValue() {
         return indexValue;
     }
 
-    public void setIndexValue(Integer indexValue) {
+    public void setIndexValue(Number indexValue) {
         this.indexValue = indexValue;
     }
 

@@ -565,16 +565,16 @@ public class UserSharesController extends BaseController {
             BigDecimal totalCount = new BigDecimal(0);
             UserSharesWarnVo uswn = new UserSharesWarnVo();
             for (UserSharesWarnDateStat bean : list) {
-                chartData.getIntXData().add(bean.getIndexValue());
+                chartData.getIntXData().add(bean.getDateIndexValue());
                 String indexName;
                 if (sf.getDateGroupType() == DateGroupType.MONTH) {
-                    indexName = bean.getIndexValue() + "月份";
+                    indexName = bean.getDateIndexValue() + "月份";
                 } else if (sf.getDateGroupType() == DateGroupType.YEAR) {
-                    indexName = bean.getIndexValue() + "年";
+                    indexName = bean.getDateIndexValue() + "年";
                 } else if (sf.getDateGroupType() == DateGroupType.WEEK) {
-                    indexName = "第" + bean.getIndexValue() + "周";
+                    indexName = "第" + bean.getDateIndexValue() + "周";
                 } else {
-                    indexName = bean.getIndexValue().toString();
+                    indexName = bean.getDateIndexValue().toString();
                 }
                 uswn.addData(indexName, bean.getWarnType().intValue(), bean.getTotalCount().intValue());
                 totalCount = totalCount.add(new BigDecimal(bean.getTotalCount()));

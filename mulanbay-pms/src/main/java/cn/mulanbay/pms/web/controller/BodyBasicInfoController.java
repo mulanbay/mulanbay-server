@@ -186,13 +186,13 @@ public class BodyBasicInfoController extends BaseController {
             //临时内容，作为补全用
             ChartData temp = new ChartData();
             for (BodyBasicInfoDateStat bean : list) {
-                temp.getIntXData().add(bean.getIndexValue());
+                temp.getIntXData().add(bean.getDateIndexValue());
                 if (sf.getDateGroupType() == DateGroupType.MONTH) {
-                    temp.getXdata().add(bean.getIndexValue() + "月份");
+                    temp.getXdata().add(bean.getDateIndexValue() + "月份");
                 } else if (sf.getDateGroupType() == DateGroupType.WEEK) {
-                    temp.getXdata().add("第" + bean.getIndexValue() + "周");
+                    temp.getXdata().add("第" + bean.getDateIndexValue() + "周");
                 } else {
-                    temp.getXdata().add(bean.getIndexValue().toString());
+                    temp.getXdata().add(bean.getDateIndexValue().toString());
                 }
                 if (sf.getGroupType() == GroupType.COUNT) {
                     yData.getData().add(bean.getTotalCount());

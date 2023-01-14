@@ -438,10 +438,10 @@ public class BuyRecordController extends BaseController {
         int size = list.size();
         for (int i = 0; i < size; i++) {
             BuyRecordRadarStat stat = list.get(i);
-            List<BuyRecordRadarStat> statList = map.get(stat.getIndexValue());
+            List<BuyRecordRadarStat> statList = map.get(stat.getDateIndexValue());
             if (statList == null) {
                 statList = new ArrayList<>();
-                map.put(stat.getIndexValue(), statList);
+                map.put(stat.getDateIndexValue(), statList);
             }
             statList.add(stat);
             //获取最大值
@@ -782,7 +782,7 @@ public class BuyRecordController extends BaseController {
             BuyRecordDateStatSearch dateSearch = generateSearch(sf.getYears().get(i), sf);
             List<BuyRecordDateStat> list = buyRecordService.statBuyRecordByDate(dateSearch);
             for (BuyRecordDateStat bean : list) {
-                String dateString = DateUtil.getFormatDateString(bean.getIndexValue().toString(), "yyyyMMdd", "yyyy-MM-dd");
+                String dateString = DateUtil.getFormatDateString(bean.getDateIndexValue().toString(), "yyyyMMdd", "yyyy-MM-dd");
                 if (sf.getGroupType() == GroupType.COUNT) {
                     data.addData(sf.getYears().get(i), dateString, bean.getTotalCount());
                 } else {

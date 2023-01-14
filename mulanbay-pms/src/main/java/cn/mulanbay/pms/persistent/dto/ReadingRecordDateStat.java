@@ -4,15 +4,19 @@ import java.math.BigInteger;
 
 public class ReadingRecordDateStat implements DateStat {
 
-    private Integer indexValue;
+    private Number indexValue;
     private BigInteger totalCount;
 
     @Override
-    public Integer getIndexValue() {
+    public Integer getDateIndexValue() {
+        return indexValue==null ? null : indexValue.intValue();
+    }
+
+    public Number getIndexValue() {
         return indexValue;
     }
 
-    public void setIndexValue(Integer indexValue) {
+    public void setIndexValue(Number indexValue) {
         this.indexValue = indexValue;
     }
 

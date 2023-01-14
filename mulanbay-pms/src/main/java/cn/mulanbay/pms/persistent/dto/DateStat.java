@@ -6,10 +6,10 @@ package cn.mulanbay.pms.persistent.dto;
 public interface DateStat {
 
     /**
-     * 获取索引值
+     * 获取日期索引值
      *
      * @return
      */
-    public Integer getIndexValue();
+    public Integer getDateIndexValue();
 
 }

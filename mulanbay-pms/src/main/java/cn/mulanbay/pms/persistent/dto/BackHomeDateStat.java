@@ -8,7 +8,7 @@ import java.math.BigInteger;
 public class BackHomeDateStat implements DateStat, CalendarDateStat {
 
     // 可以为天(20100101),周(1-36),月(1-12),年(2014)
-    private Integer indexValue;
+    private Number indexValue;
 
     private BigInteger totalCount;
 
@@ -16,7 +16,11 @@ public class BackHomeDateStat implements DateStat, CalendarDateStat {
     private BigDecimal totalPrice;
 
     @Override
-    public Integer getIndexValue() {
+    public Integer getDateIndexValue() {
+        return indexValue==null ? null : indexValue.intValue();
+    }
+
+    public Number getIndexValue() {
         return indexValue;
     }
 
@@ -46,7 +50,7 @@ public class BackHomeDateStat implements DateStat, CalendarDateStat {
     }
 
     @Override
-    public int getDateIndexValue() {
-        return indexValue.intValue();
+    public int getDayIndexValue() {
+        return this.getDateIndexValue();
     }
 }

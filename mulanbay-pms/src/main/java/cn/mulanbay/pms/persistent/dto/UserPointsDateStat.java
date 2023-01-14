@@ -7,16 +7,20 @@ import java.math.BigInteger;
 
 public class UserPointsDateStat implements DateStat, CalendarDateStat {
     // 月份
-    private Integer indexValue;
+    private Number indexValue;
     private BigDecimal totalRewardPoints;
     private BigInteger totalCount;
 
     @Override
-    public Integer getIndexValue() {
+    public Integer getDateIndexValue() {
+        return indexValue==null ? null : indexValue.intValue();
+    }
+
+    public Number getIndexValue() {
         return indexValue;
     }
 
-    public void setIndexValue(Integer indexValue) {
+    public void setIndexValue(Number indexValue) {
         this.indexValue = indexValue;
     }
 
@@ -42,7 +46,7 @@ public class UserPointsDateStat implements DateStat, CalendarDateStat {
     }
 
     @Override
-    public int getDateIndexValue() {
-        return indexValue.intValue();
+    public int getDayIndexValue() {
+        return this.getDateIndexValue();
     }
 }

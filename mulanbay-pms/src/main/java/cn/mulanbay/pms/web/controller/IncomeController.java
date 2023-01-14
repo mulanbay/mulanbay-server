@@ -167,16 +167,16 @@ public class IncomeController extends BaseController {
         BigDecimal totalValue = new BigDecimal(0);
         int year = DateUtil.getYear(sf.getEndDate() == null ? new Date() : sf.getEndDate());
         for (IncomeDateStat bean : list) {
-            chartData.getIntXData().add(bean.getIndexValue());
+            chartData.getIntXData().add(bean.getDateIndexValue());
             if (sf.getDateGroupType() == DateGroupType.MONTH) {
-                chartData.getXdata().add(bean.getIndexValue() + "月份");
-                int days = DateUtil.getDayOfMonth(year, bean.getIndexValue() - 1);
+                chartData.getXdata().add(bean.getDateIndexValue() + "月份");
+                int days = DateUtil.getDayOfMonth(year, bean.getDateIndexValue() - 1);
             } else if (sf.getDateGroupType() == DateGroupType.YEAR) {
-                chartData.getXdata().add(bean.getIndexValue() + "年");
+                chartData.getXdata().add(bean.getDateIndexValue() + "年");
             } else if (sf.getDateGroupType() == DateGroupType.WEEK) {
-                chartData.getXdata().add("第" + bean.getIndexValue() + "周");
+                chartData.getXdata().add("第" + bean.getDateIndexValue() + "周");
             } else {
-                chartData.getXdata().add(bean.getIndexValue().toString());
+                chartData.getXdata().add(bean.getDateIndexValue().toString());
             }
             yData1.getData().add(bean.getTotalCount());
             yData2.getData().add(bean.getTotalAmount().doubleValue());
