@@ -8,6 +8,11 @@ public class UserOperationWordCloudSearch extends UserOperationStatSearch {
 
     private int picHeight = 400;
 
+    /**
+     * 是否忽略短语
+     */
+    private Boolean ignoreShort;
+
     public String getField() {
         return field;
     }
@@ -30,5 +35,13 @@ public class UserOperationWordCloudSearch extends UserOperationStatSearch {
 
     public void setPicHeight(int picHeight) {
         this.picHeight = picHeight;
+    }
+
+    public Boolean getIgnoreShort() {
+        return ignoreShort;
+    }
+
+    public void setIgnoreShort(Boolean ignoreShort) {
+        this.ignoreShort = ignoreShort;
     }
 }

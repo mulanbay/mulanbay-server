@@ -238,6 +238,12 @@ public class UserOperationConfigController extends BaseController {
                 //先分词
                 List<String> list = ahaNLPHandler.extractKeyword(op.getTitle(),num);
                 for(String s : list){
+                    //忽略分词后为词长度为1的
+                    if(sf.getIgnoreShort()!=null&&sf.getIgnoreShort()){
+                        if(s.length()<2){
+                            continue;
+                        }
+                    }
                     Integer n = statData.get(s);
                     if(n==null){
                         statData.put(s,1);
