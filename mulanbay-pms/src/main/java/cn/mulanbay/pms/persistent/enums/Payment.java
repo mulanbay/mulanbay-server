@@ -7,7 +7,12 @@ package cn.mulanbay.pms.persistent.enums;
  * @create 2017-07-10 21:44
  */
 public enum Payment {
-    ALIPAY(0, "支付宝"), WECHAT(1, "微信支付"), UNIONPAY(2, "银联"), CASH(3, "现金"), OTHER(4, "其他");
+    ALIPAY(0, "支付宝"),
+    WECHAT(1, "微信支付"),
+    UNIONPAY(2, "银联"),
+    CASH(3, "现金"),
+    OTHER(4, "其他"),
+    IOU(5, "白条");
     private int value;
 
     private String name;
