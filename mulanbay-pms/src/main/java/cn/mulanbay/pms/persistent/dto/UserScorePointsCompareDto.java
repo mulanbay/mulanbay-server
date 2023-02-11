@@ -4,17 +4,17 @@ import java.math.BigDecimal;
 
 public class UserScorePointsCompareDto {
 
-    private Integer date;
+    private Number date;
 
     private BigDecimal score;
 
     private BigDecimal points;
 
-    public Integer getDate() {
+    public Number getDate() {
         return date;
     }
 
-    public void setDate(Integer date) {
+    public void setDate(Number date) {
         this.date = date;
     }
 
