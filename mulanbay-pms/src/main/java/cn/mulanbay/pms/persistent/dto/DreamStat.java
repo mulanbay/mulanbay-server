@@ -8,7 +8,7 @@ public class DreamStat {
     private String name;
 
     private Integer difficulty;
-    private BigDecimal importantLevel;
+    private BigDecimal important_level;
     private Short status;
     //次数
     private BigInteger totalCount;
@@ -29,12 +29,12 @@ public class DreamStat {
         this.difficulty = difficulty;
     }
 
-    public BigDecimal getImportantLevel() {
-        return importantLevel;
+    public BigDecimal getImportant_level() {
+        return important_level;
     }
 
-    public void setImportantLevel(BigDecimal importantLevel) {
-        this.importantLevel = importantLevel;
+    public void setImportant_level(BigDecimal important_level) {
+        this.important_level = important_level;
     }
 
     public Short getStatus() {

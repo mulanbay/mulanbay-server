@@ -202,9 +202,10 @@ public class DreamController extends BaseController {
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         for (DreamStat bean : list) {
-            chartPieData.getXdata().add(bean.getName());
+            String name = this.getStatName(sf.getGroupType(), bean);
+            chartPieData.getXdata().add(name);
             ChartPieSerieDetailData dataDetail = new ChartPieSerieDetailData();
-            dataDetail.setName(getStatName(sf.getGroupType(), bean));
+            dataDetail.setName(name);
             dataDetail.setValue(bean.getTotalCount().intValue());
             serieData.getData().add(dataDetail);
             totalValue = totalValue.add(new BigDecimal(bean.getTotalCount().intValue()));
@@ -247,7 +248,7 @@ public class DreamController extends BaseController {
         if (groupType == DreamStatListSearch.GroupType.DIFFICULTY) {
             return "困难等级(" + dd.getDifficulty() + ")";
         } else if (groupType == DreamStatListSearch.GroupType.IMPORTANTLEVEL) {
-            return "重要等级(" + dd.getImportantLevel().doubleValue() + ")";
+            return "重要等级(" + dd.getImportant_level().doubleValue() + ")";
         } else if (groupType == DreamStatListSearch.GroupType.STATUS) {
             return "状态(" + DreamStatus.getDreamStatus(dd.getStatus()).getName() + ")";
         } else {
