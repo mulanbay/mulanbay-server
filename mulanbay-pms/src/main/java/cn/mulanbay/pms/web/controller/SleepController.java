@@ -9,13 +9,16 @@ import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.persistent.domain.Sleep;
 import cn.mulanbay.pms.persistent.dto.SleepAnalyseStat;
+import cn.mulanbay.pms.persistent.enums.ChartType;
+import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.SleepStatType;
 import cn.mulanbay.pms.persistent.service.SleepService;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.sleep.*;
-import cn.mulanbay.pms.web.bean.response.chart.ScatterChartData;
-import cn.mulanbay.pms.web.bean.response.chart.ScatterChartDetailData;
+import cn.mulanbay.pms.web.bean.response.chart.*;
+import cn.mulanbay.pms.web.bean.response.health.SleepAnalyseStatVo;
+import cn.mulanbay.pms.web.bean.response.health.SleepPieChartStatVo;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -203,32 +207,140 @@ public class SleepController extends BaseController {
      */
     @RequestMapping(value = "/analyseStat")
     public ResultBean analyseStat(@Valid SleepAnalyseStatSearch sf) {
+        List<SleepAnalyseStatVo> statVoList = new ArrayList<>();
+        List<SleepAnalyseStat> list = sleepService.statSleepAnalyse(sf);
+        DateGroupType dateGroupType = sf.getXgroupType();
+        for (SleepAnalyseStat stat : list) {
+            if(stat.getyValue()==null){
+                continue;
+            }
+            double x = stat.getxDoubleValue();
+            SleepAnalyseStatVo vo = new SleepAnalyseStatVo();
+            if(dateGroupType == DateGroupType.DAYCALENDAR){
+                Date dd = DateUtil.getDate(stat.getxValue().toString(),"yyyyMMdd");
+                x = DateUtil.getDayOfYear(dd);
+            }
+            vo.setX(x);
+            if (sf.getYgroupType() == SleepStatType.DURATION) {
+                double hours = stat.getyDoubleValue() / 60;
+                BigDecimal b = new BigDecimal(hours);
+                double v = b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+                vo.setV(v);
+            } else {
+                vo.setV(stat.getyDoubleValue());
+            }
+            statVoList.add(vo);
+        }
+        if(sf.getChartType()== ChartType.SCATTER){
+            return callback(this.createAnalyseStatScatterData(statVoList,sf));
+        }else{
+            return callback(this.createAnalyseStatPieData(statVoList,sf));
+        }
+    }
+
+    /**
+     * 散点图
+     * @param statVoList
+     * @param sf
+     * @return
+     */
+    private ScatterChartData createAnalyseStatScatterData(List<SleepAnalyseStatVo> statVoList,SleepAnalyseStatSearch sf){
         ScatterChartData chartData = new ScatterChartData();
         chartData.setTitle("睡眠分析");
         chartData.setxUnit(sf.getXgroupType().getName());
         chartData.setyUnit(sf.getYgroupType().getUnit());
-        List<SleepAnalyseStat> list = sleepService.statSleepAnalyse(sf);
         chartData.addLegent(sf.getYgroupType().getName());
         ScatterChartDetailData detailData = new ScatterChartDetailData();
         detailData.setName(sf.getYgroupType().getName());
         double totalX = 0;
         int n = 0;
-        for (SleepAnalyseStat stat : list) {
-            if (sf.getYgroupType() == SleepStatType.DURATION) {
-                double hours = stat.getyDoubleValue() / 60;
-                BigDecimal b = new BigDecimal(hours);
-                double v = b.setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
-                detailData.addData(new Object[]{stat.getxDoubleValue(), v});
-            } else {
-                detailData.addData(new Object[]{stat.getxDoubleValue(), stat.getyDoubleValue()});
-
-            }
-            totalX += stat.getxDoubleValue();
+        for (SleepAnalyseStatVo stat : statVoList) {
+            detailData.addData(new Object[]{stat.getX(), stat.getV()});
+            totalX += stat.getX();
             n++;
         }
         detailData.setxAxisAverage(totalX / n);
         chartData.addSeriesData(detailData);
-        return callback(chartData);
+        return chartData;
+    }
+
+    /**
+     * 封装饼状图数据
+     *
+     * @param statVoList
+     * @param sf
+     * @return
+     */
+    private ChartPieData createAnalyseStatPieData(List<SleepAnalyseStatVo> statVoList,SleepAnalyseStatSearch sf) {
+        SleepStatType statType = sf.getYgroupType();
+        ChartPieData chartPieData = new ChartPieData();
+        chartPieData.setTitle("睡眠分析");
+        chartPieData.setUnit("次");
+        ChartPieSerieData serieData = new ChartPieSerieData();
+        serieData.setName(statType.getName());
+        //Step 1:初始化
+        List<SleepPieChartStatVo> pieStatList = new ArrayList<>();
+        if(statType==SleepStatType.SLEEP_TIME||statType==SleepStatType.GETUP_TIME){
+            for(int i=0;i<24;i++){
+                SleepPieChartStatVo vo = new SleepPieChartStatVo();
+                if(i<10){
+                    vo.setName("0"+i+":00~"+"0"+i+":59");
+                }else{
+                    vo.setName(i+":00~"+i+":59");
+                }
+                vo.setMin(i);
+                vo.setMax(i+1);
+                vo.setCount(0);
+                pieStatList.add(vo);
+            }
+        }else if(statType == SleepStatType.DURATION){
+            for(int i=0;i<24;i++){
+                SleepPieChartStatVo vo = new SleepPieChartStatVo();
+                vo.setName("["+i+"~"+(i+1)+")小时");
+                vo.setMin(i);
+                vo.setMax(i+1);
+                vo.setCount(0);
+                pieStatList.add(vo);
+            }
+        }else if(statType == SleepStatType.QUALITY){
+            for(int i=1;i<6;i++){
+                SleepPieChartStatVo vo = new SleepPieChartStatVo();
+                vo.setName("["+i+"~"+(i+1)+")分");
+                vo.setMin(i);
+                vo.setMax(i+1);
+                vo.setCount(0);
+                pieStatList.add(vo);
+            }
+        }else if(statType == SleepStatType.WAKEUP_COUNT){
+            for(int i=1;i<6;i++){
+                SleepPieChartStatVo vo = new SleepPieChartStatVo();
+                vo.setName("["+i+"~"+(i+1)+")次");
+                vo.setMin(i);
+                vo.setMax(i+1);
+                vo.setCount(0);
+                pieStatList.add(vo);
+            }
+        }
+        //Step 2:统计数据
+        for(SleepAnalyseStatVo vo : statVoList){
+            long v = Math.round(vo.getV());
+            for(SleepPieChartStatVo pv : pieStatList){
+                if(pv.getMin()<=v&& v<pv.getMax()){
+                    pv.setCount(pv.getCount()+1);
+                    continue;
+                }
+            }
+        }
+        //Step 3:封装图表对象
+        for (SleepPieChartStatVo bean : pieStatList) {
+            chartPieData.getXdata().add(bean.getName());
+            ChartPieSerieDetailData dataDetail = new ChartPieSerieDetailData();
+            dataDetail.setName(bean.getName());
+            dataDetail.setValue(bean.getCount());
+            serieData.getData().add(dataDetail);
+        }
+        chartPieData.getDetailData().add(serieData);
+        return chartPieData;
     }
 
 }

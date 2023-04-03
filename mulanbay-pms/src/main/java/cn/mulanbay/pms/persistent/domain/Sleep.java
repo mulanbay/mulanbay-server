@@ -30,12 +30,16 @@ public class Sleep implements java.io.Serializable {
     //起床时间
     private Date getUpTime;
 
-    //醒来时间
-    private Date wakeUpTime;
+    //首次醒来时间
+    private Date firstWakeUpTime;
+
+    //最后一次醒来时间
+    private Date lastWakeUpTime;
 
     //醒来次数
     private Integer wakeUpCount;
 
+    //睡眠时长
     private Integer totalMinutes;
 
     //浅睡时长（分钟）
@@ -104,13 +108,23 @@ public class Sleep implements java.io.Serializable {
     }
 
     @Basic
-    @Column(name = "wake_up_time")
-    public Date getWakeUpTime() {
-        return wakeUpTime;
+    @Column(name = "first_wake_up_time")
+    public Date getFirstWakeUpTime() {
+        return firstWakeUpTime;
     }
 
-    public void setWakeUpTime(Date wakeUpTime) {
-        this.wakeUpTime = wakeUpTime;
+    public void setFirstWakeUpTime(Date firstWakeUpTime) {
+        this.firstWakeUpTime = firstWakeUpTime;
+    }
+
+    @Basic
+    @Column(name = "last_wake_up_time")
+    public Date getLastWakeUpTime() {
+        return lastWakeUpTime;
+    }
+
+    public void setLastWakeUpTime(Date lastWakeUpTime) {
+        this.lastWakeUpTime = lastWakeUpTime;
     }
 
     @Basic

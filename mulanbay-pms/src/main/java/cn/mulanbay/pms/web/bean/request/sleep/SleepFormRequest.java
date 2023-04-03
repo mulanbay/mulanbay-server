@@ -16,8 +16,11 @@ public class SleepFormRequest implements BindUser {
     //起床时间
     private Date getUpTime;
 
-    //醒来时间
-    private Date wakeUpTime;
+    //首次醒来时间
+    private Date firstWakeUpTime;
+
+    //最后一次醒来时间
+    private Date lastWakeUpTime;
 
     //醒来次数
     private Integer wakeUpCount;
@@ -66,12 +69,20 @@ public class SleepFormRequest implements BindUser {
         this.getUpTime = getUpTime;
     }
 
-    public Date getWakeUpTime() {
-        return wakeUpTime;
+    public Date getFirstWakeUpTime() {
+        return firstWakeUpTime;
     }
 
-    public void setWakeUpTime(Date wakeUpTime) {
-        this.wakeUpTime = wakeUpTime;
+    public void setFirstWakeUpTime(Date firstWakeUpTime) {
+        this.firstWakeUpTime = firstWakeUpTime;
+    }
+
+    public Date getLastWakeUpTime() {
+        return lastWakeUpTime;
+    }
+
+    public void setLastWakeUpTime(Date lastWakeUpTime) {
+        this.lastWakeUpTime = lastWakeUpTime;
     }
 
     public Integer getWakeUpCount() {

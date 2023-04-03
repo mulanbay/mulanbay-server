@@ -4,6 +4,7 @@ import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.persistent.query.QueryBuilder;
+import cn.mulanbay.pms.persistent.enums.ChartType;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.SleepStatType;
 import cn.mulanbay.pms.web.bean.request.DateStatSearch;
@@ -25,6 +26,8 @@ public class SleepAnalyseStatSearch extends QueryBuilder implements DateStatSear
     private DateGroupType xgroupType;
 
     private SleepStatType ygroupType;
+
+    private ChartType chartType;
 
     public DateGroupType getXgroupType() {
         return xgroupType;
@@ -58,7 +61,7 @@ public class SleepAnalyseStatSearch extends QueryBuilder implements DateStatSear
 
     @Override
     public DateGroupType getDateGroupType() {
-        return null;
+        return xgroupType;
     }
 
     @Override
@@ -80,4 +83,11 @@ public class SleepAnalyseStatSearch extends QueryBuilder implements DateStatSear
         this.userId = userId;
     }
 
+    public ChartType getChartType() {
+        return chartType;
+    }
+
+    public void setChartType(ChartType chartType) {
+        this.chartType = chartType;
+    }
 }

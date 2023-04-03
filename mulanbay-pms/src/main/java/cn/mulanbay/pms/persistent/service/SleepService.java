@@ -90,6 +90,9 @@ public class SleepService extends BaseHibernateDao {
             } else if (sf.getYgroupType() == SleepStatType.GETUP_TIME) {
                 sb.append("select " + MysqlUtil.dateTypeMethod("get_up_time", sf.getXgroupType()) + " as xValue,");
                 sb.append(MysqlUtil.dateTypeMethod("get_up_time", DateGroupType.HOURMINUTE) + " as yValue ");
+            }else if (sf.getYgroupType() == SleepStatType.WAKEUP_COUNT) {
+                sb.append("select " + MysqlUtil.dateTypeMethod("sleep_time", sf.getXgroupType()) + " as xValue,");
+                sb.append("wake_up_count as yValue ");
             } else {
                 sb.append("select " + MysqlUtil.dateTypeMethod("sleep_date", sf.getXgroupType()) + " as xValue,");
                 sb.append("quality as yValue ");

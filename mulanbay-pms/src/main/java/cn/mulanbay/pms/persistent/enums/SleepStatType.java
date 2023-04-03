@@ -12,7 +12,8 @@ public enum SleepStatType {
     DURATION("睡眠时长", "小时", 0),
     SLEEP_TIME("睡眠点", "点", 1),
     GETUP_TIME("起床点", "点", 2),
-    QUALITY("睡眠质量", "分", 3);
+    QUALITY("睡眠质量", "分", 3),
+    WAKEUP_COUNT("醒来次数", "次", 4);
 
     private String name;
 
