@@ -28,9 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 睡眠
@@ -278,61 +276,41 @@ public class SleepController extends BaseController {
         chartPieData.setUnit("次");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName(statType.getName());
-        //Step 1:初始化
-        List<SleepPieChartStatVo> pieStatList = new ArrayList<>();
-        if(statType==SleepStatType.SLEEP_TIME||statType==SleepStatType.GETUP_TIME){
-            for(int i=0;i<24;i++){
-                SleepPieChartStatVo vo = new SleepPieChartStatVo();
-                if(i<10){
-                    vo.setName("0"+i+":00~"+"0"+i+":59");
-                }else{
-                    vo.setName(i+":00~"+i+":59");
-                }
-                vo.setMin(i);
-                vo.setMax(i+1);
-                vo.setCount(0);
-                pieStatList.add(vo);
-            }
-        }else if(statType == SleepStatType.DURATION){
-            for(int i=0;i<24;i++){
-                SleepPieChartStatVo vo = new SleepPieChartStatVo();
-                vo.setName("["+i+"~"+(i+1)+")小时");
-                vo.setMin(i);
-                vo.setMax(i+1);
-                vo.setCount(0);
-                pieStatList.add(vo);
-            }
-        }else if(statType == SleepStatType.QUALITY){
-            for(int i=1;i<6;i++){
-                SleepPieChartStatVo vo = new SleepPieChartStatVo();
-                vo.setName("["+i+"~"+(i+1)+")分");
-                vo.setMin(i);
-                vo.setMax(i+1);
-                vo.setCount(0);
-                pieStatList.add(vo);
-            }
-        }else if(statType == SleepStatType.WAKEUP_COUNT){
-            for(int i=1;i<6;i++){
-                SleepPieChartStatVo vo = new SleepPieChartStatVo();
-                vo.setName("["+i+"~"+(i+1)+")次");
-                vo.setMin(i);
-                vo.setMax(i+1);
-                vo.setCount(0);
-                pieStatList.add(vo);
-            }
-        }
-        //Step 2:统计数据
+        //Step 1:统计数据
+        Map<String,SleepPieChartStatVo> statMap =new HashMap<>();
         for(SleepAnalyseStatVo vo : statVoList){
-            long v = Math.round(vo.getV());
-            for(SleepPieChartStatVo pv : pieStatList){
-                if(pv.getMin()<=v&& v<pv.getMax()){
-                    pv.setCount(pv.getCount()+1);
-                    continue;
+            int v = (int) Math.round(vo.getV());
+            String key = v+"-"+(v+1);
+            SleepPieChartStatVo pv = statMap.get(key);
+            if(pv==null){
+                if(statType==SleepStatType.SLEEP_TIME||statType==SleepStatType.GETUP_TIME){
+                    pv = new SleepPieChartStatVo();
+                    if(v<10){
+                        pv.setName("0"+v+":00~"+"0"+v+":59");
+                    }else{
+                        pv.setName(v+":00~"+v+":59");
+                    }
+                    pv.setCount(1);
+                }else if(statType == SleepStatType.DURATION){
+                    pv = new SleepPieChartStatVo();
+                    pv.setName("["+v+"~"+(v+1)+")小时");
+                    pv.setCount(1);
+                }else if(statType == SleepStatType.QUALITY){
+                    pv = new SleepPieChartStatVo();
+                    pv.setName("["+v+"~"+(v+1)+")分");
+                    pv.setCount(1);
+                }else if(statType == SleepStatType.WAKEUP_COUNT){
+                    pv = new SleepPieChartStatVo();
+                    pv.setName("["+v+"~"+(v+1)+")次");
+                    pv.setCount(1);
                 }
+                statMap.put(key,pv);
+            }else{
+                pv.setCount(pv.getCount()+1);
             }
         }
-        //Step 3:封装图表对象
-        for (SleepPieChartStatVo bean : pieStatList) {
+        //Step 2:封装图表对象
+        for (SleepPieChartStatVo bean : statMap.values()) {
             chartPieData.getXdata().add(bean.getName());
             ChartPieSerieDetailData dataDetail = new ChartPieSerieDetailData();
             dataDetail.setName(bean.getName());
