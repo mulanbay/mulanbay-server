@@ -283,26 +283,20 @@ public class SleepController extends BaseController {
             String key = v+"-"+(v+1);
             SleepPieChartStatVo pv = statMap.get(key);
             if(pv==null){
+                pv = new SleepPieChartStatVo();
+                pv.setCount(1);
                 if(statType==SleepStatType.SLEEP_TIME||statType==SleepStatType.GETUP_TIME){
-                    pv = new SleepPieChartStatVo();
                     if(v<10){
                         pv.setName("0"+v+":00~"+"0"+v+":59");
                     }else{
                         pv.setName(v+":00~"+v+":59");
                     }
-                    pv.setCount(1);
                 }else if(statType == SleepStatType.DURATION){
-                    pv = new SleepPieChartStatVo();
                     pv.setName("["+v+"~"+(v+1)+")小时");
-                    pv.setCount(1);
                 }else if(statType == SleepStatType.QUALITY){
-                    pv = new SleepPieChartStatVo();
                     pv.setName("["+v+"~"+(v+1)+")分");
-                    pv.setCount(1);
                 }else if(statType == SleepStatType.WAKEUP_COUNT){
-                    pv = new SleepPieChartStatVo();
                     pv.setName("["+v+"~"+(v+1)+")次");
-                    pv.setCount(1);
                 }
                 statMap.put(key,pv);
             }else{
