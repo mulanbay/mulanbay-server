@@ -718,7 +718,7 @@ public class TreatService extends BaseHibernateDao {
             sb.append("where tags is not null ");
             sb.append(pr.getParameterString());
             sb.append(" group by tags");
-            sb.append(" order by minTreatDate desc");
+            sb.append(" order by maxTreatDate desc");
             List<TreatRecordFullStat> list = this.getEntityListWithClassSQL(sb.toString(), pr.getPage(), pr.getPageSize(), TreatRecordFullStat.class, pr.getParameterValue());
             return list;
         } catch (BaseException e) {
