@@ -20,6 +20,10 @@ public class TreatDrugDetail implements java.io.Serializable {
     private Long userId;
     //用药时间
     private Date occurTime;
+    //实际食用的单位
+    private String eu;
+    //实际食用的量，可能半颗
+    private Double ec;
     private String remark;
     private Date createdTime;
     private Date lastModifyTime;
@@ -63,6 +67,25 @@ public class TreatDrugDetail implements java.io.Serializable {
 
     public void setOccurTime(Date occurTime) {
         this.occurTime = occurTime;
+    }
+    @Basic
+    @Column(name = "eu")
+    public String getEu() {
+        return eu;
+    }
+
+    public void setEu(String eu) {
+        this.eu = eu;
+    }
+
+    @Basic
+    @Column(name = "ec")
+    public Double getEc() {
+        return ec;
+    }
+
+    public void setEc(Double ec) {
+        this.ec = ec;
     }
 
     @Basic

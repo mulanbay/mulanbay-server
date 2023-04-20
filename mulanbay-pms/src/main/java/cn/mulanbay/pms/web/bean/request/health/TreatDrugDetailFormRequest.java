@@ -15,6 +15,12 @@ public class TreatDrugDetailFormRequest implements BindUser {
     //用药时间
     @NotNull(message = "{validate.treatDrugDetail.occurTime.NotNull}")
     private Date occurTime;
+
+    //实际食用的单位
+    private String eu;
+    //实际食用的量，可能半颗
+    private Double ec;
+
     private String remark;
 
     public Long getId() {
@@ -49,6 +55,22 @@ public class TreatDrugDetailFormRequest implements BindUser {
 
     public void setOccurTime(Date occurTime) {
         this.occurTime = occurTime;
+    }
+
+    public String getEu() {
+        return eu;
+    }
+
+    public void setEu(String eu) {
+        this.eu = eu;
+    }
+
+    public Double getEc() {
+        return ec;
+    }
+
+    public void setEc(Double ec) {
+        this.ec = ec;
     }
 
     public String getRemark() {
