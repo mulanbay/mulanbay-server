@@ -459,7 +459,7 @@ public class DataService extends BaseHibernateDao {
      */
     public void initGoodsTypeData(Long userId) {
         try {
-            String hql = "from GoodsType where userId=0 and status=1";
+            String hql = "from GoodsType where userId=0 and status=1 and id>0 ";
             List<GoodsType> list = this.getEntityListNoPageHQL(hql);
             if (!list.isEmpty()) {
                 for (int i = 0; i < list.size(); i++) {
