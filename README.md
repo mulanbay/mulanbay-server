@@ -80,6 +80,16 @@ mulanbay-server
 * mulanbay_init.sql里面的数据只有原始的空数据，各个初始化配置数据需要自己手动添加，或者在菜单“权限管理-用户管理”中对用户进行初始化。
 * mulanbay_init_data.sql里面的数据同时包含初始化好的数据，登录后直接可以使用。（推荐导入这个版本）
 
+附：数据库导入方法：
+1. 进入mysql终端
+mysql -u root -p
+2. 创建数据库
+create database mulanbay_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
+3. 选择数据库
+use mulanbay_db
+4. 导入数据库
+source /xx/xx/xx/mulanbay_init_data.sql(数据库文件绝对路径)
+
 # Step 2：修改配置文件
 
 1. 在mulanbay-pms/src/main/resources/目录下复制application-local-template.properties文件并重命名为application-local.properties，设置本地配置。
