@@ -142,10 +142,12 @@ public class ConsumeHandler extends BaseHandler {
                     if(br.getSubGoodsType()!=null){
                         bean.setSubGoodsTypeId(br.getSubGoodsType().getId());
                     }
+                    bean.setBuyTypeId(br.getBuyType().getId());
                     bean.setCompareId(br.getId());
                     bean.setShopName(br.getShopName());
                     bean.setBrand(br.getBrand());
                     bean.setMatch(m);
+                    BeanCopy.copyProperties(br,bean);
                     if(m>=maxMatchDegree){
                         logger.debug("在历史消费记录中匹配到，goodsName:"+br.getGoodsName());
                         return bean;

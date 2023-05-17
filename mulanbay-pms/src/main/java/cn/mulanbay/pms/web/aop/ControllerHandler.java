@@ -45,6 +45,12 @@ public class ControllerHandler {
     @Value("${system.pageSearch.maxPageSize}")
     int maxPageSize;
 
+    /**
+     * 是否跳过未定义的功能点（新功能调试使用）
+     */
+    @Value("${security.UnDefineFunc.skip:false}")
+    boolean skipUnDefineFunc;
+
     @Autowired
     SystemConfigHandler systemConfigHandler;
 
@@ -82,7 +88,7 @@ public class ControllerHandler {
             String url = request.getServletPath();
             String method = request.getMethod();
             SystemFunction sf = systemConfigHandler.getFunction(url, method);
-            if (sf == null) {
+            if (sf == null && true==skipUnDefineFunc) {
                 logger.warn("url:" + url + ",method:" + method + "未配置功能定义");
                 throw new ApplicationException(ErrorCode.FUNCTION_UN_DEFINE);
             } else if (sf.getStatus() == CommonStatus.DISABLE) {

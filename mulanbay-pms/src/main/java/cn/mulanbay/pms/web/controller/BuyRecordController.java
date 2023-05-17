@@ -954,15 +954,21 @@ public class BuyRecordController extends BaseController {
 
     /**
      * 根据商品名智能分析出其分类及品牌等
-     *
+     * 如果没有配置NLP直接返回空对象
      * @return
      */
     @RequestMapping(value = "/aiMatch", method = RequestMethod.POST)
     public ResultBean aiMatch(@RequestBody @Valid GoodsNameAiMatchRequest mr) {
-        BuyRecordMatchBean bean = consumeHandler.match(mr.getUserId(),mr.getGoodsName());
-        Integer num = systemConfigHandler.getIntegerConfig(ConfigKey.NLP_BUYRECORD_GOODSNAME_EKNUM);
-        List<String> keywords = ahaNLPHandler.extractKeyword(mr.getGoodsName(),num);
-        bean.setKeywords(keywords);
+        BuyRecordMatchBean bean = null;
+        try {
+            bean = consumeHandler.match(mr.getUserId(),mr.getGoodsName());
+            Integer num = systemConfigHandler.getIntegerConfig(ConfigKey.NLP_BUYRECORD_GOODSNAME_EKNUM);
+            List<String> keywords = ahaNLPHandler.extractKeyword(mr.getGoodsName(),num);
+            bean.setKeywords(keywords);
+        } catch (Exception e) {
+            logger.error("根据商品名智能分析出其分类及品牌等异常",e);
+            return callback(new BuyRecordMatchBean());
+        }
         return callback(bean);
     }
 }
