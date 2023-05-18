@@ -57,6 +57,8 @@ public class BuyRecordFormRequest implements BindUser {
     // 作废日期
     private Date deleteDate;
 
+    private Date expectDeleteDate;
+
     // 状态
     //@NotNull(message = "{validate.buyRecord.status.NotNull}")
     private BuyRecord.Status status = BuyRecord.Status.BUY;
@@ -200,6 +202,14 @@ public class BuyRecordFormRequest implements BindUser {
 
     public void setDeleteDate(Date deleteDate) {
         this.deleteDate = deleteDate;
+    }
+
+    public Date getExpectDeleteDate() {
+        return expectDeleteDate;
+    }
+
+    public void setExpectDeleteDate(Date expectDeleteDate) {
+        this.expectDeleteDate = expectDeleteDate;
     }
 
     public BuyRecord.Status getStatus() {

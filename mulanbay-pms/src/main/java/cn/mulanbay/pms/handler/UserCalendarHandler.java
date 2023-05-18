@@ -5,19 +5,19 @@ import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.common.util.PriceUtil;
 import cn.mulanbay.common.util.StringUtil;
-import cn.mulanbay.pms.persistent.domain.Budget;
-import cn.mulanbay.pms.persistent.domain.BudgetLog;
-import cn.mulanbay.pms.persistent.domain.TreatDrug;
-import cn.mulanbay.pms.persistent.domain.UserCalendar;
+import cn.mulanbay.pms.handler.bean.UserCalendarIdBean;
+import cn.mulanbay.pms.persistent.domain.*;
 import cn.mulanbay.pms.persistent.dto.CalendarLogDto;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.enums.UserCalendarFinishType;
 import cn.mulanbay.pms.persistent.enums.UserCalendarSource;
 import cn.mulanbay.pms.persistent.service.BudgetService;
+import cn.mulanbay.pms.persistent.service.BuyRecordService;
 import cn.mulanbay.pms.persistent.service.TreatService;
 import cn.mulanbay.pms.persistent.service.UserCalendarService;
 import cn.mulanbay.pms.web.bean.request.usercalendar.UserCalendarListSearch;
 import cn.mulanbay.pms.web.bean.response.calendar.UserCalendarVo;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -46,8 +46,35 @@ public class UserCalendarHandler extends BaseHandler {
     @Autowired
     TreatService treatService;
 
+    @Autowired
+    BuyRecordService buyRecordService;
+
     public UserCalendarHandler() {
         super("用户日历处理");
+    }
+
+    /**
+     * 产生新的ID
+     * @param source
+     * @param id
+     * @return
+     */
+    private String generateNewId(UserCalendarSource source,Long id){
+        return source.name()+"--"+id;
+    }
+
+    /**
+     * 解析Bean
+     * @param id
+     * @return
+     */
+    public UserCalendarIdBean parseId(String id){
+        String[] ss = id.split("--");
+        UserCalendarIdBean bean = new UserCalendarIdBean();
+        bean.setId(Long.valueOf(ss[1]));
+        UserCalendarSource source = UserCalendarSource.valueOf(ss[0]);
+        bean.setSource(source);
+        return bean;
     }
 
     /**
@@ -63,7 +90,8 @@ public class UserCalendarHandler extends BaseHandler {
             PeriodType period = b.getPeriod();
             if (period == PeriodType.ONCE) {
                 UserCalendarVo copy = new UserCalendarVo();
-                BeanCopy.copyProperties(b, copy);
+                BeanUtils.copyProperties(b, copy,"id");
+                copy.setId(this.generateNewId(UserCalendarSource.MANUAL,b.getId()));
                 copy.setExpireTime(b.getBussDay());
                 res.add(copy);
             } else {
@@ -99,7 +127,8 @@ public class UserCalendarHandler extends BaseHandler {
                     }
                     if (need) {
                         UserCalendarVo copy = new UserCalendarVo();
-                        BeanCopy.copyProperties(b, copy);
+                        BeanUtils.copyProperties(b, copy,"id");
+                        copy.setId(this.generateNewId(UserCalendarSource.MANUAL,b.getId()));
                         //当前时间加上配置的时分秒时间
                         String bd = DateUtil.getFormatDate(dd, DateUtil.FormatDay1);
                         bd += " " + DateUtil.getFormatDate(b.getBussDay(), "HH:mm:ss");
@@ -129,6 +158,9 @@ public class UserCalendarHandler extends BaseHandler {
         if (true == sf.getNeedBudget()) {
             res.addAll(getBudgetCalendar(sf));
         }
+        if (true == sf.getNeedBuyRecord()) {
+            res.addAll(getBuyRecordCalendar(sf));
+        }
         return res;
     }
 
@@ -148,7 +180,8 @@ public class UserCalendarHandler extends BaseHandler {
                 boolean b = DateUtil.isTheSameDay(date, cls.getDate());
                 if (b) {
                     UserCalendarVo copy = new UserCalendarVo();
-                    BeanCopy.copyProperties(uc, copy);
+                    BeanUtils.copyProperties(uc, copy,"id");
+                    copy.setId(this.generateNewId(uc.getSourceType(),uc.getId()));
                     copy.setBussDay(cls.getDate());
                     copy.setExpireTime(cls.getDate());
                     copy.setReadOnly(true);
@@ -212,6 +245,22 @@ public class UserCalendarHandler extends BaseHandler {
     }
 
     /**
+     * 获取消费日历(商品)
+     *
+     * @param sf
+     * @return
+     */
+    private List<UserCalendarVo> getBuyRecordCalendar(UserCalendarListSearch sf) {
+        List<UserCalendarVo> res = new ArrayList<>();
+        List<BuyRecord> brList = buyRecordService.getExpectDeleteBuyRecordList(sf.getStartDate(),sf.getEndDate(),sf.getUserId());
+        for(BuyRecord br : brList){
+            UserCalendarVo vo = this.generateUserCalendar(br);
+            res.add(vo);
+        }
+        return res;
+    }
+
+    /**
      * 获取预算日历
      *
      * @param sf
@@ -253,9 +302,34 @@ public class UserCalendarHandler extends BaseHandler {
         return false;
     }
 
+    /**
+     * 构建用户日历
+     * @param br
+     * @return
+     */
+    private UserCalendarVo generateUserCalendar(BuyRecord br) {
+        UserCalendarVo uc = new UserCalendarVo();
+        uc.setId(this.generateNewId(UserCalendarSource.BUY_RECORD,br.getId()));
+        uc.setReadOnly(true);
+        uc.setAllDay(true);
+        uc.setTitle("商品过期");
+        uc.setDelayCounts(0);
+        uc.setSourceType(UserCalendarSource.BUY_RECORD);
+        uc.setSourceId(br.getId().toString());
+        uc.setBussDay(br.getExpectDeleteDate());
+        uc.setExpireTime(br.getExpectDeleteDate());
+        uc.setContent("商品达到预期报废时间，"+br.getGoodsName());
+        return uc;
+    }
+
+    /**
+     * 构建用户日历
+     * @param b
+     * @return
+     */
     private UserCalendarVo generateUserCalendar(TreatDrug b) {
         UserCalendarVo uc = new UserCalendarVo();
-        uc.setId(-1000L - b.getId());
+        uc.setId(this.generateNewId(UserCalendarSource.TREAT_DRUG,b.getId()));
         uc.setReadOnly(true);
         uc.setAllDay(true);
         uc.setTitle(b.getName());
@@ -268,9 +342,15 @@ public class UserCalendarHandler extends BaseHandler {
         return uc;
     }
 
+    /**
+     * 构建用户日历
+     * @param b
+     * @param date
+     * @return
+     */
     private UserCalendarVo generateUserCalendar(Budget b, Date date) {
         UserCalendarVo uc = new UserCalendarVo();
-        uc.setId(0 - b.getId());
+        uc.setId(this.generateNewId(UserCalendarSource.BUDGET,b.getId()));
         uc.setReadOnly(true);
         uc.setAllDay(true);
         uc.setTitle(b.getName());

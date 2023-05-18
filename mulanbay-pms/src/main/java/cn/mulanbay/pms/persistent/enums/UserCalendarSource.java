@@ -1,5 +1,7 @@
 package cn.mulanbay.pms.persistent.enums;
 
+import cn.mulanbay.pms.persistent.domain.*;
+
 /**
  * 日历来源
  *
@@ -8,22 +10,30 @@ package cn.mulanbay.pms.persistent.enums;
  */
 public enum UserCalendarSource {
 
-    MANUAL(0, "手动"),
-    NOTIFY(1, "提醒"),
-    PLAN(2, "计划"),
-    COMMON_RECORD(3, "通用"),
-    BUDGET(4, "预算"),
-    TREAT_OPERATION(5, "手术"),
-    TREAT_DRUG(6, "用药"),
-    BUY_RECORD(7, "消费");
+    MANUAL(0, "手动",UserCalendar.class),
+    NOTIFY(1, "提醒", UserNotify.class),
+    PLAN(2, "计划", UserPlan.class),
+    COMMON_RECORD(3, "通用", CommonRecord.class),
+    BUDGET(4, "预算", Budget.class),
+    TREAT_OPERATION(5, "手术", TreatOperation.class),
+    TREAT_DRUG(6, "用药",TreatDrug.class),
+    BUY_RECORD(7, "消费",BuyRecord.class);
 
     private int value;
 
     private String name;
 
+    private Class beanClass;
+
     UserCalendarSource(int value, String name) {
         this.value = value;
         this.name = name;
+    }
+
+    UserCalendarSource(int value, String name, Class beanClass) {
+        this.value = value;
+        this.name = name;
+        this.beanClass = beanClass;
     }
 
     public int getValue() {
@@ -40,6 +50,14 @@ public enum UserCalendarSource {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Class getBeanClass() {
+        return beanClass;
+    }
+
+    public void setBeanClass(Class beanClass) {
+        this.beanClass = beanClass;
     }
 
     public static UserCalendarSource getUserCalendarSource(int value) {

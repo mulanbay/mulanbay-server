@@ -35,6 +35,24 @@ import java.util.List;
 public class BuyRecordService extends BaseHibernateDao {
 
     /**
+     * 获取需要作废需要提醒的商品
+     *
+     * @param startDate
+     * @param endDate
+     * @param userId
+     * @return
+     */
+    public List<BuyRecord> getExpectDeleteBuyRecordList(Date startDate,Date endDate,Long userId) {
+        try {
+            String hql="from BuyRecord where userId=?0 and expectDeleteDate>=?1 and expectDeleteDate<=?2 and deleteDate is null";
+            return this.getEntityListNoPageHQL(hql,userId,startDate,endDate);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取需要作废需要提醒的商品异常", e);
+        }
+    }
+
+    /**
      * 基本的统计
      *
      * @param sf

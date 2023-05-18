@@ -49,6 +49,8 @@ public class BuyRecord implements java.io.Serializable {
     private Double soldPrice;
     // 作废日期
     private Date deleteDate;
+    // 预期作废日期
+    private Date expectDeleteDate;
     // 状态
     private Status status;
     //关键字，统计使用
@@ -62,6 +64,8 @@ public class BuyRecord implements java.io.Serializable {
     private Boolean statable;
     private GoodsConsumeType consumeType;
     private String skuInfo;
+    //父级ID
+    private Long pid;
     private Date createdTime;
     private Date lastModifyTime;
 
@@ -232,6 +236,15 @@ public class BuyRecord implements java.io.Serializable {
         this.deleteDate = deleteDate;
     }
 
+    @Column(name = "expect_delete_date")
+    public Date getExpectDeleteDate() {
+        return expectDeleteDate;
+    }
+
+    public void setExpectDeleteDate(Date expectDeleteDate) {
+        this.expectDeleteDate = expectDeleteDate;
+    }
+
     @Column(name = "status", nullable = false)
     public Status getStatus() {
         return this.status;
@@ -302,6 +315,15 @@ public class BuyRecord implements java.io.Serializable {
 
     public void setSkuInfo(String skuInfo) {
         this.skuInfo = skuInfo;
+    }
+
+    @Column(name = "pid")
+    public Long getPid() {
+        return pid;
+    }
+
+    public void setPid(Long pid) {
+        this.pid = pid;
     }
 
     @Column(name = "created_time", length = 19)

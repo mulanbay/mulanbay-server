@@ -13,7 +13,8 @@ import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.handler.PmsNotifyHandler;
 import cn.mulanbay.pms.handler.UserCalendarHandler;
 import cn.mulanbay.pms.handler.bean.UserCalendarCountsBean;
-import cn.mulanbay.pms.persistent.domain.*;
+import cn.mulanbay.pms.handler.bean.UserCalendarIdBean;
+import cn.mulanbay.pms.persistent.domain.UserCalendar;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.enums.UserCalendarFinishType;
 import cn.mulanbay.pms.persistent.enums.UserCalendarSource;
@@ -113,9 +114,13 @@ public class UserCalendarController extends BaseController {
         //过滤掉不适合的
         List<UserCalendar> res = new ArrayList<>();
         int sn = DateUtil.getDayOfYear(start);
-        for (UserCalendar uc : ucList) {
-            int cn = DateUtil.getDayOfYear(uc.getBussDay());
+        for (UserCalendarVo vo : ucList) {
+            int cn = DateUtil.getDayOfYear(vo.getBussDay());
             if (sn == cn) {
+                UserCalendar uc = new UserCalendar();
+                BeanCopy.copyProperties(vo,uc);
+                UserCalendarIdBean idBean = userCalendarHandler.parseId(vo.getId());
+                uc.setId(idBean.getId());
                 res.add(uc);
             }
         }
@@ -235,32 +240,12 @@ public class UserCalendarController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/getSource", method = RequestMethod.GET)
-    public ResultBean getSource(@Valid CommonBeanGetRequest getRequest) {
-        UserCalendar bean = this.getUserEntity(beanClass, getRequest.getId(), getRequest.getUserId());
-        String sourceId = bean.getSourceId();
-        UserCalendarSource sourceType = bean.getSourceType();
-        Object res = this.getSource(sourceType,sourceId);
+    public ResultBean getSource(@Valid UserCalendarGetSourceRequest getRequest) {
+        UserCalendarIdBean bean = userCalendarHandler.parseId(getRequest.getId());
+        Long sourceId = bean.getId();
+        UserCalendarSource source = bean.getSource();
+        Object res = baseService.getObject(source.getBeanClass(),sourceId);
         return callback(res);
-    }
-
-    private Object getSource(UserCalendarSource sourceType,String sourceId){
-        Object res = null;
-        if (sourceType == UserCalendarSource.NOTIFY) {
-            res = baseService.getObject(UserNotify.class, Long.valueOf(sourceId));
-        } else if (sourceType == UserCalendarSource.PLAN) {
-            res = baseService.getObject(UserPlan.class, Long.valueOf(sourceId));
-        } else if (sourceType == UserCalendarSource.COMMON_RECORD) {
-            res = baseService.getObject(CommonRecord.class, Long.valueOf(sourceId));
-        } else if (sourceType == UserCalendarSource.BUDGET) {
-            res = baseService.getObject(Budget.class, Long.valueOf(sourceId));
-        } else if (sourceType == UserCalendarSource.TREAT_OPERATION) {
-            res = baseService.getObject(TreatOperation.class, Long.valueOf(sourceId));
-        } else if (sourceType == UserCalendarSource.TREAT_DRUG) {
-            res = baseService.getObject(TreatDrug.class, Long.valueOf(sourceId));
-        } else if (sourceType == UserCalendarSource.BUY_RECORD) {
-            res = baseService.getObject(BuyRecord.class, Long.valueOf(sourceId));
-        }
-        return res;
     }
 
     /**

@@ -19,14 +19,34 @@ public class UserCalendarListSearch extends QueryBuilder implements BindUser, Fu
 
     public Long userId;
 
+    /**
+     * 是否包含已经完成的
+     */
     private Boolean needFinished;
 
+    /**
+     * 是否包含周期性的
+     */
     private Boolean needPeriod;
 
+    /**
+     * 是否包含周期性日历
+     */
     private Boolean needBudget;
 
+    /**
+     * 是否包含用药日历
+     */
     private Boolean needTreatDrug;
 
+    /**
+     * 是否包含消费
+     */
+    private Boolean needBuyRecord;
+
+    /**
+     * 是否包含日志
+     */
     private Boolean needBandLog;
 
     private UserCalendarSource sourceType;
@@ -97,6 +117,14 @@ public class UserCalendarListSearch extends QueryBuilder implements BindUser, Fu
 
     public void setNeedTreatDrug(Boolean needTreatDrug) {
         this.needTreatDrug = needTreatDrug;
+    }
+
+    public Boolean getNeedBuyRecord() {
+        return needBuyRecord;
+    }
+
+    public void setNeedBuyRecord(Boolean needBuyRecord) {
+        this.needBuyRecord = needBuyRecord;
     }
 
     public Boolean getNeedBandLog() {
