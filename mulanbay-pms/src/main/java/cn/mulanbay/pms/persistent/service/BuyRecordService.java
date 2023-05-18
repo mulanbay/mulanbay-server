@@ -820,14 +820,23 @@ public class BuyRecordService extends BaseHibernateDao {
 
     /**
      * 获取消费记录的总成本（关联子集）
+     * 不包含自身的价格成本
+     *
      * @param rootId 消费记录ID
      */
     public BuyRecordChildrenCost getChildrenTotalDeepCost(Long rootId) {
         try {
+            String sql = "select getBuyRecordChildren("+rootId+")";
+            List<String> ll = this.getEntityListNoPageSQL(sql);
+            String ids = ll.get(0);
+            if(StringUtil.isEmpty(ids)){
+                return new BuyRecordChildrenCost();
+            }
+            ids = ids.substring(1);
             StringBuffer sb = new StringBuffer();
             sb.append("select sum(total_price) as totalPrice,sum(sold_price) as soldPrice,count(0) as totalCount FROM buy_record WHERE id in ");
-            sb.append("(select id from ");
-            sb.append("(SELECT id FROM buy_record WHERE FIND_IN_SET(id, getBuyRecordChildren("+rootId+"))) as aa ");
+            sb.append("(");
+            sb.append(ids);
             sb.append(") ");
             List<BuyRecordChildrenCost> list = this.getEntityListWithClassSQL(sb.toString(),0,0,BuyRecordChildrenCost.class);
             return list.get(0);
@@ -839,6 +848,8 @@ public class BuyRecordService extends BaseHibernateDao {
 
     /**
      * 获取消费记录的总成本（只关联一层）
+     * 不包含自身的价格成本
+     *
      * @param rootId 消费记录ID
      */
     public BuyRecordChildrenCost getChildrenTotalCost(Long rootId) {
