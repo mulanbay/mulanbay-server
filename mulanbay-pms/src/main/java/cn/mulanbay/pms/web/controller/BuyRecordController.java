@@ -356,6 +356,23 @@ public class BuyRecordController extends BaseController {
     }
 
     /**
+     * 子成本
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getChildrenTotalCost")
+    public ResultBean getChildrenTotalCost(BuyRecordChildrenTotalCostRequest tcr) {
+        boolean deepCost = tcr.getDeepCost();
+        BuyRecordChildrenCost cost = null;
+        if(deepCost){
+            cost = buyRecordService.getChildrenTotalDeepCost(tcr.getId());
+        }else{
+            cost = buyRecordService.getChildrenTotalCost(tcr.getId());
+        }
+        return callback(cost);
+    }
+
+    /**
      * 商品使用寿命
      *
      * @return

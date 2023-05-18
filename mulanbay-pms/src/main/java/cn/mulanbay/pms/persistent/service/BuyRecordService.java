@@ -817,4 +817,38 @@ public class BuyRecordService extends BaseHibernateDao {
                     "取消下级异常", e);
         }
     }
+
+    /**
+     * 获取消费记录的总成本（关联子集）
+     * @param rootId 消费记录ID
+     */
+    public BuyRecordChildrenCost getChildrenTotalDeepCost(Long rootId) {
+        try {
+            StringBuffer sb = new StringBuffer();
+            sb.append("select sum(total_price) as totalPrice,sum(sold_price) as soldPrice,count(0) as totalCount FROM buy_record WHERE id in ");
+            sb.append("(select id from ");
+            sb.append("(SELECT id FROM buy_record WHERE FIND_IN_SET(id, getBuyRecordChildren("+rootId+"))) as aa ");
+            sb.append(") ");
+            List<BuyRecordChildrenCost> list = this.getEntityListWithClassSQL(sb.toString(),0,0,BuyRecordChildrenCost.class);
+            return list.get(0);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_DELETE_ERROR,
+                    "获取消费记录的总成本异常", e);
+        }
+    }
+
+    /**
+     * 获取消费记录的总成本（只关联一层）
+     * @param rootId 消费记录ID
+     */
+    public BuyRecordChildrenCost getChildrenTotalCost(Long rootId) {
+        try {
+            String sql = "select sum(total_price) as totalPrice,sum(sold_price) as soldPrice,count(0) as totalCount from buy_record where pid = ?0";
+            List<BuyRecordChildrenCost> list = this.getEntityListWithClassSQL(sql,0,0,BuyRecordChildrenCost.class,rootId);
+            return list.get(0);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_DELETE_ERROR,
+                    "获取消费记录的总成本异常", e);
+        }
+    }
 }
