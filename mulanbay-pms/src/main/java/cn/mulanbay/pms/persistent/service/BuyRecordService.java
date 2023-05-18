@@ -775,4 +775,46 @@ public class BuyRecordService extends BaseHibernateDao {
         }
     }
 
+    /**
+     * 设置上级
+     * @param id
+     * @param pid
+     */
+    public void setParent(Long id,Long pid) {
+        try {
+            String hql = "update BuyRecord set pid=?0 where id=?1 ";
+            this.updateEntities(hql,pid,id);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_UPDATE_ERROR,
+                    "设置上级异常", e);
+        }
+    }
+
+    /**
+     * 取消上级
+     * @param id
+     */
+    public void deleteParent(Long id) {
+        try {
+            String hql = "update BuyRecord set pid=null where id=?0 ";
+            this.updateEntities(hql,id);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_UPDATE_ERROR,
+                    "取消上级异常", e);
+        }
+    }
+
+    /**
+     * 取消下级
+     * @param pid
+     */
+    public void deleteChildren(Long pid) {
+        try {
+            String hql = "update BuyRecord set pid=null where pid=?0 ";
+            this.updateEntities(hql,pid);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_UPDATE_ERROR,
+                    "取消下级异常", e);
+        }
+    }
 }

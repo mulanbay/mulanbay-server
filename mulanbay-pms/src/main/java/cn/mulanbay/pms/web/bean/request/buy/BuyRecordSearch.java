@@ -18,6 +18,9 @@ import java.util.List;
 
 public class BuyRecordSearch extends PageSearch implements BindUser, BindFamily, FullEndDateTime {
 
+    @Query(fieldName = "pid", op = Operator.EQ)
+    private Long pid;
+
     @Query(fieldName = "goodsType.id", op = Operator.EQ)
     private Integer goodsType;
 
@@ -56,6 +59,14 @@ public class BuyRecordSearch extends PageSearch implements BindUser, BindFamily,
     private List<Long> userIdList;
 
     private MoneyFlow moneyFlow;
+
+    public Long getPid() {
+        return pid;
+    }
+
+    public void setPid(Long pid) {
+        this.pid = pid;
+    }
 
     @Override
     public Long getUserId() {

@@ -296,6 +296,40 @@ public class BuyRecordController extends BaseController {
     }
 
     /**
+     * 设置上级
+     *
+     * @return
+     */
+    @RequestMapping(value = "/setParent", method = RequestMethod.POST)
+    public ResultBean setParent(@RequestBody @Valid BuyRecordSetParentRequest spr) {
+        buyRecordService.setParent(spr.getId(),spr.getPid());
+        return callback(null);
+    }
+
+    /**
+     * 取消上级
+     *
+     * @return
+     */
+    @RequestMapping(value = "/deleteParent", method = RequestMethod.POST)
+    public ResultBean deleteParent(@RequestBody @Valid BuyRecordSetParentRequest spr) {
+        buyRecordService.deleteParent(spr.getId());
+        return callback(null);
+    }
+
+    /**
+     * 取消下级
+     *
+     * @return
+     */
+    @RequestMapping(value = "/deleteChildren", method = RequestMethod.POST)
+    public ResultBean deleteChildren(@RequestBody @Valid BuyRecordDeleteChildrenRequest dcr) {
+        buyRecordService.deleteChildren(dcr.getPid());
+        return callback(null);
+    }
+
+
+    /**
      * 统计分析
      *
      * @return
