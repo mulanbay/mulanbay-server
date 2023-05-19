@@ -204,8 +204,17 @@ public class ConsumeHandler extends BaseHandler {
      * @return
      */
     public GoodsLifetimeMatchBean matchLifetime(String goodsName){
-        GoodsLifetimeMatchBean bean = new GoodsLifetimeMatchBean();
         List<GoodsLifetime> list = this.getGoodsLifetimeList();
+        return this.matchLifetime(goodsName,list,true);
+    }
+
+    /**
+     * 商品寿命匹配
+     * @param goodsName
+     * @return
+     */
+    public GoodsLifetimeMatchBean matchLifetime(String goodsName,List<GoodsLifetime> list,boolean skipMin){
+        GoodsLifetimeMatchBean bean = new GoodsLifetimeMatchBean();
         for(GoodsLifetime lt : list){
             float m = ahaNLPHandler.sentenceSimilarity(goodsName,lt.getKeywords());
             if(m>bean.getMatch()){
@@ -217,7 +226,7 @@ public class ConsumeHandler extends BaseHandler {
                 }
             }
         }
-        if(bean.getMatch()<minMatchDegree){
+        if(skipMin&&bean.getMatch()<minMatchDegree){
             logger.warn("商品寿命匹配度过低:"+bean.getMatch());
             return null;
         }
