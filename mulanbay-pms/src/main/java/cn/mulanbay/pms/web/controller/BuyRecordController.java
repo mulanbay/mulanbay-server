@@ -1072,7 +1072,7 @@ public class BuyRecordController extends BaseController {
             bean.setKeywords(keywords);
         } catch (Exception e) {
             logger.error("根据商品名智能分析出其分类及品牌等异常",e);
-            return callback(new BuyRecordMatchBean());
+            return callback(null);
         }
         return callback(bean);
     }
