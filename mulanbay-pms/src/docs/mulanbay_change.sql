@@ -11,13 +11,13 @@ CREATE FUNCTION `getBuyRecordChildren`(rootId BigInt) RETURNS varchar(1000) CHAR
 BEGIN
 	DECLARE ptemp VARCHAR(1000);
 	DECLARE ctemp VARCHAR(1000);
-	SET ptemp = '';
+	SET ptemp = '#';
 	SET ctemp = CAST(rootId AS CHAR);
 	WHILE ctemp IS NOT NULL DO
 		SET ptemp = CONCAT(ptemp,',',ctemp);
 SELECT GROUP_CONCAT(id) INTO ctemp FROM buy_record
 WHERE FIND_IN_SET(pid, ctemp) > 0;
 END WHILE;
-    set ptemp = replace(ptemp,concat(',',rootId),'');
+    set ptemp = replace(ptemp,concat('#,',rootId),'');
 RETURN ptemp;
 END

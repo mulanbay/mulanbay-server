@@ -862,4 +862,31 @@ public class BuyRecordService extends BaseHibernateDao {
                     "获取消费记录的总成本异常", e);
         }
     }
+
+    /**
+     * 获取子商品列表
+     * @param rootId
+     * @return
+     */
+    public List<BuyRecordCascadeDto> getChildrenDeepList(Long rootId){
+        try {
+            String sql = "select getBuyRecordChildren("+rootId+")";
+            List<String> ll = this.getEntityListNoPageSQL(sql);
+            String ids = ll.get(0);
+            if(StringUtil.isEmpty(ids)){
+                return new ArrayList<>();
+            }
+            ids = ids.substring(1);
+            StringBuffer sb = new StringBuffer();
+            sb.append("select id,pid,goods_name as goodsName,total_price as totalPrice FROM buy_record WHERE id in ");
+            sb.append("(");
+            sb.append(ids);
+            sb.append(") ");
+            List<BuyRecordCascadeDto> list = this.getEntityListWithClassSQL(sb.toString(),0,0,BuyRecordCascadeDto.class);
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取子商品列表异常", e);
+        }
+    }
 }

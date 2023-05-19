@@ -18,12 +18,23 @@ public class ChartTreeDetailData {
 
     private String name;
 
+    /**
+     * 是否统计子类的值
+     */
+    private boolean sumChildrenValue = true;
+
     public ChartTreeDetailData() {
     }
 
     public ChartTreeDetailData(double value, String name) {
         this.value = value;
         this.name = name;
+    }
+
+    public ChartTreeDetailData(double value, String name, boolean sumChildrenValue) {
+        this.value = value;
+        this.name = name;
+        this.sumChildrenValue = sumChildrenValue;
     }
 
     private List<ChartTreeDetailData> children = new ArrayList<>();
@@ -36,6 +47,16 @@ public class ChartTreeDetailData {
      */
     public void addChild(double value, String name) {
         this.addChild(new ChartTreeDetailData(value, name));
+    }
+
+    /**
+     * 添加子节点
+     *
+     * @param value
+     * @param name
+     */
+    public void addChild(double value, String name, boolean sumChildrenValue) {
+        this.addChild(new ChartTreeDetailData(value, name,sumChildrenValue));
     }
 
     public void addChild(ChartTreeDetailData tmb) {
@@ -75,6 +96,9 @@ public class ChartTreeDetailData {
      * @return
      */
     public double getValue() {
+        if(!sumChildrenValue){
+            return value;
+        }
         if (StringUtil.isNotEmpty(children)) {
             double b = 0;
             for (ChartTreeDetailData ct : children) {

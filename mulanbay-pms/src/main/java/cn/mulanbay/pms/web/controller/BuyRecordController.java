@@ -364,12 +364,66 @@ public class BuyRecordController extends BaseController {
     public ResultBean getChildrenTotalCost(BuyRecordChildrenTotalCostRequest tcr) {
         boolean deepCost = tcr.getDeepCost();
         BuyRecordChildrenCost cost = null;
-        if(deepCost){
+        if(deepCost==true){
             cost = buyRecordService.getChildrenTotalDeepCost(tcr.getId());
         }else{
             cost = buyRecordService.getChildrenTotalCost(tcr.getId());
         }
         return callback(cost);
+    }
+
+    /**
+     * 子集树形统计
+     *
+     * @return
+     */
+    @RequestMapping(value = "/treeStat", method = RequestMethod.GET)
+    public ResultBean treeStat(@Valid CommonBeanGetRequest getRequest) {
+        Long rootId = getRequest.getId();
+        BuyRecord buyRecord = this.getUserEntity(beanClass, rootId, getRequest.getUserId());
+        List<BuyRecordCascadeDto> children = buyRecordService.getChildrenDeepList(rootId);
+        // 转换为Map
+        Map<Long,BuyRecordCascadeDto> map = new HashMap<>();
+        // 添加根节点信息
+        BuyRecordCascadeDto root = new BuyRecordCascadeDto();
+        root.setGoodsName(buyRecord.getGoodsName());
+        map.put(rootId,root);
+        BigDecimal totalCost = new BigDecimal(buyRecord.getTotalPrice());
+        for (BuyRecordCascadeDto child : children){
+            map.put(child.getId().longValue(),child);
+            totalCost = totalCost.add(child.getTotalPrice());
+        }
+        ChartTreeDetailData rootData = new ChartTreeDetailData(buyRecord.getTotalPrice(), buyRecord.getGoodsName(),false);
+        ChartTreeDetailData data = this.generateTree(rootData,map,children);
+        ChartTreeData treeData = new ChartTreeData();
+        treeData.setData(data);
+        treeData.setUnit("元");
+        treeData.setTitle("商品关系图");
+        treeData.setSubTitle("商品总价:"+NumberUtil.getDoubleValue(buyRecord.getTotalPrice(),2)+"元,总成本:"+NumberUtil.getDoubleValue(totalCost.doubleValue(),2)+"元");
+        return callback(treeData);
+    }
+
+    /**
+     * 构建树
+     * @param root
+     * @param map
+     * @param list
+     * @return
+     */
+    private ChartTreeDetailData generateTree(ChartTreeDetailData root,Map<Long,BuyRecordCascadeDto> map,List<BuyRecordCascadeDto> list){
+        for (BuyRecordCascadeDto child : list) {
+            BuyRecordCascadeDto parent = map.get(child.getPid().longValue());
+            String parentName = parent.getGoodsName();
+            if (root.getName().equals(parentName)) {
+                root.addChild(NumberUtil.getDoubleValue(child.getTotalPrice().doubleValue(),2), child.getGoodsName(),false);
+            }
+        }
+        if (root.getChildren() != null) {
+            for (ChartTreeDetailData cc : root.getChildren()) {
+                generateTree(cc,map, list);
+            }
+        }
+        return root;
     }
 
     /**

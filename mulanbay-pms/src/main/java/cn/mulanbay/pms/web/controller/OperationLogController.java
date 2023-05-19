@@ -3,6 +3,7 @@ package cn.mulanbay.pms.web.controller;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.JsonUtil;
+import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
@@ -337,6 +338,8 @@ public class OperationLogController extends BaseController {
         }
         ChartTreeData treeData = new ChartTreeData();
         treeData.setData(data);
+        treeData.setUnit("次");
+        treeData.setTitle("操作日志关系图");
         return callback(treeData);
     }
 
