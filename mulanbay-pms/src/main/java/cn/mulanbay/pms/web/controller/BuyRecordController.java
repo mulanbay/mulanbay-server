@@ -27,6 +27,7 @@ import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.GroupType;
 import cn.mulanbay.pms.web.bean.request.buy.*;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
+import cn.mulanbay.pms.web.bean.response.buy.BuyRecordCostStatVo;
 import cn.mulanbay.pms.web.bean.response.buy.ChartRadarGroupVo;
 import cn.mulanbay.pms.web.bean.response.chart.*;
 import cn.mulanbay.web.bean.response.ResultBean;
@@ -34,6 +35,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -356,20 +358,64 @@ public class BuyRecordController extends BaseController {
     }
 
     /**
-     * 子成本
+     * 成本统计
      *
      * @return
      */
-    @RequestMapping(value = "/getChildrenTotalCost")
-    public ResultBean getChildrenTotalCost(BuyRecordChildrenTotalCostRequest tcr) {
-        boolean deepCost = tcr.getDeepCost();
-        BuyRecordChildrenCost cost = null;
-        if(deepCost==true){
-            cost = buyRecordService.getChildrenTotalDeepCost(tcr.getId());
+    @RequestMapping(value = "/costStat")
+    public ResultBean costStat(BuyRecordStatCostRequest tcr) {
+        BuyRecord buyRecord = this.getUserEntity(beanClass, tcr.getId(), tcr.getUserId());
+        BuyRecordCostStatVo vo = new BuyRecordCostStatVo();
+        BeanCopy.copyProperties(buyRecord,vo);
+        Date expDate = vo.getDeleteDate();
+        if(expDate==null){
+            expDate = new Date();
         }else{
-            cost = buyRecordService.getChildrenTotalCost(tcr.getId());
+            long expMillSecs = expDate.getTime()-vo.getBuyDate().getTime();
+            vo.setExpMillSecs(expMillSecs);
         }
-        return callback(cost);
+        long usedMillSecs = expDate.getTime()-vo.getBuyDate().getTime();
+        vo.setUsedMillSecs(usedMillSecs);
+        long usedDays = usedMillSecs / (24*3600*1000);
+        if(usedDays<=0){
+            usedDays=1;
+        }
+        //计算下一级
+        boolean deepCost = tcr.getDeepCost();
+        BuyRecordChildrenCost cc = null;
+        if(deepCost==true){
+            cc = buyRecordService.getChildrenTotalDeepCost(tcr.getId());
+        }else{
+            cc = buyRecordService.getChildrenTotalCost(tcr.getId());
+        }
+        vo.setChildrens(cc.getTotalCount().longValue());
+        if(cc.getSoldPrice()!=null){
+            vo.setChildrenSoldPrice(NumberUtil.getDoubleValue(cc.getSoldPrice().doubleValue(),2));
+        }
+        BigDecimal ctp = cc.getTotalPrice()==null ? new BigDecimal(0) : cc.getTotalPrice();
+        vo.setChildrenPrice(NumberUtil.getDoubleValue(ctp.doubleValue(),2));
+        //总成本=商品价格+下一级商品成本
+        BigDecimal totalCost = ctp.add(new BigDecimal(vo.getTotalPrice()));
+        vo.setTotalCost(NumberUtil.getDoubleValue(totalCost.doubleValue(),2));
+        //计算每天花费
+        BigDecimal vs = vo.getSoldPrice()==null ? new BigDecimal(0) : new BigDecimal(vo.getSoldPrice());
+        BigDecimal cts = cc.getSoldPrice()==null ? new BigDecimal(0) : cc.getSoldPrice();
+        // (买入价格-出售价格)/使用天数
+        Double costPerDay = ((new BigDecimal(vo.getTotalPrice()).subtract(vs)).divide(new BigDecimal(usedDays),2,BigDecimal.ROUND_HALF_UP)).doubleValue();
+        // (买入价格-出售价格+下一级商品成本-下一级商品出售价格)/使用天数
+        Double totalCostPerDay = ((new BigDecimal(vo.getTotalPrice()).subtract(vs).add(ctp).subtract(cts)).divide(new BigDecimal(usedDays),2,BigDecimal.ROUND_HALF_UP)).doubleValue();
+        vo.setCostPerDay(costPerDay);
+        vo.setTotalCostPerDay(totalCostPerDay);
+        if(vo.getSoldPrice()!=null){
+            //折旧率
+            // 买入价格/出售价格
+            Double depRate = vo.getSoldPrice()*10/vo.getTotalPrice();
+            // 买入价格/(总成本-下一级商品出售价格)
+            Double totalDepRate = vo.getSoldPrice()*10/(totalCost.subtract(cts).doubleValue());
+            vo.setDepRate(depRate);
+            vo.setTotalDepRate(totalDepRate);
+        }
+        return callback(vo);
     }
 
     /**

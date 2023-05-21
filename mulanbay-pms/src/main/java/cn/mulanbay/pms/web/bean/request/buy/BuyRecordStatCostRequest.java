@@ -4,7 +4,7 @@ import cn.mulanbay.common.aop.BindUser;
 
 import javax.validation.constraints.NotNull;
 
-public class BuyRecordChildrenTotalCostRequest implements BindUser {
+public class BuyRecordStatCostRequest implements BindUser {
 
     @NotNull(message = "{validate.buyRecord.id.notNull}")
     private Long id;
