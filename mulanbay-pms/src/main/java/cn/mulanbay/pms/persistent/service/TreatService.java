@@ -874,4 +874,44 @@ public class TreatService extends BaseHibernateDao {
                     "获取看病记录的总体统计异常", e);
         }
     }
+
+    /**
+     * 获取看病列表
+     * @param tags
+     * @param userId
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public List<TreatRecordUnionDto> getTreatList(String tags,Long userId,Date startDate,Date endDate) {
+        try {
+            int index =0;
+            List args = new ArrayList();
+            StringBuffer sb = new StringBuffer();
+            sb.append("select tr.hospital,tr.department,tr.organ ,tr.disease,tr.diagnosed_disease as diagnosedDisease,td.name as drugName,op.name as operationName ");
+            sb.append("from treat_record tr ");
+            sb.append("left join treat_drug td on tr.id = td.treat_record_id ");
+            sb.append("left join treat_operation op on tr.id = op.treat_record_id ");
+            sb.append("where tr.user_id= ?"+(index++));
+            args.add(userId);
+            if(StringUtil.isNotEmpty(tags)){
+                sb.append(" and tr.tags like ?"+(index++));
+                args.add("%"+tags+"%");
+            }
+            if(startDate!=null){
+                sb.append(" and tr.treat_date >= ?"+(index++));
+                args.add(startDate);
+            }
+            if(endDate!=null){
+                sb.append(" and tr.treat_date <= ?"+(index++));
+                args.add(endDate);
+            }
+
+            List<TreatRecordUnionDto> list = this.getEntityListWithClassSQL(sb.toString(), 0, 0, TreatRecordUnionDto.class, args.toArray());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取看病列表异常", e);
+        }
+    }
 }

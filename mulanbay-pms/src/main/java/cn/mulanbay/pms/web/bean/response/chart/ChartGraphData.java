@@ -1,7 +1,9 @@
 package cn.mulanbay.pms.web.bean.response.chart;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Description:关系节点图
@@ -10,15 +12,30 @@ import java.util.List;
  */
 public class ChartGraphData extends BaseChartData{
 
+    private Map<String,String> tempItemMap = new HashMap<>();
+
+    private Map<String,String> tempLinkMap = new HashMap<>();
+
+    /**
+     * 分类列表
+     */
+    private String[] categoryNames;
+
     private List<ChartGraphItemData> itemDataList = new ArrayList<>();
 
     private List<ChartGraphLinkData> linkDataList = new ArrayList<>();
 
     public void addItem(String name,int category){
+        String key = name+"_"+category;
+        String vv = tempItemMap.get(key);
+        if(vv!=null){
+            return;
+        }
         ChartGraphItemData itemData = new ChartGraphItemData();
         itemData.setName(name);
         itemData.setCategory(category);
         this.itemDataList.add(itemData);
+        tempItemMap.put(key,key);
     }
 
     public void addLink(String source,String target){
@@ -30,12 +47,26 @@ public class ChartGraphData extends BaseChartData{
     }
 
     public void addLink(String source,String target,String name,int type){
+        String key = source+"_"+target;
+        String vv = tempItemMap.get(key);
+        if(vv!=null){
+            return;
+        }
         ChartGraphLinkData linkData = new ChartGraphLinkData();
         linkData.setSource(source);
         linkData.setTarget(target);
         linkData.setName(name);
         linkData.setType(type);
         this.linkDataList.add(linkData);
+        tempItemMap.put(key,key);
+    }
+
+    public String[] getCategoryNames() {
+        return categoryNames;
+    }
+
+    public void setCategoryNames(String[] categoryNames) {
+        this.categoryNames = categoryNames;
     }
 
     public List<ChartGraphItemData> getItemDataList() {

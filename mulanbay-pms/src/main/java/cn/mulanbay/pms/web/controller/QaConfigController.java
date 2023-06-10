@@ -224,9 +224,10 @@ public class QaConfigController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/stat", method = RequestMethod.GET)
-    public ResultBean ration() {
+    public ResultBean relation() {
         Sort sort = new Sort("parentId", Sort.ASC);
         List<QaConfig> qaList = baseService.getBeanList(beanClass,0,0,sort);
+        int maxLevel = 0;
         int n = qaList.size();
         Map<String, QaConfigVo> qcMap = new HashMap<>();
         for(int i=0;i<n;i++){
@@ -247,7 +248,6 @@ public class QaConfigController extends BaseController {
             }else{
                 QaConfigVo parent = qcMap.get(parentId.toString());
                 chartGraphData.addLink(parent.getName(),qc.getName());
-                int pl = parent.getLevel();
                 //增加级数
                 QaConfigVo my = qcMap.get(qc.getId().toString());
                 level = parent.getLevel()+1;
@@ -255,11 +255,19 @@ public class QaConfigController extends BaseController {
                 qcMap.put(qc.getId().toString(),my);
             }
             chartGraphData.addItem(qc.getName(),level);
+            if(level>maxLevel){
+                maxLevel = level;
+            }
             if(qc.getReferQaId()!=null){
                 QaConfigVo refer = qcMap.get(qc.getReferQaId().toString());
                 chartGraphData.addLink(qc.getName(),refer.getName(),"跳转",1);
             }
         }
+        List<String> cs = new ArrayList<>();
+        for(int i=0;i<maxLevel+1;i++){
+            cs.add(i+"级");
+        }
+        chartGraphData.setCategoryNames(cs.toArray(new String[cs.size()]));
         chartGraphData.setTitle("QA拓扑结构");
         return callback(chartGraphData);
     }

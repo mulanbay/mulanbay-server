@@ -10,6 +10,7 @@ import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
+import cn.mulanbay.pms.persistent.domain.QaConfig;
 import cn.mulanbay.pms.persistent.domain.TreatRecord;
 import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.ChartType;
@@ -21,9 +22,11 @@ import cn.mulanbay.pms.util.TreeBeanUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.GroupType;
+import cn.mulanbay.pms.web.bean.request.buy.BuyRecordRelationSearch;
 import cn.mulanbay.pms.web.bean.request.health.*;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
 import cn.mulanbay.pms.web.bean.response.chart.*;
+import cn.mulanbay.pms.web.bean.response.system.QaConfigVo;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -584,6 +587,127 @@ public class TreatRecordController extends BaseController {
         return callback(chartData);
     }
 
+    /**
+     * 关系图
+     *
+     * @return
+     */
+    @RequestMapping(value = "/relation", method = RequestMethod.GET)
+    public ResultBean relation(BuyRecordRelationSearch rs) {
+        String tags = rs.getTags();
+        boolean unionAll = rs.getUnionAll()==null ? false:rs.getUnionAll();
+        List<TreatRecordUnionDto> list = treatService.getTreatList(tags,rs.getUserId(),rs.getStartDate(),rs.getEndDate());
+        if(StringUtil.isNotEmpty(tags)){
+            ChartGraphData data = this.createGraphData(tags,unionAll,list);
+            return callback(data);
+        }else{
+            if(rs.getStartDate()==null||rs.getEndDate()==null){
+                //数据过多导致图形显示复杂
+                return callbackErrorInfo("请选择时间段");
+            }
+            ChartGraphData data = this.createGraphData(unionAll,list);
+            return callback(data);
+        }
+    }
 
+    /**
+     * 指定标签
+     * @param tags
+     * @param unionAll
+     * @param list
+     * @return
+     */
+    private ChartGraphData createGraphData(String tags,boolean unionAll,List<TreatRecordUnionDto> list){
+        int n = list.size();
+        String root = tags;
+        ChartGraphData chartGraphData = new ChartGraphData();
+        chartGraphData.addItem(root,0);
+        chartGraphData.setCategoryNames(new String[]{"根","医院","科室","确诊疾病","药品","手术"});
+        for(int i=0;i<n;i++){
+            TreatRecordUnionDto dto = list.get(i);
+            //第一级：医院
+            String hospital = dto.getHospital();
+            chartGraphData.addLink(root,hospital);
+            chartGraphData.addItem(hospital,1);
 
+            //第二级：科室
+            String department = dto.getDepartment();
+            chartGraphData.addLink(hospital,department);
+            chartGraphData.addItem(department,2);
+
+            //第三级：确诊疾病
+            String diagnosedDisease = dto.getDiagnosedDisease();
+            chartGraphData.addLink(hospital,diagnosedDisease);
+            chartGraphData.addItem(diagnosedDisease,3);
+
+            //第四级：药品
+            String drugName = dto.getDrugName();
+            if(StringUtil.isNotEmpty(drugName)){
+                chartGraphData.addLink(hospital,drugName);
+                chartGraphData.addItem(drugName,4);
+                if(unionAll){
+                    chartGraphData.addLink(diagnosedDisease,drugName);
+                }
+            }
+
+            //第五级：手术
+            String operationName = dto.getOperationName();
+            if(StringUtil.isNotEmpty(operationName)){
+                chartGraphData.addLink(hospital,operationName);
+                chartGraphData.addItem(operationName,5);
+                if(unionAll){
+                    chartGraphData.addLink(diagnosedDisease,operationName);
+                }
+            }
+        }
+        chartGraphData.setTitle("["+tags+"]疾病分析");
+        return chartGraphData;
+    }
+
+    /**
+     * 不指定标签
+     * @param list
+     * @return
+     */
+    private ChartGraphData createGraphData(boolean unionAll,List<TreatRecordUnionDto> list){
+        String root = "我的疾病";
+        int n = list.size();
+        ChartGraphData chartGraphData = new ChartGraphData();
+        chartGraphData.addItem(root,0);
+        chartGraphData.setCategoryNames(new String[]{"根","确诊疾病","医院","科室","药品","手术"});
+        for(int i=0;i<n;i++){
+            TreatRecordUnionDto dto = list.get(i);
+
+            //第一级：确诊疾病
+            String diagnosedDisease = dto.getDiagnosedDisease();
+            chartGraphData.addLink(root,diagnosedDisease);
+            chartGraphData.addItem(diagnosedDisease,1);
+
+            //第二级：医院
+            String hospital = dto.getHospital();
+            chartGraphData.addLink(diagnosedDisease,hospital);
+            chartGraphData.addItem(hospital,2);
+
+            //第三级：科室
+            String department = dto.getDepartment();
+            chartGraphData.addLink(hospital,department);
+            chartGraphData.addItem(department,3);
+
+            //第四级：药品
+            String drugName = dto.getDrugName();
+            if(StringUtil.isNotEmpty(drugName)){
+                chartGraphData.addLink(hospital,drugName);
+                chartGraphData.addItem(drugName,4);
+            }
+
+            //第五级：手术
+            String operationName = dto.getOperationName();
+            if(StringUtil.isNotEmpty(operationName)){
+                chartGraphData.addLink(hospital,operationName);
+                chartGraphData.addItem(operationName,5);
+            }
+        }
+        chartGraphData.setTitle("我的疾病分析");
+        return chartGraphData;
+    }
 }
