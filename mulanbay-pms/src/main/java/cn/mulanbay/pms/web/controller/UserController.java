@@ -406,13 +406,8 @@ public class UserController extends BaseController {
                 return callbackErrorCode(PmsErrorCode.USER_SEC_AUTH_WECHAT_NULL_);
             }
         }
-        UserSetting us = authService.getUserSetting(upr.getUserId());
-        BeanCopy.copyProperties(upr, us);
-        user.setLastModifyTime(new Date());
         BeanCopy.copyProperties(upr, user);
-        us.setStatScore(true);
-        us.setLastModifyTime(new Date());
-        authService.updateUser(user, us);
+        baseService.updateObject(user);
         return callback(null);
     }
 

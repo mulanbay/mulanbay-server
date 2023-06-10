@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.web.bean.request.health;
 
 import cn.mulanbay.common.aop.BindUser;
+import cn.mulanbay.pms.persistent.enums.TreatStage;
 import cn.mulanbay.pms.persistent.enums.TreatType;
 
 import javax.validation.constraints.NotEmpty;
@@ -65,7 +66,13 @@ public class TreatRecordFormRequest implements BindUser {
     @NotNull(message = "{validate.treatRecord.personalPaidFee.NotNull}")
     private Double personalPaidFee;
     private String tags;
+    //门诊阶段
+    @NotNull(message = "{validate.treatRecord.stage.NotNull}")
+    private TreatStage stage;
     private String remark;
+
+    //同步到消费记录
+    private Boolean syncToConsume;
 
     public Long getId() {
         return id;
@@ -237,11 +244,27 @@ public class TreatRecordFormRequest implements BindUser {
         this.tags = tags;
     }
 
+    public TreatStage getStage() {
+        return stage;
+    }
+
+    public void setStage(TreatStage stage) {
+        this.stage = stage;
+    }
+
     public String getRemark() {
         return remark;
     }
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+    public Boolean getSyncToConsume() {
+        return syncToConsume;
+    }
+
+    public void setSyncToConsume(Boolean syncToConsume) {
+        this.syncToConsume = syncToConsume;
     }
 }

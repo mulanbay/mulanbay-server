@@ -66,6 +66,8 @@ public class BuyRecord implements java.io.Serializable {
     private String skuInfo;
     //父级ID
     private Long pid;
+    //看病记录
+    private Long treatRecordId;
     private Date createdTime;
     private Date lastModifyTime;
 
@@ -324,6 +326,15 @@ public class BuyRecord implements java.io.Serializable {
 
     public void setPid(Long pid) {
         this.pid = pid;
+    }
+
+    @Column(name = "treat_record_id")
+    public Long getTreatRecordId() {
+        return treatRecordId;
+    }
+
+    public void setTreatRecordId(Long treatRecordId) {
+        this.treatRecordId = treatRecordId;
     }
 
     @Column(name = "created_time", length = 19)

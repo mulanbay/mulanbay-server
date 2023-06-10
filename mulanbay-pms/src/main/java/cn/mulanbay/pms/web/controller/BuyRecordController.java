@@ -16,10 +16,7 @@ import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.*;
 import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.*;
-import cn.mulanbay.pms.persistent.service.BuyRecordService;
-import cn.mulanbay.pms.persistent.service.DataService;
-import cn.mulanbay.pms.persistent.service.IncomeService;
-import cn.mulanbay.pms.persistent.service.LifeExperienceService;
+import cn.mulanbay.pms.persistent.service.*;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.util.TreeBeanUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
@@ -64,6 +61,9 @@ public class BuyRecordController extends BaseController {
 
     @Autowired
     LifeExperienceService lifeExperienceService;
+
+    @Autowired
+    AuthService authService;
 
     @Autowired
     BudgetHandler budgetHandler;
@@ -1113,9 +1113,18 @@ public class BuyRecordController extends BaseController {
         BuyRecordMatchBean bean = null;
         try {
             bean = consumeHandler.match(mr.getUserId(),mr.getGoodsName());
+            if(bean==null){
+                bean = new BuyRecordMatchBean();
+            }
             Integer num = systemConfigHandler.getIntegerConfig(ConfigKey.NLP_BUYRECORD_GOODSNAME_EKNUM);
             List<String> keywords = ahaNLPHandler.extractKeyword(mr.getGoodsName(),num);
             bean.setKeywords(keywords);
+            if(bean.getCompareId()==null){
+                //说明没有匹配,设置默认的配置
+                UserSetting us = authService.getUserSetting(mr.getUserId());
+                bean.setBuyTypeId(us.getBuyTypeId());
+                bean.setPayment(us.getPayment());
+            }
         } catch (Exception e) {
             logger.error("根据商品名智能分析出其分类及品牌等异常",e);
             return callback(null);

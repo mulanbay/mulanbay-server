@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.persistent.domain;
 
+import cn.mulanbay.pms.persistent.enums.TreatStage;
 import cn.mulanbay.pms.persistent.enums.TreatType;
 
 import javax.persistence.*;
@@ -56,6 +57,8 @@ public class TreatRecord implements java.io.Serializable {
     // 个人支付费用
     private Double personalPaidFee;
     private String tags;
+    //门诊阶段
+    private TreatStage stage;
     private String remark;
     private Date createdTime;
     private Date lastModifyTime;
@@ -269,6 +272,16 @@ public class TreatRecord implements java.io.Serializable {
 
     public void setTags(String tags) {
         this.tags = tags;
+    }
+
+    @Basic
+    @Column(name = "stage")
+    public TreatStage getStage() {
+        return stage;
+    }
+
+    public void setStage(TreatStage stage) {
+        this.stage = stage;
     }
 
     @Basic

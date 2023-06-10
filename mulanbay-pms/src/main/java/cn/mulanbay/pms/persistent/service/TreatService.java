@@ -11,6 +11,7 @@ import cn.mulanbay.pms.persistent.domain.*;
 import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.BodyAbnormalRecordGroupType;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
+import cn.mulanbay.pms.persistent.enums.GoodsConsumeType;
 import cn.mulanbay.pms.persistent.util.MysqlUtil;
 import cn.mulanbay.pms.web.bean.request.bodyabnormal.BodyAbnormalCategorySearch;
 import cn.mulanbay.pms.web.bean.request.bodyabnormal.BodyAbnormalRecordDateStatSearch;
@@ -914,4 +915,61 @@ public class TreatService extends BaseHibernateDao {
                     "获取看病列表异常", e);
         }
     }
+
+    /**
+     * 保存记录
+     * @param treat
+     * @param syncToConsume
+     * @param us
+     */
+    public void saveTreatRecord(TreatRecord treat,boolean syncToConsume,UserSetting us) {
+        try {
+            if(treat.getId()==null){
+                this.saveEntity(treat);
+            }else{
+                this.updateEntity(treat);
+            }
+            if(syncToConsume){
+                String hql = "from BuyRecord where userId=?0 and treatRecordId=?1 ";
+                BuyRecord br = (BuyRecord) this.getEntityForOne(hql,treat.getUserId(),treat.getId());
+                if(br==null){
+                    br = new BuyRecord();
+                    br.setTreatRecordId(treat.getId());
+                    br.setGoodsName("看病:"+treat.getHospital()+","+treat.getDisease());
+                    GoodsType goodsType = (GoodsType) this.getEntityById(GoodsType.class,us.getTreatGoodsTypeId());
+                    br.setGoodsType(goodsType);
+                    if(us.getTreatSubGoodsTypeId()!=null){
+                        GoodsType subGoodsType = (GoodsType) this.getEntityById(GoodsType.class,us.getTreatSubGoodsTypeId());
+                        br.setSubGoodsType(subGoodsType);
+                    }
+                    BuyType buyType = (BuyType) this.getEntityById(BuyType.class,us.getTreatBuyTypeId());
+                    br.setBuyType(buyType);
+                    br.setUserId(treat.getUserId());
+                    br.setConsumeType(GoodsConsumeType.TREAT);
+                    br.setShopName(treat.getHospital());
+                    br.setKeywords(treat.getTags());
+                    br.setPrice(treat.getPersonalPaidFee());
+                    br.setShipment(0.0);
+                    br.setTotalPrice(treat.getPersonalPaidFee());
+                    br.setPayment(us.getPayment());
+                    br.setBuyDate(treat.getTreatDate());
+                    br.setConsumeDate(treat.getTreatDate());
+                    br.setSecondhand(false);
+                    br.setStatable(true);
+                    br.setAmount(1);
+                    br.setStatus(BuyRecord.Status.BUY);
+                    br.setCreatedTime(new Date());
+                    this.saveEntity(br);
+                }else{
+                    br.setPrice(treat.getPersonalPaidFee());
+                    br.setTotalPrice(treat.getPersonalPaidFee());
+                    br.setLastModifyTime(new Date());
+                    this.updateEntity(br);
+                }
+            }
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_ADD_ERROR, "保存记录异常", e);
+        }
+    }
+
 }

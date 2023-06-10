@@ -1,22 +1,21 @@
 package cn.mulanbay.pms.persistent.enums;
 
 /**
- * 消费记录类型
+ * 门诊类型
  *
  * @author fenghong
  * @create 2017-07-10 21:44
  */
-public enum GoodsConsumeType {
+public enum TreatStage {
 
-    NORMAL(0, "普通消费"),
-    OUTBURST(1, "突发消费"),
-    TREAT(2, "看病消费");
+    FIRST(0, "首诊"),
+    RETURN(1, "复诊");
 
     private int value;
 
     private String name;
 
-    GoodsConsumeType(int value, String name) {
+    TreatStage(int value, String name) {
         this.value = value;
         this.name = name;
     }

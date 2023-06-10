@@ -17,12 +17,7 @@ public class UserProfileRequest implements BindUser {
     //生日（计算最大心率使用到）
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date birthday;
-    private Boolean sendEmail;
-    private Boolean sendWxMessage;
     private AuthType secAuthType;
-    private String residentCity;
-    //评分的配置组，对应的是ScoreConfig中的key
-    private String scoreGroup;
 
     @Override
     public Long getUserId() {
@@ -66,22 +61,6 @@ public class UserProfileRequest implements BindUser {
         this.birthday = birthday;
     }
 
-    public Boolean getSendEmail() {
-        return sendEmail;
-    }
-
-    public void setSendEmail(Boolean sendEmail) {
-        this.sendEmail = sendEmail;
-    }
-
-    public Boolean getSendWxMessage() {
-        return sendWxMessage;
-    }
-
-    public void setSendWxMessage(Boolean sendWxMessage) {
-        this.sendWxMessage = sendWxMessage;
-    }
-
     public AuthType getSecAuthType() {
         return secAuthType;
     }
@@ -90,19 +69,4 @@ public class UserProfileRequest implements BindUser {
         this.secAuthType = secAuthType;
     }
 
-    public String getResidentCity() {
-        return residentCity;
-    }
-
-    public void setResidentCity(String residentCity) {
-        this.residentCity = residentCity;
-    }
-
-    public String getScoreGroup() {
-        return scoreGroup;
-    }
-
-    public void setScoreGroup(String scoreGroup) {
-        this.scoreGroup = scoreGroup;
-    }
 }

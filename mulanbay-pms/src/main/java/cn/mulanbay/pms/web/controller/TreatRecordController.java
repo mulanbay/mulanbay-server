@@ -9,12 +9,15 @@ import cn.mulanbay.persistent.query.NullType;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
+import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.persistent.domain.QaConfig;
 import cn.mulanbay.pms.persistent.domain.TreatRecord;
+import cn.mulanbay.pms.persistent.domain.UserSetting;
 import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.ChartType;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
+import cn.mulanbay.pms.persistent.service.AuthService;
 import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.TreatService;
 import cn.mulanbay.pms.util.ChartUtil;
@@ -58,6 +61,9 @@ public class TreatRecordController extends BaseController {
 
     @Autowired
     DataService dataService;
+
+    @Autowired
+    AuthService authService;
     /**
      * 获取看病或者器官的各种分类归类
      *
@@ -109,10 +115,13 @@ public class TreatRecordController extends BaseController {
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST)
     public ResultBean create(@RequestBody @Valid TreatRecordFormRequest formRequest) {
+        boolean syncToConsume = formRequest.getSyncToConsume()==null ? true : formRequest.getSyncToConsume();
+        UserSetting us = authService.getUserSetting(formRequest.getUserId());
+        this.checkConsumeSync(syncToConsume,us);
         TreatRecord bean = new TreatRecord();
         BeanCopy.copyProperties(formRequest, bean);
         bean.setCreatedTime(new Date());
-        baseService.saveObject(bean);
+        treatService.saveTreatRecord(bean,syncToConsume,us);
         return callback(bean);
     }
 
@@ -129,16 +138,31 @@ public class TreatRecordController extends BaseController {
     }
 
     /**
+     * 检查同步配置
+     * @param syncToConsume
+     * @param us
+     */
+    private void checkConsumeSync(boolean syncToConsume,UserSetting us){
+        if(syncToConsume){
+            if(us.getTreatBuyTypeId()==null||us.getTreatGoodsTypeId()==null){
+                throw new ApplicationException(PmsErrorCode.TREAT_SYNC_UN_CONFIG);
+            }
+        }
+    }
+    /**
      * 修改
      *
      * @return
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     public ResultBean edit(@RequestBody @Valid TreatRecordFormRequest formRequest) {
+        boolean syncToConsume = formRequest.getSyncToConsume()==null ? true : formRequest.getSyncToConsume();
+        UserSetting us = authService.getUserSetting(formRequest.getUserId());
+        this.checkConsumeSync(syncToConsume,us);
         TreatRecord bean = this.getUserEntity(beanClass, formRequest.getId(), formRequest.getUserId());
         BeanCopy.copyProperties(formRequest, bean);
         bean.setLastModifyTime(new Date());
-        baseService.updateObject(bean);
+        treatService.saveTreatRecord(bean,syncToConsume,us);
         return callback(bean);
     }
 
@@ -698,6 +722,9 @@ public class TreatRecordController extends BaseController {
             if(StringUtil.isNotEmpty(drugName)){
                 chartGraphData.addLink(hospital,drugName);
                 chartGraphData.addItem(drugName,4);
+                if(unionAll){
+                    chartGraphData.addLink(diagnosedDisease,drugName);
+                }
             }
 
             //第五级：手术
@@ -705,6 +732,9 @@ public class TreatRecordController extends BaseController {
             if(StringUtil.isNotEmpty(operationName)){
                 chartGraphData.addLink(hospital,operationName);
                 chartGraphData.addItem(operationName,5);
+                if(unionAll){
+                    chartGraphData.addLink(diagnosedDisease,operationName);
+                }
             }
         }
         chartGraphData.setTitle("我的疾病分析");

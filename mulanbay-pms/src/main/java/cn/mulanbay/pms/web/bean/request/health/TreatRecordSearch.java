@@ -5,6 +5,7 @@ import cn.mulanbay.persistent.query.CrossType;
 import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
+import cn.mulanbay.pms.persistent.enums.TreatStage;
 import cn.mulanbay.pms.persistent.enums.TreatType;
 import cn.mulanbay.pms.web.bean.request.DateStatSearch;
 import cn.mulanbay.web.bean.request.PageSearch;
@@ -34,6 +35,9 @@ public class TreatRecordSearch extends PageSearch implements DateStatSearch, Bin
 
     @Query(fieldName = "treatType", op = Parameter.Operator.EQ)
     private TreatType treatType;
+
+    @Query(fieldName = "stage", op = Parameter.Operator.EQ)
+    private TreatStage stage;
 
     public String getName() {
         return name;
@@ -103,5 +107,13 @@ public class TreatRecordSearch extends PageSearch implements DateStatSearch, Bin
 
     public void setTreatType(TreatType treatType) {
         this.treatType = treatType;
+    }
+
+    public TreatStage getStage() {
+        return stage;
+    }
+
+    public void setStage(TreatStage stage) {
+        this.stage = stage;
     }
 }

@@ -183,6 +183,7 @@ public class PmsErrorCode {
      **/
     public static final int TREAT_DRUG_DETAIL_OCCURTIME_INCORRECT = 1090101;
 
+    public static final int TREAT_SYNC_UN_CONFIG = 1090102;
 
     /** 健康类 end **/
 

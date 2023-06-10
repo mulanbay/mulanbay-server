@@ -21,3 +21,42 @@ END WHILE;
     set ptemp = replace(ptemp,concat('#,',rootId),'');
 RETURN ptemp;
 END
+
+# 看病记录增加门诊阶段
+ALTER TABLE `treat_record` ADD COLUMN `stage` SMALLINT(5) NULL DEFAULT 0 AFTER `tags`;
+
+# 消费记录增加看病记录外键
+ALTER TABLE `buy_record` ADD COLUMN `treat_record_id` BIGINT(20) NULL AFTER `pid`;
+# 用户设置增加偏好
+ALTER TABLE `user_setting`
+ADD COLUMN `treat_goods_type_id` INT NULL AFTER `resident_city`,
+ADD COLUMN `treat_sub_goods_type_id` INT NULL AFTER `treat_goods_type_id`,
+ADD COLUMN `treat_buy_type_id` INT NULL AFTER `treat_sub_goods_type_id`,
+ADD COLUMN `payment` SMALLINT(5) NULL DEFAULT 0 AFTER `treat_sub_goods_type_id`,
+ADD COLUMN `buy_type_id` INT NULL AFTER `payment`;
+
+#同步看病记录到消费记录
+INSERT INTO buy_record
+(`user_id`,
+ `buy_type_id`,
+ `goods_type_id`,
+ `sub_goods_type_id`,
+ `goods_name`,
+ `shop_name`,
+ `price`,
+ `amount`,
+ `shipment`,
+ `total_price`,
+ `payment`,
+ `buy_date`,
+ `consume_date`,
+ `status`,
+ `secondhand`,
+ `keywords`,
+ `statable`,
+ `consume_type`,
+ `treat_record_id`,
+ `remark`,
+ `created_time`)
+SELECT user_id,27,104,105,CONCAT('看病：',hospital,',',disease) as goodsName,hospital,personal_paid_fee,1,0,personal_paid_fee,1,treat_date,treat_date,0,0,tags,1,2,id,'自动导入',now()
+FROM treat_record;
