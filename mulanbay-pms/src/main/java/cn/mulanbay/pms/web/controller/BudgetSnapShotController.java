@@ -79,7 +79,7 @@ public class BudgetSnapShotController extends BaseController {
             BudgetDetailVo vo=null;
             switch (bg.getPeriod()){
                 case ONCE:
-                    if(bg.getFeeType()!=null){
+                    if(bg.getGoodsTypeId()!=null){
                         //实时统计
                         vo = this.getDetail(bg,bussDay,bussKey);
                     }else{
@@ -253,7 +253,7 @@ public class BudgetSnapShotController extends BaseController {
     private BudgetDetailVo getDetail(BudgetSnapshot bg,Date bussDay,String bussKey ){
         BudgetDetailVo bdb = new BudgetDetailVo();
         BeanCopy.copyProperties(bg, bdb);
-        if (bg.getFeeType()!=null) {
+        if (bg.getGoodsTypeId()!=null) {
             //查询预算实际支付
             Budget budget = new Budget();
             BeanCopy.copyProperties(bg,budget);

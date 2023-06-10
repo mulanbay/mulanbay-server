@@ -1,7 +1,6 @@
 package cn.mulanbay.pms.handler;
 
 import cn.mulanbay.business.handler.BaseHandler;
-import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.common.util.PriceUtil;
 import cn.mulanbay.common.util.StringUtil;

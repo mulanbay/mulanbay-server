@@ -23,7 +23,6 @@ import cn.mulanbay.pms.web.bean.request.auth.RegisterRequest;
 import cn.mulanbay.pms.web.bean.request.auth.UserSecAuthRequest;
 import cn.mulanbay.pms.web.bean.request.buy.BuyRecordAnalyseStatSearch;
 import cn.mulanbay.pms.web.bean.request.fund.BudgetSearch;
-import cn.mulanbay.pms.web.bean.request.health.TreatRecordSearch;
 import cn.mulanbay.pms.web.bean.request.music.MusicPracticeStatSearch;
 import cn.mulanbay.pms.web.bean.request.sport.SportExerciseStatSearch;
 import cn.mulanbay.pms.web.bean.request.user.UserGeneralStatSearch;
@@ -362,19 +361,6 @@ public class MainController extends BaseController {
         for (BuyRecordRealTimeStat br : list) {
             res.appendConsume(br.getValue());
         }
-        TreatRecordSearch trs = new TreatRecordSearch();
-        trs.setStartDate(ugs.getStartDate());
-        trs.setEndDate(ugs.getEndDate());
-        trs.setUserId(ugs.getUserId());
-        double treatAmount = budgetHandler.getTreadConsume(ugs.getStartDate(), ugs.getEndDate(), ugs.getUserId());
-        BuyRecordRealTimeStat tt = new BuyRecordRealTimeStat();
-        tt.setName("看病花费");
-        tt.setValue(treatAmount);
-        list.add(tt);
-        //增加看病的记录
-        res.setTotalTreatAmount(tt.getValue());
-        res.setTotalTreatCount(0L);
-        res.appendConsume(tt.getValue());
 
         //收入
         IncomeSummaryStat iss = incomeService.incomeSummaryStat(ugs.getUserId(), ugs.getStartDate(), ugs.getEndDate());
@@ -391,8 +377,6 @@ public class MainController extends BaseController {
         Date[] dd = getStatDateRange(DateGroupType.MONTH, new Date());
         double monthConsumeAmount = buyRecordService.statBuyAmount(dd[0], dd[1], ugs.getUserId(), ugs.getConsumeType());
         res.appendMonthConsume(monthConsumeAmount);
-        double treatMonthAmount = budgetHandler.getTreadConsume(dd[0], dd[1], ugs.getUserId());
-        res.appendMonthConsume(treatMonthAmount);
         return callback(res);
     }
 

@@ -8,7 +8,6 @@ import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.pms.persistent.domain.BookCategory;
 import cn.mulanbay.pms.persistent.domain.ReadingRecord;
 import cn.mulanbay.pms.persistent.domain.ReadingRecordDetail;
-import cn.mulanbay.pms.persistent.domain.SportType;
 import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.BookLanguage;
 import cn.mulanbay.pms.persistent.enums.BookType;
@@ -16,7 +15,6 @@ import cn.mulanbay.pms.persistent.enums.DateGroupType;
 import cn.mulanbay.pms.persistent.enums.ReadingStatus;
 import cn.mulanbay.pms.persistent.util.MysqlUtil;
 import cn.mulanbay.pms.web.bean.request.read.*;
-import cn.mulanbay.pms.web.bean.request.sport.SportExerciseOverallStatSearch;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;

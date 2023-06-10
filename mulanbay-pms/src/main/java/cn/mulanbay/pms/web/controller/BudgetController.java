@@ -11,6 +11,7 @@ import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.BudgetHandler;
 import cn.mulanbay.pms.handler.bean.BudgetAmountBean;
+import cn.mulanbay.pms.handler.bean.ConsumeBean;
 import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.domain.BudgetTimeline;
@@ -144,7 +145,7 @@ public class BudgetController extends BaseController {
         BeanCopy.copyProperties(bg, bdb);
         if (bg.getStatus() == CommonStatus.ENABLE) {
             //直接根据实际花费实时查询
-            if (bg.getFeeType()!=null) {
+            if (bg.getGoodsTypeId()!=null) {
                 BuyRecordBudgetStat bs= budgetHandler.getActualAmount(bg,now);
                 if (bs.getTotalPrice() != null) {
                     bdb.setCpPaidTime(bs.getMaxBuyDate());
@@ -329,12 +330,10 @@ public class BudgetController extends BaseController {
         //设置预算
         res.setBudgetAmount(amount);
         //查询已经消费的
-        double treatAmount = budgetHandler.getTreadConsume(ds[0], ds[1], sf.getUserId());
-        res.setTrAmount(treatAmount);
-        double ncAmount = buyRecordService.statBuyAmount(ds[0], ds[1], sf.getUserId(), (short) GoodsConsumeType.NORMAL.getValue());
-        res.setNcAmount(ncAmount);
-        double bcAmount = buyRecordService.statBuyAmount(ds[0], ds[1], sf.getUserId(), (short) GoodsConsumeType.OUTBURST.getValue());
-        res.setBcAmount(bcAmount);
+        ConsumeBean cb= budgetHandler.getBuyRecordConsume(ds[0], ds[1], sf.getUserId());
+        res.setTrAmount(cb.getTreatAmount());
+        res.setNcAmount(cb.getNcAmount());
+        res.setBcAmount(cb.getBcAmount());
         //todo 查询收入
 
         return callback(res);

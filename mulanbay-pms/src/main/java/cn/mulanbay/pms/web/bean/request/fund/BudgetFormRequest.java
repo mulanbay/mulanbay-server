@@ -1,7 +1,6 @@
 package cn.mulanbay.pms.web.bean.request.fund;
 
 import cn.mulanbay.common.aop.BindUser;
-import cn.mulanbay.pms.persistent.enums.BudgetFeeType;
 import cn.mulanbay.pms.persistent.enums.BudgetType;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
@@ -36,8 +35,6 @@ public class BudgetFormRequest implements BindUser {
 
     private String keywords;
 
-    //资金类型
-    private BudgetFeeType feeType;
     //消费大类（feeType为BUY_RECORD有效）
     private Integer goodsTypeId;
     //消费大类（feeType为BUY_RECORD有效）
@@ -139,14 +136,6 @@ public class BudgetFormRequest implements BindUser {
 
     public void setRemark(String remark) {
         this.remark = remark;
-    }
-
-    public BudgetFeeType getFeeType() {
-        return feeType;
-    }
-
-    public void setFeeType(BudgetFeeType feeType) {
-        this.feeType = feeType;
     }
 
     public Integer getGoodsTypeId() {

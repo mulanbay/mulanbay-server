@@ -1,7 +1,6 @@
 package cn.mulanbay.pms.handler.qa;
 
 import cn.mulanbay.common.util.PriceUtil;
-import cn.mulanbay.pms.handler.BudgetHandler;
 import cn.mulanbay.pms.handler.qa.bean.QaMatch;
 import cn.mulanbay.pms.persistent.dto.BuyRecordRealTimeStat;
 import cn.mulanbay.pms.persistent.service.BuyRecordService;
@@ -24,9 +23,6 @@ public class QaConsumeHandler extends AbstractQaMessageHandler {
 
     @Autowired
     BuyRecordService buyRecordService;
-
-    @Autowired
-    BudgetHandler budgetHandler;
 
     public QaConsumeHandler() {
         super("consume", "QA的消费处理器");
@@ -60,9 +56,6 @@ public class QaConsumeHandler extends AbstractQaMessageHandler {
             total += ts.getValue();
         }
         sb.append(">>花费总计:" + PriceUtil.changeToString(2, total) + "元\n");
-        double treatAmount = budgetHandler.getTreadConsume(sf.getStartDate(), sf.getEndDate(), sf.getUserId());
-        sb.append("T." + "看病花费:" + PriceUtil.changeToString(2, treatAmount) + "元\n");
-        total += treatAmount;
         sb.append(">>一共消费总额:" + PriceUtil.changeToString(2, total) + "元\n");
         return sb.toString();
     }

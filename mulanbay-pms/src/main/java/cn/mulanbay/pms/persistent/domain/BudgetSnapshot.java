@@ -1,6 +1,5 @@
 package cn.mulanbay.pms.persistent.domain;
 
-import cn.mulanbay.pms.persistent.enums.BudgetFeeType;
 import cn.mulanbay.pms.persistent.enums.BudgetType;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
@@ -49,8 +48,6 @@ public class BudgetSnapshot implements java.io.Serializable {
     //账户状态
     private CommonStatus status;
     private String keywords;
-    //资金类型
-    private BudgetFeeType feeType;
     //消费大类（feeType为BUY_RECORD有效）
     private Integer goodsTypeId;
     //消费大类（feeType为BUY_RECORD有效）
@@ -208,16 +205,6 @@ public class BudgetSnapshot implements java.io.Serializable {
 
     public void setKeywords(String keywords) {
         this.keywords = keywords;
-    }
-
-    @Basic
-    @Column(name = "fee_type")
-    public BudgetFeeType getFeeType() {
-        return feeType;
-    }
-
-    public void setFeeType(BudgetFeeType feeType) {
-        this.feeType = feeType;
     }
 
     @Basic

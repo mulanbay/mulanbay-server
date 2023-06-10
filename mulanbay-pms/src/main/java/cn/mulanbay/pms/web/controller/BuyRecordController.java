@@ -32,7 +32,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -169,11 +168,6 @@ public class BuyRecordController extends BaseController {
         sf.setType(GroupType.TOTALPRICE);
         sf.setGroupField("goods_type_id");
         List<BuyRecordRealTimeStat> list = buyRecordService.getAnalyseStat(sf);
-        double treatAmount = budgetHandler.getTreadConsume(sf.getStartDate(), sf.getEndDate(), sf.getUserId());
-        BuyRecordRealTimeStat tt = new BuyRecordRealTimeStat();
-        tt.setName("看病花费");
-        tt.setValue(treatAmount);
-        list.add(tt);
         return callback(this.createAnalyseStatPieData(list, sf));
     }
 

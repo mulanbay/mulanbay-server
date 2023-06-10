@@ -3,7 +3,6 @@ package cn.mulanbay.pms.web.bean.request.fund;
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Query;
-import cn.mulanbay.pms.persistent.enums.BudgetFeeType;
 import cn.mulanbay.pms.persistent.enums.BudgetType;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
@@ -30,9 +29,6 @@ public class BudgetSearch extends PageSearch implements BindUser {
 
     @Query(fieldName = "remind", op = Parameter.Operator.EQ)
     private Boolean remind;
-
-    @Query(fieldName = "feeType", op = Parameter.Operator.EQ)
-    private BudgetFeeType feeType;
 
     @Query(fieldName = "goodsTypeId", op = Parameter.Operator.EQ)
     private Integer goodsTypeId;
@@ -88,14 +84,6 @@ public class BudgetSearch extends PageSearch implements BindUser {
 
     public void setRemind(Boolean remind) {
         this.remind = remind;
-    }
-
-    public BudgetFeeType getFeeType() {
-        return feeType;
-    }
-
-    public void setFeeType(BudgetFeeType feeType) {
-        this.feeType = feeType;
     }
 
     public Integer getGoodsTypeId() {

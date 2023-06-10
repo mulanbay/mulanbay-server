@@ -60,3 +60,7 @@ INSERT INTO buy_record
  `created_time`)
 SELECT user_id,27,104,105,CONCAT('看病：',hospital,',',disease) as goodsName,hospital,personal_paid_fee,1,0,personal_paid_fee,1,treat_date,treat_date,0,0,tags,1,2,id,'自动导入',now()
 FROM treat_record;
+
+#删除资金类型字段
+ALTER TABLE budget DROP COLUMN `fee_type`;
+ALTER TABLE budget_snapshot DROP COLUMN `fee_type`;

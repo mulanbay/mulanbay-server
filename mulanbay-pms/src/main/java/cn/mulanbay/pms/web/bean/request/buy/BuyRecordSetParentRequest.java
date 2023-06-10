@@ -2,7 +2,6 @@ package cn.mulanbay.pms.web.bean.request.buy;
 
 import cn.mulanbay.common.aop.BindUser;
 
-import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
 public class BuyRecordSetParentRequest implements BindUser {

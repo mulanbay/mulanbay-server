@@ -3,18 +3,20 @@ package cn.mulanbay.pms.handler;
 import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.pms.handler.bean.BudgetAmountBean;
+import cn.mulanbay.pms.handler.bean.ConsumeBean;
 import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.dto.BuyRecordBudgetStat;
 import cn.mulanbay.pms.persistent.dto.BuyRecordConsumeTypeStat;
 import cn.mulanbay.pms.persistent.dto.IncomeSummaryStat;
-import cn.mulanbay.pms.persistent.dto.TreatRecordSummaryStat;
-import cn.mulanbay.pms.persistent.enums.*;
+import cn.mulanbay.pms.persistent.enums.BudgetLogSource;
+import cn.mulanbay.pms.persistent.enums.CommonStatus;
+import cn.mulanbay.pms.persistent.enums.GoodsConsumeType;
+import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.BuyRecordService;
 import cn.mulanbay.pms.persistent.service.IncomeService;
 import cn.mulanbay.pms.persistent.service.TreatService;
-import cn.mulanbay.pms.web.bean.request.health.TreatRecordSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,10 +34,10 @@ import java.util.List;
 public class BudgetHandler extends BaseHandler {
 
     //年的时间格式化
-    public static final String YEARLY_DATE_FORMAT="yyyy";
+    public static final String YEARLY_DATE_FORMAT = "yyyy";
 
     //月的时间格式化
-    public static final String MONTHLY_DATE_FORMAT="yyyyMM";
+    public static final String MONTHLY_DATE_FORMAT = "yyyyMM";
 
     @Autowired
     BuyRecordService buyRecordService;
@@ -61,72 +63,36 @@ public class BudgetHandler extends BaseHandler {
      * @param userId
      * @return
      */
-    public double[] getBuyRecordConsume(Date startTime, Date endTime, Long userId) {
+    public ConsumeBean getBuyRecordConsume(Date startTime, Date endTime, Long userId) {
+        ConsumeBean bean = new ConsumeBean();
         //总消费
         List<BuyRecordConsumeTypeStat> brcList = buyRecordService.getConsumeTypeAmountStat(startTime, endTime, userId);
-        //普通消费
-        double ncAmount = 0;
-        //突发消费
-        double bcAmount = 0;
         for (BuyRecordConsumeTypeStat brc : brcList) {
             if (brc.getConsumeType().intValue() == GoodsConsumeType.NORMAL.getValue()) {
-                ncAmount = brc.getTotalPrice().doubleValue();
+                bean.setNcAmount(brc.getTotalPrice().doubleValue());
             } else if (brc.getConsumeType().intValue() == GoodsConsumeType.OUTBURST.getValue()) {
-                bcAmount = brc.getTotalPrice().doubleValue();
+                bean.setBcAmount(brc.getTotalPrice().doubleValue());
+            } else if (brc.getConsumeType().intValue() == GoodsConsumeType.TREAT.getValue()) {
+                bean.setTreatAmount(brc.getTotalPrice().doubleValue());
             }
         }
 
-        return new double[]{ncAmount, bcAmount};
+        return bean;
     }
 
     /**
      * 实际支付金额
+     *
      * @param budget
      * @return
      */
-    public BuyRecordBudgetStat getActualAmount(Budget budget,Date bussDay) {
-        BudgetFeeType feeType = budget.getFeeType();
-        //没有绑定类型
-        if(feeType==null){
-            return null;
-        }
-        BuyRecordBudgetStat v =null;
+    public BuyRecordBudgetStat getActualAmount(Budget budget, Date bussDay) {
+        BuyRecordBudgetStat v = null;
         Date[] ds = this.getDateRange(budget.getPeriod(), bussDay, true);
-        if(feeType==BudgetFeeType.BUY_RECORD){
-            v = buyRecordService.statBuyAmount(ds[0],ds[1],budget.getUserId(),budget.getGoodsTypeId(),budget.getSubGoodsTypeId(),budget.getKeywords());
-        }else if(feeType==BudgetFeeType.TREAT_RECORD){
-            TreatRecordSummaryStat data = this.statTreatRecord(ds[0],ds[1],budget.getUserId());
-            v = new BuyRecordBudgetStat();
-            if(data.getTotalPersonalPaidFee()!=null){
-                v.setTotalPrice(new BigDecimal(data.getTotalPersonalPaidFee()));
-            }
-            v.setMaxBuyDate(data.getMaxTreatDate());
+        if (budget.getGoodsTypeId() != null) {
+            v = buyRecordService.statBuyAmount(ds[0], ds[1], budget.getUserId(), budget.getGoodsTypeId(), budget.getSubGoodsTypeId(), budget.getKeywords());
         }
         return v;
-    }
-
-    /**
-     * 获取看病消费
-     *
-     * @param startTime
-     * @param endTime
-     * @param userId
-     * @return
-     */
-    public double getTreadConsume(Date startTime, Date endTime, Long userId) {
-        TreatRecordSummaryStat data = this.statTreatRecord(startTime,endTime,userId);
-        double treatAmount = data.getTotalPersonalPaidFee() == null ? 0.0 : data.getTotalPersonalPaidFee();
-        return treatAmount;
-    }
-
-    private TreatRecordSummaryStat statTreatRecord(Date startTime, Date endTime, Long userId){
-        //看病消费
-        TreatRecordSearch trs = new TreatRecordSearch();
-        trs.setStartDate(startTime);
-        trs.setEndDate(endTime);
-        trs.setUserId(userId);
-        TreatRecordSummaryStat data = treatService.statTreatRecord(trs);
-        return data;
     }
 
     public String createBussKey(PeriodType period, Date date) {
@@ -159,8 +125,7 @@ public class BudgetHandler extends BaseHandler {
      */
     public BudgetLog statBudget(Long userId, double budgetAmount, Date startTime, Date endTime, String bussKey, boolean isRedo, PeriodType period) {
         //step 2:查询实际的消费情况
-        double[] dd = this.getBuyRecordConsume(startTime, endTime, userId);
-        double treatAmount = this.getTreadConsume(startTime, endTime, userId);
+        ConsumeBean cb = this.getBuyRecordConsume(startTime, endTime, userId);
         //step 3:保存记录
         BudgetLog bl = new BudgetLog();
         bl.setBussKey(bussKey);
@@ -175,9 +140,9 @@ public class BudgetHandler extends BaseHandler {
         } else {
             bl.setBudgetAmount(budgetAmount);
         }
-        bl.setNcAmount(dd[0]);
-        bl.setBcAmount(dd[1]);
-        bl.setTrAmount(treatAmount);
+        bl.setNcAmount(cb.getNcAmount());
+        bl.setBcAmount(cb.getBcAmount());
+        bl.setTrAmount(cb.getTreatAmount());
         bl.setCreatedTime(new Date());
         bl.setOccurDate(startTime);
         bl.setUserId(userId);
@@ -226,16 +191,18 @@ public class BudgetHandler extends BaseHandler {
 
     /**
      * 通过bussKey获取BussDay
+     *
      * @param bussKey
      * @return
      */
-    public Date getBussDay(String bussKey){
-        if(bussKey.length()==4){
-            return DateUtil.getDate(bussKey+"0101","yyyyMMdd");
-        }else{
-            return DateUtil.getDate(bussKey+"01","yyyyMMdd");
+    public Date getBussDay(String bussKey) {
+        if (bussKey.length() == 4) {
+            return DateUtil.getDate(bussKey + "0101", "yyyyMMdd");
+        } else {
+            return DateUtil.getDate(bussKey + "01", "yyyyMMdd");
         }
     }
+
     /**
      * 统计及保存预算日志
      *
