@@ -20,11 +20,7 @@ public class BuyRecordMatchBean implements Serializable {
 
     private Integer goodsTypeId;
 
-    private String goodsTypeName;
-
     private Integer subGoodsTypeId;
-
-    private String subGoodsTypeName;
 
     private Integer buyTypeId;
 
@@ -53,6 +49,9 @@ public class BuyRecordMatchBean implements Serializable {
     //参与比较的消费记录
     private Long compareId;
 
+    //参与比较的消费名称
+    private String compareName;
+
     private List<String> keywords;
 
     public String getGoodsName() {
@@ -71,28 +70,12 @@ public class BuyRecordMatchBean implements Serializable {
         this.goodsTypeId = goodsTypeId;
     }
 
-    public String getGoodsTypeName() {
-        return goodsTypeName;
-    }
-
-    public void setGoodsTypeName(String goodsTypeName) {
-        this.goodsTypeName = goodsTypeName;
-    }
-
     public Integer getSubGoodsTypeId() {
         return subGoodsTypeId;
     }
 
     public void setSubGoodsTypeId(Integer subGoodsTypeId) {
         this.subGoodsTypeId = subGoodsTypeId;
-    }
-
-    public String getSubGoodsTypeName() {
-        return subGoodsTypeName;
-    }
-
-    public void setSubGoodsTypeName(String subGoodsTypeName) {
-        this.subGoodsTypeName = subGoodsTypeName;
     }
 
     public Integer getBuyTypeId() {
@@ -205,6 +188,14 @@ public class BuyRecordMatchBean implements Serializable {
 
     public void setBrand(String brand) {
         this.brand = brand;
+    }
+
+    public String getCompareName() {
+        return compareName;
+    }
+
+    public void setCompareName(String compareName) {
+        this.compareName = compareName;
     }
 
     public List<String> getKeywords() {

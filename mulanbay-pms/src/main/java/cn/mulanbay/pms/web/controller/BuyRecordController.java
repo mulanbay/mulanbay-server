@@ -4,7 +4,6 @@ import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.util.*;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
-import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.ConfigKey;
 import cn.mulanbay.pms.common.PmsErrorCode;
@@ -481,9 +480,6 @@ public class BuyRecordController extends BaseController {
             BeanCopy.copyProperties(sf, brs);
             PageRequest req = brs.buildQuery();
             req.setBeanClass(beanClass);
-            Parameter parameter = new Parameter("deleteDate", Parameter.Operator.SQL);
-            parameter.setValue("deleteDate is not null");
-            req.addParameter(parameter);
             req.addSort(new Sort("deleteDate", Sort.DESC));
             PageResult<BuyRecord> res = baseService.getBeanResult(req);
             return callbackDataGrid(res);

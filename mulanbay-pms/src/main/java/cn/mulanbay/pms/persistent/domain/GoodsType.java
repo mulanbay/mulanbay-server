@@ -32,7 +32,8 @@ public class GoodsType implements java.io.Serializable {
     private Short orderIndex;
     // 是否加入统计
     private Boolean statable;
-
+    //标签，目前用于AI自动匹配
+    private String tags;
     // Constructors
 
     /**
@@ -124,6 +125,15 @@ public class GoodsType implements java.io.Serializable {
 
     public void setStatable(Boolean statable) {
         this.statable = statable;
+    }
+
+    @Column(name = "tags")
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
     @Transient

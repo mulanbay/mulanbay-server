@@ -15,7 +15,7 @@ public class BuyRecordRelationSearch  implements BindUser, FullEndDateTime {
 
     private Date endDate;
 
-    private Boolean unionAll;
+    private Boolean unionAll  = true;
 
     @Override
     public Long getUserId() {

@@ -617,17 +617,16 @@ public class TreatRecordController extends BaseController {
     @RequestMapping(value = "/relation", method = RequestMethod.GET)
     public ResultBean relation(BuyRecordRelationSearch rs) {
         String tags = rs.getTags();
-        boolean unionAll = rs.getUnionAll()==null ? false:rs.getUnionAll();
         List<TreatRecordUnionDto> list = treatService.getTreatList(tags,rs.getUserId(),rs.getStartDate(),rs.getEndDate());
         if(StringUtil.isNotEmpty(tags)){
-            ChartGraphData data = this.createGraphData(tags,unionAll,list);
+            ChartGraphData data = this.createGraphData(tags,rs.getUnionAll(),list);
             return callback(data);
         }else{
             if(rs.getStartDate()==null||rs.getEndDate()==null){
                 //数据过多导致图形显示复杂
                 return callbackErrorInfo("请选择时间段");
             }
-            ChartGraphData data = this.createGraphData(unionAll,list);
+            ChartGraphData data = this.createGraphData(rs.getUnionAll(),list);
             return callback(data);
         }
     }

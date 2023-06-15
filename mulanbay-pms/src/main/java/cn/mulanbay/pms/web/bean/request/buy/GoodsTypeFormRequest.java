@@ -33,6 +33,8 @@ public class GoodsTypeFormRequest implements BindUser {
     @NotNull(message = "{validate.goodsType.statable.notNull}")
     private Boolean statable;
 
+    private String tags;
+
     public Integer getId() {
         return id;
     }
@@ -97,5 +99,13 @@ public class GoodsTypeFormRequest implements BindUser {
 
     public void setStatable(Boolean statable) {
         this.statable = statable;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 }

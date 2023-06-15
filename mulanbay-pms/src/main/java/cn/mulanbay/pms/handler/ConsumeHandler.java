@@ -101,10 +101,7 @@ public class ConsumeHandler extends BaseHandler {
         //没有或者匹配度很低，再从商品类别中比对
         List<BuyRecordMatchBean> list  = this.getGoodsTypeList(userId);
         for(BuyRecordMatchBean br : list){
-            String name = br.getGoodsTypeName();
-            if(br.getSubGoodsTypeName()!=null){
-                name+=","+br.getSubGoodsTypeName();
-            }
+            String name = br.getCompareName();
             float m = ahaNLPHandler.sentenceSimilarity(goodsName,name);
             if(m>bean.getMatch()){
                 bean.setGoodsTypeId(br.getGoodsTypeId());
@@ -173,14 +170,21 @@ public class ConsumeHandler extends BaseHandler {
                 if(0==gt.getParentId()){
                     //寻找子类
                     int cn=0;
+                    String compareName = gt.getName();
+                    if(StringUtil.isNotEmpty(gt.getTags())){
+                        compareName += ","+gt.getTags();
+                    }
                     for(GoodsType child : goodsTypeList){
                         if(gt.getId().intValue()==child.getParentId().intValue()){
                             cn++;
                             BuyRecordMatchBean mb = new BuyRecordMatchBean();
                             mb.setGoodsTypeId(gt.getId());
-                            mb.setGoodsTypeName(gt.getName());
                             mb.setSubGoodsTypeId(child.getId());
-                            mb.setSubGoodsTypeName(child.getName());
+                            String subCompareName = child.getName();
+                            if(StringUtil.isNotEmpty(child.getTags())){
+                                subCompareName += ","+child.getTags();
+                            }
+                            mb.setCompareName(compareName+","+subCompareName);
                             list.add(mb);
                         }
                     }
@@ -188,7 +192,7 @@ public class ConsumeHandler extends BaseHandler {
                         //没有子类
                         BuyRecordMatchBean mb = new BuyRecordMatchBean();
                         mb.setGoodsTypeId(gt.getId());
-                        mb.setGoodsTypeName(gt.getName());
+                        mb.setCompareName(compareName);
                         list.add(mb);
                     }
                 }

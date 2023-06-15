@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.web.controller;
 
 import cn.mulanbay.common.util.BeanCopy;
+import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.query.PageRequest;
@@ -13,6 +14,8 @@ import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.buy.BuyRecordMatchLogCreateRequest;
 import cn.mulanbay.pms.web.bean.request.buy.BuyRecordMatchLogSearch;
 import cn.mulanbay.pms.web.bean.response.buy.BuyRecordMatchVo;
+import cn.mulanbay.pms.web.bean.response.chart.ChartData;
+import cn.mulanbay.pms.web.bean.response.chart.ChartYData;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -86,18 +90,19 @@ public class BuyRecordMatchLogController extends BaseController {
                     m++;
                 }
             }
-            if(StringUtil.isNotEmpty(bean.getShopName())){
-                total++;
-                if(bean.getShopName().equals(shopName)){
-                    m++;
-                }
-            }
-            if(StringUtil.isNotEmpty(bean.getBrand())){
-                total++;
-                if(bean.getBrand().equals(brand)){
-                    m++;
-                }
-            }
+            //店铺和品牌部应该属于匹配对比里面
+//            if(StringUtil.isNotEmpty(bean.getShopName())){
+//                total++;
+//                if(bean.getShopName().equals(shopName)){
+//                    m++;
+//                }
+//            }
+//            if(StringUtil.isNotEmpty(bean.getBrand())){
+//                total++;
+//                if(bean.getBrand().equals(brand)){
+//                    m++;
+//                }
+//            }
             float acMatch = (float) NumberUtil.getPercentValue(m,total,4)/100;
             bean.setAcMatch(acMatch);
             bean.setRemark("用户操作新增");
@@ -155,7 +160,43 @@ public class BuyRecordMatchLogController extends BaseController {
         Map res = new HashMap<>();
         res.put("acData",acData);
         res.put("aiData",aiData);
+        res.put("goodsName",buyRecord.getGoodsName());
+        if(ml.getCompareId()!=null){
+            BuyRecord compare = baseService.getObject(BuyRecord.class,ml.getCompareId());
+            res.put("compareGoodsName",compare.getGoodsName());
+        }
         return callback(res);
+    }
+
+    /**
+     * 统计
+     *
+     * @return
+     */
+    @RequestMapping(value = "/stat", method = RequestMethod.GET)
+    public ResultBean stat(BuyRecordMatchLogSearch sf) {
+        PageRequest pr = sf.buildQuery();
+        pr.setBeanClass(beanClass);
+        pr.setNeedTotal(false);
+        Sort sort = new Sort("createdTime", Sort.ASC);
+        pr.addSort(sort);
+        PageResult<BuyRecordMatchLog> qr = baseService.getBeanResult(pr);
+        List<BuyRecordMatchLog> list = qr.getBeanList();
+        ChartData chartData = new ChartData();
+        chartData.setTitle("商品自动匹配分析");
+        chartData.setLegendData(new String[]{"AI匹配度", "实际匹配度"});
+        ChartYData yData = new ChartYData();
+        yData.setName("AI匹配度");
+        ChartYData y2Data = new ChartYData();
+        y2Data.setName("实际匹配度");
+        for (BuyRecordMatchLog bean : list) {
+            chartData.getXdata().add(DateUtil.getFormatDate(bean.getCreatedTime(),DateUtil.Format24Datetime));
+            yData.getData().add(NumberUtil.getDoubleValue(bean.getAiMatch(),2));
+            y2Data.getData().add(NumberUtil.getDoubleValue(bean.getAcMatch(),2));
+        }
+        chartData.getYdata().add(yData);
+        chartData.getYdata().add(y2Data);
+        return callback(chartData);
     }
 
 }

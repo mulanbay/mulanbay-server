@@ -3,6 +3,8 @@ package cn.mulanbay.pms.web.bean.request.buy;
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.common.aop.FullEndDateTime;
 import cn.mulanbay.persistent.query.CrossType;
+import cn.mulanbay.persistent.query.NullType;
+import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Parameter.Operator;
 import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
@@ -38,6 +40,12 @@ public class BuyRecordUseTimeStatSearch extends PageSearch implements DateStatSe
 
     @Query(fieldName = "secondhand", op = Operator.EQ)
     private Boolean secondhand;
+
+    /**
+     * 非空表示设置过作废日期
+     */
+    @Query(fieldName = "deleteDate", op = Parameter.Operator.NULL_NOTNULL)
+    private NullType deleteDateType;
 
     private DataType dataType;
 
@@ -134,6 +142,14 @@ public class BuyRecordUseTimeStatSearch extends PageSearch implements DateStatSe
 
     public void setDataType(DataType dataType) {
         this.dataType = dataType;
+    }
+
+    public NullType getDeleteDateType() {
+        return deleteDateType;
+    }
+
+    public void setDeleteDateType(NullType deleteDateType) {
+        this.deleteDateType = deleteDateType;
     }
 
     public enum DataType {

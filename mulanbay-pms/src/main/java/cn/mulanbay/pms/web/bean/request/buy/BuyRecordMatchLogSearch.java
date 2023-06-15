@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.web.bean.request.buy;
 
+import cn.mulanbay.persistent.query.NullType;
 import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.web.bean.request.PageSearch;
@@ -16,6 +17,9 @@ public class BuyRecordMatchLogSearch extends PageSearch {
 
     @Query(fieldName = "createdTime", op = Parameter.Operator.LTE)
     private Date endDate;
+
+    @Query(fieldName = "compareId", op = Parameter.Operator.NULL_NOTNULL)
+    private NullType compareIdType;
 
     public String getName() {
         return name;
@@ -41,4 +45,11 @@ public class BuyRecordMatchLogSearch extends PageSearch {
         this.endDate = endDate;
     }
 
+    public NullType getCompareIdType() {
+        return compareIdType;
+    }
+
+    public void setCompareIdType(NullType compareIdType) {
+        this.compareIdType = compareIdType;
+    }
 }

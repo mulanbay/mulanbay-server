@@ -64,3 +64,7 @@ FROM treat_record;
 #删除资金类型字段
 ALTER TABLE budget DROP COLUMN `fee_type`;
 ALTER TABLE budget_snapshot DROP COLUMN `fee_type`;
+
+#商品类型增加标签
+ALTER TABLE `goods_type` ADD COLUMN `tags` VARCHAR(256) NULL AFTER `statable`;
+
