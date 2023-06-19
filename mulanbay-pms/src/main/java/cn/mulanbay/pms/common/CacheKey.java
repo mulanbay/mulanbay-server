@@ -27,28 +27,6 @@ public class CacheKey {
     public static final String DAILY_REWARD_POINTS_STAT = "daily_reward_points_stat:{0}";
 
     /**
-     * 股票价格监控(股票代码)
-     */
-    public static final String SHARES_PRICE_MONITOR = "shares:price:monitor:{0}";
-
-    /**
-     * 股票上一次价格监控(股票代码)
-     */
-    public static final String SHARES_LAST_PRICE = "shares:lastPrice:{0}";
-
-
-    /**
-     * 股票消息通知（用户编号：股票代码：消息类型）
-     */
-    public static final String SHARES_MSG_MONITOR = "shares:price:monitor:{0}:{1}:{2}";
-
-    /**
-     * 股票评分配置（用户编号）
-     */
-    public static final String SHARES_SCORE_CONFIG = "shares:score:config:{0}";
-
-
-    /**
      * 用户计划配置（用户编号：planId）
      */
     public static final String USER_PLAN_NOTIFY = "userPlanNotify:{0}:{1}";

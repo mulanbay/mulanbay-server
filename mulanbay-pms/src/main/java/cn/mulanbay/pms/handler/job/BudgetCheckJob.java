@@ -33,7 +33,7 @@ import java.util.List;
  */
 public class BudgetCheckJob extends AbstractBaseJob {
 
-    private static final Logger logger = LoggerFactory.getLogger(BaseAbstractSharesJob.class);
+    private static final Logger logger = LoggerFactory.getLogger(BudgetCheckJob.class);
 
     private BudgetCheckJobPara para;
 

@@ -7,7 +7,8 @@ ALTER TABLE `buy_record` ADD COLUMN `expect_delete_date` DATETIME NULL AFTER `de
 ALTER TABLE `buy_record` ADD COLUMN `pid` BIGINT(20) NULL AFTER `sku_info`;
 
 # 商品的子类ID列表(递归)
-CREATE FUNCTION `getBuyRecordChildren`(rootId BigInt) RETURNS varchar(1000)
+DELIMITER ;;
+CREATE  FUNCTION `getBuyRecordChildren`(rootId BigInt) RETURNS varchar(1000)
 BEGIN
 	DECLARE ptemp VARCHAR(1000);
 	DECLARE ctemp VARCHAR(1000);
@@ -20,7 +21,8 @@ WHERE FIND_IN_SET(pid, ctemp) > 0;
 END WHILE;
     set ptemp = replace(ptemp,concat('#,',rootId),'');
 RETURN ptemp;
-END
+END ;;
+DELIMITER ;
 
 # 看病记录增加门诊阶段
 ALTER TABLE `treat_record` ADD COLUMN `stage` SMALLINT(5) NULL DEFAULT 0 AFTER `tags`;

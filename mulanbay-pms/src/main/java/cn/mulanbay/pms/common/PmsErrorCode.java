@@ -217,12 +217,6 @@ public class PmsErrorCode {
     /**
      * 资金类 start
      **/
-    public static final int SHARES_CODE_NOT_FOUND = 1130101;
-
-    public static final int SHARES_GET_PRICE_ERROR = 1130102;
-
-    public static final int SHARES_GET_PRICE_FAIL = 1130103;
-
     public static final int BUDGET_LOG_EXIT = 1130104;
 
     /** 资金类 end **/
@@ -267,10 +261,6 @@ public class PmsErrorCode {
     public static final int USER_DREAM_COMPLETED_STAT = 1140106;
 
     public static final int USER_DAILY_TASK_STAT = 1140107;
-
-    public static final int USER_SHARES_STAT = 1140108;
-
-    public static final int USER_SHARES_ASSET_STAT = 1140109;
 
     public static final int USER_DRUG_REMIND_STAT = 1140110;
 

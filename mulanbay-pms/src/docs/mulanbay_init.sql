@@ -2785,6 +2785,7 @@ CREATE TABLE `treat_record` (
   `medical_insurance_paid_fee` decimal(9,2) NOT NULL COMMENT '医保担负费用',
   `personal_paid_fee` decimal(9,2) NOT NULL COMMENT '个人支付费用',
   `tags` varchar(100) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `stage` SMALLINT(5) DEFAULT NULL,
   `remark` varchar(400) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '备注',
   `created_time` datetime NOT NULL COMMENT '创建时间',
   `last_modify_time` datetime DEFAULT NULL COMMENT '最后更新时间',
@@ -3699,7 +3700,7 @@ UNLOCK TABLES;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`pms`@`%` FUNCTION `getBuyRecordChildren`(rootId BigInt) RETURNS varchar(1000) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
+CREATE FUNCTION `getBuyRecordChildren`(rootId BigInt) RETURNS varchar(1000) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
 BEGIN
 	DECLARE ptemp VARCHAR(1000);
 	DECLARE ctemp VARCHAR(1000);
@@ -3728,7 +3729,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`pms`@`%` FUNCTION `getFunctionChild`(rootId BigInt) RETURNS varchar(1000) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
+CREATE FUNCTION `getFunctionChild`(rootId BigInt) RETURNS varchar(1000) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
 BEGIN
 	DECLARE ptemp VARCHAR(1000);
 	DECLARE ctemp VARCHAR(1000);
@@ -3756,7 +3757,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`pms`@`%` FUNCTION `getPriceRegionId`(p_price DECIMAL,p_user_id BIGINT) RETURNS int
+CREATE FUNCTION `getPriceRegionId`(p_price DECIMAL,p_user_id BIGINT) RETURNS int
 BEGIN
 
 RETURN (select id from price_region where min_price<=p_price and max_price>p_price and user_id=p_user_id);
@@ -3776,7 +3777,7 @@ DELIMITER ;
 /*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
 /*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
 DELIMITER ;;
-CREATE DEFINER=`pms`@`%` PROCEDURE `delete_user_data`(IN p_user_id bigint)
+CREATE PROCEDURE `delete_user_data`(IN p_user_id bigint)
 BEGIN
 	
 	declare v_table_name varchar(45);
