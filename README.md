@@ -74,13 +74,15 @@ mulanbay-server
 
 1. 下载源代码
 2. 在mysql中创建数据库，比如:mulanbay_db
-3. 初始化数据库,执行mulanbay-pms工程docs目录下的sql文件：mulanbay_init.sql或者mulanbay_init_data.sql
+3. 初始化数据库,执行mulanbay-pms工程docs目录下的sql文件：mulanbay_init.sql
 
 注意：
-* mulanbay_init.sql里面的数据只有原始的空数据，各个初始化配置数据需要自己手动添加，或者在菜单“权限管理-用户管理”中对用户进行初始化。
-* mulanbay_init_data.sql里面的数据同时包含初始化好的数据，登录后直接可以使用。（推荐导入这个版本）
+* mulanbay_init.sql里面的数据只有原始的空数据，默认各个初始化配置数据需要自己手动添加(因为每个人的需求不一样)。
+* 如果想快速的使用系统可以在菜单“权限管理-用户管理”，选择对该用户(比如mulanbay用户)进行"初始化数据"（初始化数据是以root用户的初始配置为模板，所以不要针对root用户进行初始化数据或格式化数据）.
+* 系统有两个用户root,mulanbay,都包括所有权限，推荐使用mulanbay用户登录进行业务逻辑操作
+* v3.4版本后不再提供mulanbay_init_data.sql文件。
 
-附：数据库导入方法：
+附1：数据库导入方法：
 1. 进入mysql终端
 mysql -u root -p
 2. 创建数据库
@@ -88,7 +90,14 @@ create database mulanbay_db DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_genera
 3. 选择数据库
 use mulanbay_db
 4. 导入数据库
-source /xx/xx/xx/mulanbay_init_data.sql(数据库文件绝对路径)
+source /xx/xx/xx/mulanbay_init.sql(数据库文件绝对路径)
+
+附2：数据库升级方法：
+如果你已经安装过本系统，已经有自己的一些业务数据，不想重新导入数据库，可以采用升级方法：
+1. 执行数据库表结构更新语句
+source /xx/xx/xx/mulanbay_change.sql
+2. 执行数据库配置数据更新语句
+source /xx/xx/xx/mulanbay_config_update.sql
 
 # Step 2：修改配置文件
 

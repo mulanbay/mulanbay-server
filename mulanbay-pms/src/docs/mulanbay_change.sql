@@ -1,13 +1,13 @@
 # 这是小版本间的sql更新记录
 
-#3.4
+#v3.4开始
 # 消费记录增加预期作废时间
 ALTER TABLE `buy_record` ADD COLUMN `expect_delete_date` DATETIME NULL AFTER `delete_date`;
 # 消费记录增加父级ID，级联使用
 ALTER TABLE `buy_record` ADD COLUMN `pid` BIGINT(20) NULL AFTER `sku_info`;
 
 # 商品的子类ID列表(递归)
-CREATE FUNCTION `getBuyRecordChildren`(rootId BigInt) RETURNS varchar(1000) CHARSET utf8mb4 COLLATE utf8mb4_general_ci
+CREATE FUNCTION `getBuyRecordChildren`(rootId BigInt) RETURNS varchar(1000)
 BEGIN
 	DECLARE ptemp VARCHAR(1000);
 	DECLARE ctemp VARCHAR(1000);
@@ -35,7 +35,7 @@ ADD COLUMN `treat_buy_type_id` INT NULL AFTER `treat_sub_goods_type_id`,
 ADD COLUMN `payment` SMALLINT(5) NULL DEFAULT 0 AFTER `treat_sub_goods_type_id`,
 ADD COLUMN `buy_type_id` INT NULL AFTER `payment`;
 
-#同步看病记录到消费记录
+#同步看病记录到消费记录（可选）
 INSERT INTO buy_record
 (`user_id`,
  `buy_type_id`,
@@ -67,4 +67,7 @@ ALTER TABLE budget_snapshot DROP COLUMN `fee_type`;
 
 #商品类型增加标签
 ALTER TABLE `goods_type` ADD COLUMN `tags` VARCHAR(256) NULL AFTER `statable`;
+
+#v3.4结束
+
 
