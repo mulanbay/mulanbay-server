@@ -5,17 +5,24 @@
     <parent>
         <artifactId>mulanbay</artifactId>
         <groupId>cn.mulanbay</groupId>
-        <version>3.0</version>
+        <version>4.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mulanbay-pms</artifactId>
-    <packaging>jar</packaging>
     <build>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>repackage</id>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
         <resources>

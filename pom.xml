@@ -7,7 +7,7 @@
     <groupId>cn.mulanbay</groupId>
     <artifactId>mulanbay</artifactId>
     <packaging>pom</packaging>
-    <version>3.0</version>
+    <version>4.0</version>
     <modules>
         <module>mulanbay-business</module>
         <module>mulanbay-persistent</module>
@@ -25,7 +25,7 @@
     </parent>
 
     <properties>
-        <mulanbay.version>3.0</mulanbay.version>
+        <mulanbay.version>4.0</mulanbay.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <hibernate.version>5.4.21.Final</hibernate.version>
         <spring.version>5.2.9.RELEASE</spring.version>
