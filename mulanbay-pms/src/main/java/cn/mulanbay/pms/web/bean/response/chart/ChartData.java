@@ -96,6 +96,15 @@ public class ChartData extends BaseChartData {
         this.getXdata().add(s);
     }
 
+    /**
+     * 添加X轴的数据(数字)
+     * 一般没什么作用
+     * @param x
+     */
+    public void addIntXData(int x) {
+        this.getIntXData().add(x);
+    }
+
     public ChartYData findYData(String name) {
         for (ChartYData y : ydata) {
             if (y.getName().equals(name)) {

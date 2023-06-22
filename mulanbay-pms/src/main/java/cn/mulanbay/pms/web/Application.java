@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @SpringBootApplication
 @EnableCaching
 @EnableTransactionManagement
-@ComponentScan(basePackages = "cn.mulanbay.pms")
+@ComponentScan(basePackages = {"cn.mulanbay.pms","cn.mulanbay.ai"})
 public class Application {
 
     private static final Logger logger = LoggerFactory.getLogger(Application.class);

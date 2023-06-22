@@ -1,11 +1,10 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.ai.ml.processor.BudgetConsumeMEvaluateProcessor;
+import cn.mulanbay.ai.ml.processor.BudgetConsumeYEvaluateProcessor;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
-import cn.mulanbay.common.util.BeanCopy;
-import cn.mulanbay.common.util.DateUtil;
-import cn.mulanbay.common.util.NumberUtil;
-import cn.mulanbay.common.util.PriceUtil;
+import cn.mulanbay.common.util.*;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
@@ -15,6 +14,7 @@ import cn.mulanbay.pms.handler.bean.ConsumeBean;
 import cn.mulanbay.pms.persistent.domain.Budget;
 import cn.mulanbay.pms.persistent.domain.BudgetLog;
 import cn.mulanbay.pms.persistent.domain.BudgetTimeline;
+import cn.mulanbay.pms.persistent.domain.UserScore;
 import cn.mulanbay.pms.persistent.dto.BudgetStat;
 import cn.mulanbay.pms.persistent.dto.BuyRecordBudgetStat;
 import cn.mulanbay.pms.persistent.dto.BuyRecordRealTimeStat;
@@ -29,6 +29,7 @@ import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.GroupType;
 import cn.mulanbay.pms.web.bean.request.buy.BuyRecordAnalyseStatSearch;
 import cn.mulanbay.pms.web.bean.request.fund.*;
+import cn.mulanbay.pms.web.bean.request.user.UserScoreSearch;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
 import cn.mulanbay.pms.web.bean.response.chart.*;
 import cn.mulanbay.pms.web.bean.response.fund.BudgetAnalyseVo;
@@ -43,9 +44,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static cn.mulanbay.persistent.query.PageRequest.NO_PAGE;
 
 /**
  * 预算
@@ -68,6 +69,12 @@ public class BudgetController extends BaseController {
     @Autowired
     BuyRecordService buyRecordService;
 
+    @Autowired
+    BudgetConsumeMEvaluateProcessor budgetConsumeMEvaluateProcessor;
+
+    @Autowired
+    BudgetConsumeYEvaluateProcessor budgetConsumeYEvaluateProcessor;
+
     /**
      * 预算树
      * @param needRoot
@@ -79,7 +86,7 @@ public class BudgetController extends BaseController {
         try {
             BudgetSearch sf = new BudgetSearch();
             PageRequest pr = sf.buildQuery();
-            pr.setPage(PageRequest.NO_PAGE);
+            pr.setPage(NO_PAGE);
             pr.setBeanClass(beanClass);
             Sort s1 = new Sort("period", Sort.ASC);
             pr.addSort(s1);
@@ -412,55 +419,117 @@ public class BudgetController extends BaseController {
      */
     @RequestMapping(value = "/timelineStat")
     public ResultBean timelineStat(@Valid BudgetTimelineStatSearch sf) {
-        String bussKey = budgetHandler.createBussKey(sf.getPeriod(), sf.getBussDay());
+        Date bussDay = sf.getBussDay();
+        String bussKey = budgetHandler.createBussKey(sf.getPeriod(), bussDay);
         List<BudgetTimeline> list = budgetService.selectBudgetTimelineList(bussKey, sf.getUserId());
         String dateFormat = "yyyy-MM";
+        int totalDays =0;
+        //获取评分使用
+        Date startDate;
+        Date endDate;
+        int month = DateUtil.getMonth(bussDay);
         if (PeriodType.YEARLY == sf.getPeriod()) {
             dateFormat = "yyyy";
+            totalDays = DateUtil.getYearDays(bussDay);
+            startDate = DateUtil.getYearFirst(bussDay);
+            endDate = DateUtil.getLastDayOfYear(bussDay);
+        }else{
+            totalDays = DateUtil.getMonthDays(bussDay);
+            startDate = DateUtil.getFirstDayOfMonth(bussDay);
+            endDate = DateUtil.getLastDayOfMonth(bussDay);
         }
         ChartData chartData = new ChartData();
-        chartData.setTitle("[" + DateUtil.getFormatDate(sf.getBussDay(), dateFormat) + "]预算与消费统计");
-        String[] ld;
+        chartData.setTitle("[" + DateUtil.getFormatDate(bussDay, dateFormat) + "]预算与消费统计");
+        List<String> legends = new ArrayList<>();
         if (sf.getStatType() == BudgetTimelineStatSearch.StatType.RATE) {
-            ld = new String[]{"消费/预算比例", "时间进度"};
+            legends.add("消费/预算比例");
+            legends.add("时间进度");
             chartData.setUnit("%");
         } else {
-            ld = new String[]{"消费金额", "预算金额"};
+            legends.add("消费金额");
+            legends.add("预算金额");
             chartData.setUnit("元");
         }
-        chartData.setLegendData(ld);
+        boolean predict = sf.getPredict();
+        Map<String, Integer> scoreMap = null;
+        ChartYData predictData = new ChartYData();
+        if(predict){
+            legends.add("预测值");
+            scoreMap = this.getUserScoreMap(sf.getUserId(),startDate,endDate,sf.getPeriod());
+            predictData.setName(legends.get(2));
+        }
+        chartData.setLegendData(legends.toArray(new String[legends.size()]));
         ChartYData cbData = new ChartYData();
-        cbData.setName(ld[0]);
+        cbData.setName(legends.get(0));
         ChartYData timeData = new ChartYData();
-        timeData.setName(ld[1]);
+        timeData.setName(legends.get(1));
         if (list.isEmpty()) {
             return callback(chartData);
         }
-        for (BudgetTimeline tl : list) {
+        //缓存预算
+        Map<String,BudgetTimeline> budgetMap = new HashMap<>();
+        for (BudgetTimeline tl : list){
+            budgetMap.put(tl.getPassDays().toString(),tl);
+        }
+        BudgetTimeline lastBudget = list.get(list.size()-1);
+        //需要以完整的天数为准，因为BudgetTimeline有可能缺失，而且如果是当月的，后续数据也不全
+        for(int i=1;i<=totalDays;i++){
+            String key = i+"";
             if (sf.getPeriod() == PeriodType.MONTHLY) {
-                chartData.getXdata().add(tl.getPassDays() + "号");
+                chartData.getXdata().add(i + "号");
             } else {
-                chartData.getXdata().add(DateUtil.getFormatDate(tl.getBussDay(), "MM-dd"));
+                Date date = DateUtil.getDate(i-1,bussDay);
+                chartData.getXdata().add(DateUtil.getFormatDate(date, "MM-dd"));
             }
-            chartData.getIntXData().add(tl.getPassDays());
-            double consumeAmount;
-            if (sf.getConsumeType() == null) {
-                consumeAmount = tl.getNcAmount() + tl.getBcAmount() + tl.getTrAmount();
-            } else if (sf.getConsumeType() == GoodsConsumeType.NORMAL) {
-                consumeAmount = tl.getNcAmount() + tl.getTrAmount();
-            } else {
-                consumeAmount = tl.getBcAmount() + tl.getTrAmount();
+            chartData.getIntXData().add(i);
+            BudgetTimeline timeline = budgetMap.get(key);
+            if(timeline==null){
+                cbData.getData().add(null);
+                timeData.getData().add(null);
+            }else{
+                double consumeAmount = timeline.getNcAmount() + timeline.getBcAmount();
+                if(true==sf.getNeedOutBurst()){
+                    consumeAmount += timeline.getBcAmount() ;
+                }
+                if (sf.getStatType() == BudgetTimelineStatSearch.StatType.RATE) {
+                    double cbRate = NumberUtil.getPercentValue(consumeAmount, timeline.getBudgetAmount(), 0);
+                    double dayRate = NumberUtil.getPercentValue(timeline.getPassDays(), timeline.getTotalDays(), 0);
+                    cbData.getData().add(cbRate);
+                    timeData.getData().add(dayRate);
+                } else {
+                    cbData.getData().add(NumberUtil.getDoubleValue(consumeAmount,2));
+                    timeData.getData().add(NumberUtil.getDoubleValue(timeline.getBudgetAmount(),2));
+                }
             }
-            if (sf.getStatType() == BudgetTimelineStatSearch.StatType.RATE) {
-                double cbRate = NumberUtil.getPercentValue(consumeAmount, tl.getBudgetAmount(), 0);
-                double dayRate = NumberUtil.getPercentValue(tl.getPassDays(), tl.getTotalDays(), 0);
-                cbData.getData().add(cbRate);
-                timeData.getData().add(dayRate);
-            } else {
-                cbData.getData().add(PriceUtil.changeToString(2, consumeAmount));
-                timeData.getData().add(PriceUtil.changeToString(2, tl.getBudgetAmount()));
+            if(predict){
+                Float pv = null;
+                Integer score = scoreMap.get(key);
+                if(score==null){
+                    //取默认的最后一天的
+                    score = scoreMap.get("0");
+                }
+                //没有查询到，设置默认值
+                if(score==null){
+                    score = 0;
+                }
+                if (sf.getPeriod() == PeriodType.MONTHLY) {
+                    pv = budgetConsumeMEvaluateProcessor.evaluate(month,score,i);
+                }else{
+                    pv = budgetConsumeYEvaluateProcessor.evaluate(score,i);
+                }
+                if (sf.getStatType() == BudgetTimelineStatSearch.StatType.RATE){
+                    predictData.getData().add(NumberUtil.getDoubleValue(pv*100,0));
+                }else{
+                    BudgetTimeline tt = budgetMap.get(key);
+                    if(tt==null){
+                        tt = lastBudget;
+                    }
+                    predictData.getData().add(NumberUtil.getDoubleValue(pv*tt.getBudgetAmount(),2));
+                }
+
             }
         }
+
         BudgetTimeline end = list.get(list.size() - 1);
         double tt = end.getNcAmount() + end.getBcAmount() + end.getTrAmount();
         String subTitle = "当前消费总金额：" + PriceUtil.changeToString(2, tt) + "元，预算：" + PriceUtil.changeToString(2, end.getBudgetAmount()) + "元。";
@@ -470,7 +539,47 @@ public class BudgetController extends BaseController {
         chartData.setSubTitle(subTitle);
         chartData.getYdata().add(cbData);
         chartData.getYdata().add(timeData);
+        //预测
+        if(predict){
+            chartData.getYdata().add(predictData);
+        }
         return callback(chartData);
+    }
+
+    /**
+     * 用户用户评分
+     * @param userId
+     * @param startDate
+     * @param endDate
+     * @param period
+     * @return
+     */
+    private Map<String, Integer> getUserScoreMap(Long userId,Date startDate,Date endDate,PeriodType period){
+        UserScoreSearch sf = new UserScoreSearch();
+        sf.setUserId(userId);
+        sf.setStartDate(startDate);
+        sf.setEndDate(DateUtil.getTodayTillMiddleNightDate(endDate));
+        PageRequest pr = sf.buildQuery();
+        pr.setBeanClass(UserScore.class);
+        pr.setPage(NO_PAGE);
+        List<UserScore> list = baseService.getBeanList(pr);
+        int n = list.size();
+        Map<String, Integer> map = new HashMap<>();
+        for(int i=0;i<n;i++){
+            UserScore us = list.get(i);
+            int dayIndex = 0;
+            if (PeriodType.YEARLY == period) {
+                dayIndex = DateUtil.getDayOfYear(us.getStartTime());
+            }else{
+                dayIndex = DateUtil.getDayOfMonth(us.getStartTime());
+            }
+            map.put(dayIndex+"",us.getScore());
+        }
+        //设置最后一个为默认值
+        if(n>0){
+            map.put("0",list.get(n-1).getScore());
+        }
+        return map;
     }
 
     /**

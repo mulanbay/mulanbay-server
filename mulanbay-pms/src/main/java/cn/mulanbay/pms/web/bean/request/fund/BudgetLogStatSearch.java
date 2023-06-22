@@ -29,6 +29,11 @@ public class BudgetLogStatSearch extends QueryBuilder implements DateStatSearch,
 
     private Boolean needOutBurst;
 
+    /**
+     * 是否要预测
+     */
+    private Boolean predict = false;
+
     @Override
     public Date getStartDate() {
         return startDate;
@@ -90,5 +95,13 @@ public class BudgetLogStatSearch extends QueryBuilder implements DateStatSearch,
 
     public void setNeedOutBurst(Boolean needOutBurst) {
         this.needOutBurst = needOutBurst;
+    }
+
+    public Boolean getPredict() {
+        return predict;
+    }
+
+    public void setPredict(Boolean predict) {
+        this.predict = predict;
     }
 }

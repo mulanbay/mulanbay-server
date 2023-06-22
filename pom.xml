@@ -15,6 +15,7 @@
         <module>mulanbay-pms</module>
         <module>mulanbay-common</module>
         <module>mulanbay-schedule</module>
+        <module>mulanbay-ai</module>
     </modules>
 
     <parent>
@@ -64,6 +65,7 @@
         <xstream.version>1.4.7</xstream.version>
         <kaptcha.version>2.3.2</kaptcha.version>
         <jwt.version>0.9.1</jwt.version>
+        <jpmml.version>1.5.16</jpmml.version>
     </properties>
     <build>
         <plugins>

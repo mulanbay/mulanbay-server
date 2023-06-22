@@ -4,7 +4,8 @@ import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.business.handler.lock.RedisDistributedLock;
 import cn.mulanbay.schedule.lock.LockStatus;
 import cn.mulanbay.schedule.lock.ScheduleLocker;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -17,7 +18,7 @@ import org.springframework.beans.factory.annotation.Value;
  **/
 public class ScheduleLockHandler extends BaseHandler implements ScheduleLocker {
 
-    private static Logger logger = Logger.getLogger(ScheduleLockHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(ScheduleLockHandler.class);
 
     @Value("${system.namespace}")
     String namespace;

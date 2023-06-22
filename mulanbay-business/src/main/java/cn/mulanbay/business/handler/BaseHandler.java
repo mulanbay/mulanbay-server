@@ -18,7 +18,7 @@ import java.util.Locale;
  */
 public class BaseHandler {
 
-	@Autowired
+	@Autowired(required = false)
 	AbstractMessageSource messageSource;
 
 	// 自检失败关闭系统

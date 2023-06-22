@@ -2,7 +2,8 @@ package cn.mulanbay.schedule.para;
 
 import cn.mulanbay.common.exception.PersistentException;
 import cn.mulanbay.schedule.ScheduleErrorCode;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -16,7 +17,7 @@ import java.util.List;
  */
 public class ParaBuilder {
 
-    private static Logger logger = Logger.getLogger(ParaBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(ParaBuilder.class);
 
     /**
      * 构建参数定义
