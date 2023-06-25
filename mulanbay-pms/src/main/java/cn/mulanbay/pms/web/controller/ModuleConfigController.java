@@ -2,6 +2,7 @@ package cn.mulanbay.pms.web.controller;
 
 import cn.mulanbay.ai.ml.processor.ModelEvaluatorManager;
 import cn.mulanbay.common.util.BeanCopy;
+import cn.mulanbay.common.util.FileUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
@@ -15,12 +16,13 @@ import cn.mulanbay.pms.web.bean.request.moduleConfig.ModuleConfigPublishRequest;
 import cn.mulanbay.pms.web.bean.request.moduleConfig.ModuleConfigSearch;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 /**
@@ -34,6 +36,12 @@ import java.util.Date;
 public class ModuleConfigController extends BaseController {
 
     private static Class<ModuleConfig> beanClass = ModuleConfig.class;
+
+    /**
+     * 模型文件路径
+     */
+    @Value("${ml.pmml.modulePath}")
+    protected String modulePath;
 
     @Autowired
     ModelEvaluatorManager modelEvaluatorManager;
@@ -61,7 +69,8 @@ public class ModuleConfigController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResultBean create(@RequestBody @Valid ModuleConfigFormRequest formRequest) {
+    public ResultBean create(@Valid ModuleConfigFormRequest formRequest,@RequestParam(name="file",required = false) MultipartFile file)  throws IOException {
+        this.storeFile(file,formRequest.getFileName());
         ModuleConfig bean = new ModuleConfig();
         BeanCopy.copyProperties(formRequest, bean);
         bean.setCreatedTime(new Date());
@@ -71,6 +80,23 @@ public class ModuleConfigController extends BaseController {
         return callback(bean);
     }
 
+    /**
+     * 存储文件
+     * @param file
+     * @param fileName
+     * @throws IOException
+     */
+    private void storeFile(MultipartFile file,String fileName) throws IOException{
+        if (file!=null&&!file.isEmpty()) {
+            // 获取原文件名
+            String filename = fileName;
+            // 创建文件实例
+            File filePath = new File(modulePath, filename);
+            FileUtil.checkPathExits(filePath);
+            // 写入文件
+            file.transferTo(filePath);
+        }
+    }
 
     /**
      * 创建
@@ -89,7 +115,8 @@ public class ModuleConfigController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public ResultBean edit(@RequestBody @Valid ModuleConfigFormRequest formRequest) {
+    public ResultBean edit(@Valid ModuleConfigFormRequest formRequest,@RequestParam(name="file",required = false) MultipartFile file)  throws IOException {
+        this.storeFile(file,formRequest.getFileName());
         ModuleConfig bean = baseService.getObject(ModuleConfig.class,formRequest.getId());
         BeanCopy.copyProperties(formRequest, bean);
         bean.setLastModifyTime(new Date());
