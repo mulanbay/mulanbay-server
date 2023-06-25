@@ -72,4 +72,19 @@ ALTER TABLE `goods_type` ADD COLUMN `tags` VARCHAR(256) NULL AFTER `statable`;
 
 #v3.4结束
 
+#v4.0开始
+#机器学习模型配置
+CREATE TABLE `module_config` (
+  `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(64) NOT NULL,
+  `code` VARCHAR(64) NOT NULL,
+  `file_name` VARCHAR(128) NOT NULL,
+  `du` TINYINT NOT NULL,
+  `algorithm` SMALLINT(5) NOT NULL,
+  `status` SMALLINT(5) NOT NULL,
+  `remark` VARCHAR(200) NULL,
+  `created_time` DATETIME NOT NULL,
+  `last_modify_time` DATETIME NULL,
+  PRIMARY KEY (`id`));
+
 

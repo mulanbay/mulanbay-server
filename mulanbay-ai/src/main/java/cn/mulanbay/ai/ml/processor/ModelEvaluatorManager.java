@@ -74,6 +74,10 @@ public class ModelEvaluatorManager {
      */
     public String getModuleFile(String code){
         ModuleFile mf = moduleHandle.getModuleFile(code);
+        if(mf==null){
+            logger.warn("找不到code={}的模型配置",code);
+            return null;
+        }
         return mf.getFileName();
     }
 
@@ -89,15 +93,37 @@ public class ModelEvaluatorManager {
     }
 
     /**
+     * 删除评估器
+     *
+     * @param code
+     */
+    public void removeEvaluator(String code){
+        evaluatorMap.remove(code);
+    }
+
+    /**
      * 初始化评估器
      *
      * @param code
      */
-    public synchronized void initEvaluator(String code){
+    public void initEvaluator(String code){
         String modeFile = this.getModuleFile(code);
+        this.initEvaluator(code,modeFile);
+    }
+
+    /**
+     * 初始化评估器
+     *
+     * @param modeFile
+     */
+    public synchronized boolean initEvaluator(String code,String modeFile){
         Evaluator evaluator = this.createEvaluator(modulePath,modeFile);
+        if(evaluator==null){
+            return false;
+        }
         evaluatorMap.put(code,evaluator);
         logger.info("初始化了{}评估器",code);
+        return true;
     }
 
     /**
@@ -108,4 +134,5 @@ public class ModelEvaluatorManager {
     public Evaluator getEvaluator(String code){
         return evaluatorMap.get(code);
     }
+
 }
