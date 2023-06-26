@@ -13,6 +13,8 @@ import cn.mulanbay.pms.persistent.enums.CompareType;
 import cn.mulanbay.pms.persistent.service.AuthService;
 import cn.mulanbay.pms.persistent.service.UserScoreService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +33,12 @@ import java.util.List;
  */
 @Component
 public class UserScoreHandler extends BaseHandler {
+
+    /**
+     * 用户默认评分
+     */
+    @Value("${user.score.default}")
+    private int defaultUserScore;
 
     @Autowired
     AuthService authService;
@@ -153,6 +161,21 @@ public class UserScoreHandler extends BaseHandler {
             } else {
                 return (int) ((limitValue - vv) / limitValue * sc.getMaxScore());
             }
+        }
+    }
+
+    /**
+     * 获取用户最新的评分
+     * @param userId
+     * @return
+     */
+    @Cacheable(value = "UserScore", key = "('pms:latestScore:').concat(#userId)")
+    public int getLatestScore(Long userId){
+        UserScore us = userScoreService.getLatestScore(userId);
+        if(us==null){
+            return defaultUserScore;
+        }else {
+            return us.getScore();
         }
     }
 }

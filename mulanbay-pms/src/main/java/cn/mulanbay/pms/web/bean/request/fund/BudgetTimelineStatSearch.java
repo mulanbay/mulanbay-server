@@ -1,7 +1,6 @@
 package cn.mulanbay.pms.web.bean.request.fund;
 
 import cn.mulanbay.common.aop.BindUser;
-import cn.mulanbay.pms.persistent.enums.GoodsConsumeType;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
 
 import java.util.Date;

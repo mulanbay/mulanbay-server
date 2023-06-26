@@ -5,8 +5,14 @@ public class UserGeneralStatVo {
     // 本月预算
     private Double monthBudget = 0.0;
 
+    // 本月预测消费
+    private Double monthPredict;
+
     //本年预算
     private Double yearBudget = 0.0;
+
+    // 本年预测消费
+    private Double yearPredict;
 
     // 预算
     private Double totalIncome = 0.0;
@@ -52,6 +58,22 @@ public class UserGeneralStatVo {
 
     public void setYearBudget(Double yearBudget) {
         this.yearBudget = yearBudget;
+    }
+
+    public Double getMonthPredict() {
+        return monthPredict;
+    }
+
+    public void setMonthPredict(Double monthPredict) {
+        this.monthPredict = monthPredict;
+    }
+
+    public Double getYearPredict() {
+        return yearPredict;
+    }
+
+    public void setYearPredict(Double yearPredict) {
+        this.yearPredict = yearPredict;
     }
 
     public Double getTotalIncome() {

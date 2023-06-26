@@ -330,25 +330,31 @@ public class MainController extends BaseController {
      */
     @RequestMapping(value = "/generalStat", method = RequestMethod.GET)
     public ResultBean generalStat(@Valid UserGeneralStatSearch ugs) {
+        Long userId = ugs.getUserId();
         UserGeneralStatVo res = new UserGeneralStatVo();
         BudgetSearch bs = new BudgetSearch();
         bs.setStatus(CommonStatus.ENABLE);
         bs.setUserId(ugs.getUserId());
         PageRequest pr = bs.buildQuery();
         pr.setBeanClass(Budget.class);
+        Date today = new Date();
         //预算默认以预算列表来统计实现
         List<Budget> budgetList = baseService.getBeanList(pr);
         if (budgetList.isEmpty()) {
-            UserPlanConfigValue upcv = userPlanService.getMonthBudgetConfig(ugs.getUserId());
+            UserPlanConfigValue upcv = userPlanService.getMonthBudgetConfig(userId);
             //月度消费预算(目前通过用户计划来实现)
             if (upcv != null) {
                 res.setMonthBudget(Double.valueOf(upcv.getPlanValue()));
                 res.setYearBudget(Double.valueOf(upcv.getPlanValue()) * 12);
             }
         } else {
-            BudgetAmountBean bab = budgetHandler.calcBudgetAmount(budgetList, new Date());
+            BudgetAmountBean bab = budgetHandler.calcBudgetAmount(budgetList, today);
             res.setMonthBudget(bab.getMonthBudget());
             res.setYearBudget(bab.getYearBudget());
+            //年度消费预测(最后一天)
+            int days = DateUtil.getYearDays(today);
+            Float rate = budgetHandler.predictYearRate(userId,null,days);
+            res.setYearPredict(rate==null ? null : rate*res.getYearBudget());
         }
         BuyRecordAnalyseStatSearch sf = new BuyRecordAnalyseStatSearch();
         sf.setUserId(ugs.getUserId());
@@ -363,19 +369,23 @@ public class MainController extends BaseController {
         }
 
         //收入
-        IncomeSummaryStat iss = incomeService.incomeSummaryStat(ugs.getUserId(), ugs.getStartDate(), ugs.getEndDate());
+        IncomeSummaryStat iss = incomeService.incomeSummaryStat(userId, ugs.getStartDate(), ugs.getEndDate());
         res.setTotalIncome(iss.getTotalAmount() == null ? 0.0 : iss.getTotalAmount().doubleValue());
 
         //获取月度统计
-        int n = DateUtil.getMonthDays(new Date());
-        int a = DateUtil.getDayOfMonth(new Date());
+        int n = DateUtil.getMonthDays(today);
+        int a = DateUtil.getDayOfMonth(today);
         res.setDayMonthRate(NumberUtil.getPercentValue(a, n, 2));
         res.setRemainMonthDays(n - a);
         res.setMonthDays(n);
         res.setMonthPassDays(a);
+        //获取月度预测(最后一天)
+        int month = DateUtil.getMonth(today)+1;
+        Float rate = budgetHandler.predictMonthRate(userId,month,null,n);
+        res.setMonthPredict(rate==null ? null : rate*res.getMonthBudget());
 
-        Date[] dd = getStatDateRange(DateGroupType.MONTH, new Date());
-        double monthConsumeAmount = buyRecordService.statBuyAmount(dd[0], dd[1], ugs.getUserId(), ugs.getConsumeType());
+        Date[] dd = getStatDateRange(DateGroupType.MONTH, today);
+        double monthConsumeAmount = buyRecordService.statBuyAmount(dd[0], dd[1], userId, ugs.getConsumeType());
         res.appendMonthConsume(monthConsumeAmount);
         return callback(res);
     }

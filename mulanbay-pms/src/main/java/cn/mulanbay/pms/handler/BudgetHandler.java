@@ -1,5 +1,7 @@
 package cn.mulanbay.pms.handler;
 
+import cn.mulanbay.ai.ml.processor.BudgetConsumeMEvaluateProcessor;
+import cn.mulanbay.ai.ml.processor.BudgetConsumeYEvaluateProcessor;
 import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.pms.handler.bean.BudgetAmountBean;
@@ -17,6 +19,8 @@ import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.BuyRecordService;
 import cn.mulanbay.pms.persistent.service.IncomeService;
 import cn.mulanbay.pms.persistent.service.TreatService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +36,8 @@ import java.util.List;
  */
 @Component
 public class BudgetHandler extends BaseHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(BudgetHandler.class);
 
     //年的时间格式化
     public static final String YEARLY_DATE_FORMAT = "yyyy";
@@ -50,6 +56,15 @@ public class BudgetHandler extends BaseHandler {
 
     @Autowired
     IncomeService incomeService;
+
+    @Autowired
+    UserScoreHandler userScoreHandler;
+
+    @Autowired
+    BudgetConsumeMEvaluateProcessor budgetConsumeMEvaluateProcessor;
+
+    @Autowired
+    BudgetConsumeYEvaluateProcessor budgetConsumeYEvaluateProcessor;
 
     public BudgetHandler() {
         super("预算处理");
@@ -358,5 +373,44 @@ public class BudgetHandler extends BaseHandler {
             return DateUtil.getDate(newDate, DateUtil.Format24Datetime);
         }
         return null;
+    }
+
+    /**
+     * 预测月度消费比例
+     * @param userId
+     * @param month
+     * @param dayIndex
+     * @return
+     */
+    public Float predictMonthRate(Long userId,int month,Integer score,int dayIndex){
+        try {
+            if(score==null){
+                score = userScoreHandler.getLatestScore(userId);
+            }
+            Float v = budgetConsumeMEvaluateProcessor.evaluate(month,score,dayIndex);
+            return v;
+        } catch (Exception e) {
+            logger.error("预测月度消费比例异常",e);
+            return null;
+        }
+    }
+
+    /**
+     * 预测年度消费
+     * @param userId
+     * @param dayIndex
+     * @return
+     */
+    public Float predictYearRate(Long userId,Integer score,int dayIndex){
+        try {
+            if(score==null){
+                score = userScoreHandler.getLatestScore(userId);
+            }
+            Float v = budgetConsumeYEvaluateProcessor.evaluate(score,dayIndex);
+            return v;
+        } catch (Exception e) {
+            logger.error("预测年度消费比例异常",e);
+            return null;
+        }
     }
 }

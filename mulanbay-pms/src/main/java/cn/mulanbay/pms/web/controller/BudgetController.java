@@ -1,10 +1,11 @@
 package cn.mulanbay.pms.web.controller;
 
-import cn.mulanbay.ai.ml.processor.BudgetConsumeMEvaluateProcessor;
-import cn.mulanbay.ai.ml.processor.BudgetConsumeYEvaluateProcessor;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
-import cn.mulanbay.common.util.*;
+import cn.mulanbay.common.util.BeanCopy;
+import cn.mulanbay.common.util.DateUtil;
+import cn.mulanbay.common.util.NumberUtil;
+import cn.mulanbay.common.util.PriceUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
@@ -19,7 +20,6 @@ import cn.mulanbay.pms.persistent.dto.BudgetStat;
 import cn.mulanbay.pms.persistent.dto.BuyRecordBudgetStat;
 import cn.mulanbay.pms.persistent.dto.BuyRecordRealTimeStat;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
-import cn.mulanbay.pms.persistent.enums.GoodsConsumeType;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.BuyRecordService;
@@ -68,12 +68,6 @@ public class BudgetController extends BaseController {
 
     @Autowired
     BuyRecordService buyRecordService;
-
-    @Autowired
-    BudgetConsumeMEvaluateProcessor budgetConsumeMEvaluateProcessor;
-
-    @Autowired
-    BudgetConsumeYEvaluateProcessor budgetConsumeYEvaluateProcessor;
 
     /**
      * 预算树
@@ -420,8 +414,9 @@ public class BudgetController extends BaseController {
     @RequestMapping(value = "/timelineStat")
     public ResultBean timelineStat(@Valid BudgetTimelineStatSearch sf) {
         Date bussDay = sf.getBussDay();
+        Long userId = sf.getUserId();
         String bussKey = budgetHandler.createBussKey(sf.getPeriod(), bussDay);
-        List<BudgetTimeline> list = budgetService.selectBudgetTimelineList(bussKey, sf.getUserId());
+        List<BudgetTimeline> list = budgetService.selectBudgetTimelineList(bussKey, userId);
         String dateFormat = "yyyy-MM";
         int totalDays =0;
         //获取评分使用
@@ -455,7 +450,7 @@ public class BudgetController extends BaseController {
         ChartYData predictData = new ChartYData();
         if(predict){
             legends.add("预测值");
-            scoreMap = this.getUserScoreMap(sf.getUserId(),startDate,endDate,sf.getPeriod());
+            scoreMap = this.getUserScoreMap(userId,startDate,endDate,sf.getPeriod());
             predictData.setName(legends.get(2));
         }
         chartData.setLegendData(legends.toArray(new String[legends.size()]));
@@ -508,14 +503,10 @@ public class BudgetController extends BaseController {
                     //取默认的最后一天的
                     score = scoreMap.get("0");
                 }
-                //没有查询到，设置默认值
-                if(score==null){
-                    score = 0;
-                }
                 if (sf.getPeriod() == PeriodType.MONTHLY) {
-                    pv = budgetConsumeMEvaluateProcessor.evaluate(month,score,i);
+                    pv = budgetHandler.predictMonthRate(userId,month,score,i);
                 }else{
-                    pv = budgetConsumeYEvaluateProcessor.evaluate(score,i);
+                    pv = budgetHandler.predictYearRate(userId,score,i);
                 }
                 if (sf.getStatType() == BudgetTimelineStatSearch.StatType.RATE){
                     predictData.getData().add(NumberUtil.getDoubleValue(pv*100,0));

@@ -84,8 +84,8 @@ public class UserScoreService extends BaseHibernateDao {
             String hql = "from UserScore where userId=?0 order by endTime desc";
             return (UserScore) this.getEntityForOne(hql, userId);
         } catch (BaseException e) {
-            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
-                    "获取预判定用户等级异常", e);
+            throw new PersistentException(ErrorCode.OBJECT_GET_ERROR,
+                    "获取用户最新的评分异常", e);
         }
     }
 
