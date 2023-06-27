@@ -8,7 +8,15 @@
 * 我要做什么？
 * 我做了什么？
 
+基于以上三个问题，我们是否可以去思考以下两个问题：
+* 我是怎么样的人？（用户画像）
+* 我将会怎么样？ （机器学习）
+
 该系统是前后端分离的项目，当前项目mulanbay-server为后端API项目，只提供系统的api接口，整个系统必须要同时运行前端才能完整访问。
+
+木兰湾算法端项目：
+* 基于sklearn的机器学习(python)[mulanbay-sklearn](https://gitee.com/mulanbay/mulanbay-sklearn)
+(对于数据预测，mulanbay-sklearn负责算法，生成pmml模型文件，java端mulanbay-server通过jpmml库加载模型文件对业务数据进行预测)
 
 木兰湾前端项目：
 
@@ -40,6 +48,7 @@ Jquery版本(V3.0版本后不再维护，以VUE版本为主)
 * 提供可配置的个人积分和评分体系
 * 提供多角度的用户行为分析
 * 提供词云、相似度、智能问答等分析功能 
+* 基于sklearn的机器学习对一些数据进行预测
 
 ### 文档地址
 
@@ -59,6 +68,7 @@ Jquery版本(V3.0版本后不再维护，以VUE版本为主)
 ### 项目结构
 ``` lua
 mulanbay-server
+├── mulanbay-ai          -- 机器学习模块，数据预测
 ├── mulanbay-business    -- 通用业务类
 ├── mulanbay-common      -- 公共模块
 ├── mulanbay-persistent  -- 持久层基于hibernate的封装
@@ -127,6 +137,11 @@ source /xx/xx/xx/mulanbay_config_update.sql
 系统默认包含两个用户admin和mulanbay，密码都是123456.admin用户主要是维护使用，一般以mulanbay用户登录。
 
 mulanbay用户默认情况下是没有任何业务数据的，可以在"权限管理/用户管理"里对mulanbay用户进行"初始化数据"，系统可以显示mulanbay用户基础的配置数据。
+
+# Step 5：机器学习模型文件pmml导入
+如果想要使用数据预测功能，需要从mulanbay-sklearn项目中module文件夹下拷贝模型文件到服务器目录，服务器目录配置项为ml.pmml.modulePath。
+模型文件也可以通过VUE版本的PC端页面进行上传。
+
 
 ```
 
