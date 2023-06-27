@@ -628,7 +628,6 @@ CREATE TABLE `command_config` (
 
 LOCK TABLES `command_config` WRITE;
 /*!40000 ALTER TABLE `command_config` DISABLE KEYS */;
-INSERT INTO `command_config` VALUES (1,'BACKUP_DB','备份数据库','1001','/mulanbay/server/serverUpdate/backupDatabase.sh',0,0,1,NULL,'2020-06-07 09:47:14',NULL),(2,'UPDATE_PUI','更新电脑端UI','1002','/mulanbay/server/serverUpdate/updatePUI.sh',0,1,1,NULL,'2020-06-07 09:47:14',NULL),(3,'UPDATE_MUI','更新移动端UI','1003','/mulanbay/server/serverUpdate/updateMUI.sh',0,2,1,NULL,'2020-06-07 09:47:14',NULL),(4,'BACKUP_MULANBAY','备份木兰湾系统','1004','/mulanbay/server/serverUpdate/backupMulanbay.sh',1,3,1,NULL,'2020-06-07 09:47:14',NULL),(5,'UPDATE_API','更新API服务','1005','/mulanbay/server/serverUpdate/updateAndRestartApiServer.sh',0,4,1,NULL,'2020-06-07 09:47:14',NULL),(6,'BUFF_CACHE','释放操作系统缓存','1006','/mulanbay/server/serverUpdate/buffCache.sh',1,5,1,NULL,'2020-06-07 09:47:14',NULL),(7,'PHDDNS_START','启动花生壳域名服务','1007','phddns start',1,6,1,NULL,'2020-06-23 09:47:14',NULL),(8,'PHDDNS_STOP','停止花生壳域名服务','1008','echo y | phddns stop',1,7,1,NULL,'2020-06-23 09:47:14',NULL),(9,'UPDATE_PVUE','更新电脑端UI的VUE项目','1009','/mulanbay/server/serverUpdate/updatePVUE.sh',0,2,1,NULL,'2020-06-23 09:47:14',NULL);
 /*!40000 ALTER TABLE `command_config` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -781,7 +780,6 @@ CREATE TABLE `data_input_analyse` (
 
 LOCK TABLES `data_input_analyse` WRITE;
 /*!40000 ALTER TABLE `data_input_analyse` DISABLE KEYS */;
-INSERT INTO `data_input_analyse` VALUES (1,'消费记录','buy_record','buy_date','created_time','user_id',_binary '','','2017-08-30 13:56:05','2019-12-23 09:04:52'),(2,'音乐练习记录','music_practice','practice_date','created_time','user_id',_binary '',NULL,'2017-08-30 13:56:58','2018-02-19 10:14:51'),(3,'运动锻炼','sport_exercise','exercise_date','created_time','user_id',_binary '',NULL,'2017-08-30 15:57:25','2018-02-19 10:15:02'),(4,'看病记录管理','treat_record','treat_date','created_time','user_id',_binary '',NULL,'2017-08-30 16:05:11','2018-02-19 10:15:14'),(5,'阅读书籍录入','reading_record','store_date','created_time','user_id',_binary '\0',NULL,'2017-08-30 16:21:48','2018-02-19 10:15:24'),(6,'阅读完成录入','reading_record','finished_date','last_modify_time','user_id',_binary '\0','不是太准，lastModifyTime经常变','2017-08-30 16:22:25','2018-02-19 10:15:39');
 /*!40000 ALTER TABLE `data_input_analyse` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -816,7 +814,6 @@ CREATE TABLE `database_clean` (
 
 LOCK TABLES `database_clean` WRITE;
 /*!40000 ALTER TABLE `database_clean` DISABLE KEYS */;
-INSERT INTO `database_clean` VALUES (1,'操作日志','operation_log','created_time',7,0,'','2023-05-10 02:00:00',0,1,1,'2017-11-25 21:24:43','2020-09-25 14:02:12'),(2,'系统日志','system_log','occur_time',7,0,NULL,'2023-05-10 02:00:00',0,1,2,'2017-11-25 21:44:57','2018-02-18 20:39:10'),(3,'调度日志','task_log','start_time',7,0,NULL,'2023-05-10 02:00:00',19,1,3,'2017-11-25 21:45:58','2018-02-18 20:39:31'),(4,'已发成功的用户消息','user_message','created_time',7,0,'send_status=1','2023-05-10 02:00:00',21,1,1,'2017-11-26 10:31:13','2019-04-11 09:24:00'),(5,'未发送或者发送失败的用户消息','user_message','created_time',14,0,'(send_status=0 or send_status=2)','2023-05-10 02:00:00',0,1,2,'2017-11-26 10:35:16','2019-04-11 09:23:52'),(6,'股票价格记录','shares_price','occur_time',365,0,NULL,'2023-05-10 02:00:00',0,1,6,'2019-02-25 23:55:47','2019-02-25 23:56:02'),(7,'股票评分记录','user_shares_score','created_time',365,0,NULL,'2023-05-10 02:00:00',0,1,7,'2019-03-02 13:40:16',NULL),(8,'股票报警记录','user_shares_warn','created_time',90,0,NULL,'2023-05-10 02:00:00',0,1,8,'2019-06-18 12:12:19',NULL),(9,'用户评分','user_score','end_time',365,0,NULL,'2019-09-11 02:00:00',253,0,9,'2019-09-10 09:17:12','2020-11-21 09:06:31'),(10,'消费匹配日志','buy_record_match_log','created_time',30,0,NULL,'2023-05-10 02:00:00',3,1,10,'2020-12-23 12:33:21','2020-12-23 12:33:32'),(11,'用户QA','user_qa','created_time',30,0,NULL,'2023-05-10 02:00:00',0,1,11,'2021-03-23 08:53:22',NULL);
 /*!40000 ALTER TABLE `database_clean` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -971,7 +968,6 @@ CREATE TABLE `diet_category` (
 
 LOCK TABLES `diet_category` WRITE;
 /*!40000 ALTER TABLE `diet_category` DISABLE KEYS */;
-INSERT INTO `diet_category` VALUES (1,1,'优益C','乳与乳制品','素',1,1,'指各种原粮、成品粮以及各种粮食加工制品，包括方便面等；','2019-04-03 09:20:24','2019-12-22 22:04:26'),(2,1,'油','脂肪、油和乳化脂肪制品','素',1,2,'指植物和动物性食用油料，如花生油、大豆油、动物油等；','2019-04-03 09:23:31','2019-04-03 09:31:25'),(3,1,'冷饮','冷冻饮品','荤',1,3,'水果、蔬菜(包括块根类)、豆类、食用菌、藻类、坚果以及籽类等','2019-04-03 09:23:54','2019-04-03 09:35:36'),(4,1,'苹果,香蕉,火龙果,橙子,橘子,李子,枣,柚子,桃子,桂圆,核桃,枸杞,芒果,黄桃,布林,丰田瓜,梨','水果','素',1,4,'水果、蔬菜(包括块根类)、豆类、食用菌、藻类、坚果以及籽类等','2019-04-03 09:24:25','2019-10-14 16:50:53'),(5,1,'巧克力','巧克力和巧克力制品','素',1,5,'可可制品、巧克力和巧克力制品(包括类巧克力和代巧克力)以及糖果','2019-04-03 09:32:45','2019-04-03 17:41:11'),(6,1,'米,糕,水饺,面,粥,包子,煎饼,饼,小笼包,扁食,披萨,麻糍,麻球,粉丝,馒头,馄饨,饺,薯,粉圆,片儿川,饭,粉,汤圆,青团,粽子,锅巴,小刀切','粮食和粮食制品','素',1,6,NULL,'2019-04-03 09:33:02','2019-10-14 16:51:09'),(7,1,'面包,汉堡,麦片,麻花','焙烤食品','素',1,7,NULL,'2019-04-03 09:33:15','2019-10-14 16:52:05'),(8,1,'肉,鸡,仔排,大排,小排,叉烧,排骨,鸭,牛,猪,香肠,里脊,火腿肠,鹅','肉及肉制品','荤',1,8,NULL,'2019-04-03 09:33:34','2019-05-10 11:03:44'),(9,1,'虾,鱼,贝','水产品及其制品','荤',1,9,NULL,'2019-04-03 09:33:49','2019-04-03 17:45:33'),(10,1,'蛋','蛋及蛋制品','荤',1,10,NULL,'2019-04-03 09:38:20',NULL),(11,1,'蜂蜜','甜味料','素',1,11,NULL,'2019-04-03 09:38:41','2019-04-03 17:46:09'),(12,1,'酱','调味品','素',1,12,NULL,'2019-04-03 09:39:00',NULL),(13,1,'西洋参','特殊营养食品','素',1,13,NULL,'2019-04-03 09:39:19',NULL),(14,1,'汽水,可乐,雪碧,椰汁,农夫山泉,王老吉,矿泉水','饮料类','素',1,14,NULL,'2019-04-03 09:39:43','2019-10-14 16:51:37'),(15,1,'酒','酒类','荤',1,15,NULL,'2019-04-03 09:39:58',NULL),(16,1,'其他,开水,火锅,千张','其他类','素',1,17,NULL,'2019-04-03 09:40:13','2019-05-10 11:02:55'),(17,1,'菜,豆,葱,蒜,姜,山药,木耳,黄瓜,香菇,香干,韭黄,韭心,西蓝花,藕,萝卜,茭白,胡萝卜,笋,番茄,西红柿,海带,银耳,丝瓜','蔬菜','素',1,4,NULL,'2019-04-03 10:19:34','2019-10-14 16:51:57'),(18,1,'花生,瓜子,松塔,马芬杯,黄桃干','零食','素',1,16,NULL,'2019-04-03 22:12:55','2019-04-03 22:14:50');
 /*!40000 ALTER TABLE `diet_category` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1537,13 +1533,13 @@ DROP TABLE IF EXISTS `module_config`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `module_config` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(64) COLLATE utf8mb4_general_ci NOT NULL,
-  `code` varchar(64) COLLATE utf8mb4_general_ci NOT NULL,
-  `file_name` varchar(128) COLLATE utf8mb4_general_ci NOT NULL,
+  `name` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `code` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `file_name` varchar(128) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
   `du` tinyint NOT NULL,
   `algorithm` smallint NOT NULL,
   `status` smallint NOT NULL,
-  `remark` varchar(200) COLLATE utf8mb4_general_ci DEFAULT NULL,
+  `remark` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL,
   `created_time` datetime NOT NULL,
   `last_modify_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -3857,4 +3853,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-06-27 21:44:29
+-- Dump completed on 2023-06-27 22:26:12
