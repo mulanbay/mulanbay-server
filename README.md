@@ -16,6 +16,7 @@
 
 木兰湾算法端项目：
 * 基于sklearn的机器学习(python)[mulanbay-sklearn](https://gitee.com/mulanbay/mulanbay-sklearn)
+
 (对于数据预测，mulanbay-sklearn负责算法，生成pmml模型文件，java端mulanbay-server通过jpmml库加载模型文件对业务数据进行预测)
 
 木兰湾前端项目：
