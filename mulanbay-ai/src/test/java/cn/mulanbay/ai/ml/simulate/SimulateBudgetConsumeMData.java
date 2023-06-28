@@ -24,7 +24,7 @@ public class SimulateBudgetConsumeMData {
             //写入标题
             writeText.write("month,score,dayIndex,rate");
             for(int month = 1;month<=12;month++){
-                for(int score = 1;score<=100;score=score*10){
+                for(int score = 0;score<=100;score++){
                     for(int dayIndex = 1;dayIndex<=31;dayIndex++){
                         double rate = dayIndex / 31.0 + Math.random()*0.1;
                         writeText.newLine();    //换行

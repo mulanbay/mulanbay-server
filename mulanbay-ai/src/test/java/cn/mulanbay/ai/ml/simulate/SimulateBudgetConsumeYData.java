@@ -23,7 +23,7 @@ public class SimulateBudgetConsumeYData {
 
             //写入标题
             writeText.write("score,dayIndex,rate");
-            for(int score = 1;score<=100;score=score*10){
+            for(int score = 0;score<=100;score++){
                 for(int dayIndex = 1;dayIndex<=366;dayIndex++){
                     double rate = dayIndex / 366.0 + Math.random()*0.1;
                     writeText.newLine();    //换行

@@ -21,7 +21,7 @@ public class TestBudgetConsumeYEvaluateProcessor {
     @Autowired
     BudgetConsumeYEvaluateProcessor evaluateProcessor;
 
-    private float min = -0.2f ;
+    private float min = 0f ;
 
     private float max = 1.5f;
 
@@ -35,7 +35,7 @@ public class TestBudgetConsumeYEvaluateProcessor {
     public void testEvaluate(){
         float evMin = max;
         float evMax = min;
-        for(int score = 1;score<=100;score=score*10){
+        for(int score = 0;score<=100;score++){
             for(int dayIndex = 1;dayIndex<=366;dayIndex++){
                 Float v = evaluateProcessor.evaluate(score,dayIndex);
                 String vs = "score="+score+",dayIndex="+dayIndex+",预测值="+v;
