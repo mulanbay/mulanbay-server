@@ -74,7 +74,7 @@ ALTER TABLE `goods_type` ADD COLUMN `tags` VARCHAR(256) NULL AFTER `statable`;
 
 #v4.0开始
 #机器学习模型配置
-CREATE TABLE `module_config` (
+CREATE TABLE `model_config` (
   `id` BIGINT(20) NOT NULL AUTO_INCREMENT,
   `name` VARCHAR(64) NOT NULL,
   `code` VARCHAR(64) NOT NULL,

@@ -1,40 +1,40 @@
-package cn.mulanbay.pms.web.bean.request.moduleConfig;
+package cn.mulanbay.pms.web.bean.request.modelConfig;
 
 import cn.mulanbay.pms.persistent.enums.MLAlgorithm;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-public class ModuleConfigFormRequest  {
+public class ModelConfigFormRequest {
 
     private Long id;
     /**
      * 名称
      */
-    @NotEmpty(message = "{validate.moduleConfig.name.notEmpty}")
+    @NotEmpty(message = "{validate.modelConfig.name.notEmpty}")
     private String name;
     /**
      * 唯一标识代码
      */
-    @NotEmpty(message = "{validate.moduleConfig.code.notEmpty}")
+    @NotEmpty(message = "{validate.modelConfig.code.notEmpty}")
     private String code;
 
     /**
      * 文件名
      */
-    @NotEmpty(message = "{validate.moduleConfig.fileName.notEmpty}")
+    @NotEmpty(message = "{validate.modelConfig.fileName.notEmpty}")
     private String fileName;
 
     /**
      * 是否区分用户
      */
-    @NotNull(message = "{validate.moduleConfig.du.NotNull}")
+    @NotNull(message = "{validate.modelConfig.du.NotNull}")
     private Boolean du;
 
     /**
      * 算法
      */
-    @NotNull(message = "{validate.moduleConfig.algorithm.NotNull}")
+    @NotNull(message = "{validate.modelConfig.algorithm.NotNull}")
     private MLAlgorithm algorithm;
 
     private String remark;

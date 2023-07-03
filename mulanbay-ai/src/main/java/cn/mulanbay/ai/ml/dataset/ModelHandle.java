@@ -1,6 +1,6 @@
 package cn.mulanbay.ai.ml.dataset;
 
-import cn.mulanbay.ai.ml.dataset.bean.ModuleFile;
+import cn.mulanbay.ai.ml.dataset.bean.ModelFile;
 
 /**
  * 模型处理
@@ -8,12 +8,12 @@ import cn.mulanbay.ai.ml.dataset.bean.ModuleFile;
  * @author fenghong
  * @create 2023-06-21
  */
-public interface ModuleHandle {
+public interface ModelHandle {
 
     /**
      * 获取模型文件
      * @param code
      * @return
      */
-    ModuleFile getModuleFile(String code);
+    ModelFile getModelFile(String code);
 }

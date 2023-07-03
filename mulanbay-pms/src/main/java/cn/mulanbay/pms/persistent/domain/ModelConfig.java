@@ -15,8 +15,8 @@ import static javax.persistence.GenerationType.IDENTITY;
  * @create 2020-08-27 18:44
  */
 @Entity
-@Table(name = "module_config")
-public class ModuleConfig implements java.io.Serializable {
+@Table(name = "model_config")
+public class ModelConfig implements java.io.Serializable {
 
     private static final long serialVersionUID = 7254329209805899896L;
 

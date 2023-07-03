@@ -6,7 +6,7 @@ package cn.mulanbay.ai.ml.dataset.bean;
  * @author fenghong
  * @create 2023-06-21
  */
-public class ModuleFile {
+public class ModelFile {
 
     /**
      * 唯一标识代码

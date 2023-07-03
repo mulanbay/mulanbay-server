@@ -6,14 +6,14 @@ import cn.mulanbay.common.util.FileUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
-import cn.mulanbay.pms.persistent.domain.ModuleConfig;
+import cn.mulanbay.pms.persistent.domain.ModelConfig;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
-import cn.mulanbay.pms.persistent.service.ModuleConfigService;
+import cn.mulanbay.pms.persistent.service.ModelConfigService;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
-import cn.mulanbay.pms.web.bean.request.moduleConfig.ModuleConfigFormRequest;
-import cn.mulanbay.pms.web.bean.request.moduleConfig.ModuleConfigPublishRequest;
-import cn.mulanbay.pms.web.bean.request.moduleConfig.ModuleConfigSearch;
+import cn.mulanbay.pms.web.bean.request.modelConfig.ModelConfigFormRequest;
+import cn.mulanbay.pms.web.bean.request.modelConfig.ModelConfigPublishRequest;
+import cn.mulanbay.pms.web.bean.request.modelConfig.ModelConfigSearch;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,34 +32,34 @@ import java.util.Date;
  * @create 2017-07-10 21:44
  */
 @RestController
-@RequestMapping("/moduleConfig")
-public class ModuleConfigController extends BaseController {
+@RequestMapping("/modelConfig")
+public class ModelConfigController extends BaseController {
 
-    private static Class<ModuleConfig> beanClass = ModuleConfig.class;
+    private static Class<ModelConfig> beanClass = ModelConfig.class;
 
     /**
      * 模型文件路径
      */
-    @Value("${ml.pmml.modulePath}")
-    protected String modulePath;
+    @Value("${ml.pmml.modelPath}")
+    protected String modelPath;
 
     @Autowired
     ModelEvaluatorManager modelEvaluatorManager;
 
     @Autowired
-    ModuleConfigService moduleConfigService;
+    ModelConfigService modelConfigService;
     /**
      * 获取任务列表
      *
      * @return
      */
     @RequestMapping(value = "/getData", method = RequestMethod.GET)
-    public ResultBean getData(ModuleConfigSearch sf) {
+    public ResultBean getData(ModelConfigSearch sf) {
         PageRequest pr = sf.buildQuery();
         pr.setBeanClass(beanClass);
         Sort sort = new Sort("createdTime", Sort.DESC);
         pr.addSort(sort);
-        PageResult<ModuleConfig> qr = baseService.getBeanResult(pr);
+        PageResult<ModelConfig> qr = baseService.getBeanResult(pr);
         return callbackDataGrid(qr);
     }
 
@@ -69,9 +69,9 @@ public class ModuleConfigController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/create", method = RequestMethod.POST)
-    public ResultBean create(@Valid ModuleConfigFormRequest formRequest,@RequestParam(name="file",required = false) MultipartFile file)  throws IOException {
+    public ResultBean create(@Valid ModelConfigFormRequest formRequest, @RequestParam(name="file",required = false) MultipartFile file)  throws IOException {
         this.storeFile(file,formRequest.getFileName());
-        ModuleConfig bean = new ModuleConfig();
+        ModelConfig bean = new ModelConfig();
         BeanCopy.copyProperties(formRequest, bean);
         bean.setCreatedTime(new Date());
         //手动发布
@@ -91,7 +91,7 @@ public class ModuleConfigController extends BaseController {
             // 获取原文件名
             String filename = fileName;
             // 创建文件实例
-            File filePath = new File(modulePath, filename);
+            File filePath = new File(modelPath, filename);
             FileUtil.checkPathExits(filePath);
             // 写入文件
             file.transferTo(filePath);
@@ -105,7 +105,7 @@ public class ModuleConfigController extends BaseController {
      */
     @RequestMapping(value = "/get", method = RequestMethod.GET)
     public ResultBean get(@Valid CommonBeanGetRequest getRequest) {
-        ModuleConfig bean = baseService.getObject(ModuleConfig.class,getRequest.getId());
+        ModelConfig bean = baseService.getObject(ModelConfig.class,getRequest.getId());
         return callback(bean);
     }
 
@@ -115,9 +115,9 @@ public class ModuleConfigController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
-    public ResultBean edit(@Valid ModuleConfigFormRequest formRequest,@RequestParam(name="file",required = false) MultipartFile file)  throws IOException {
+    public ResultBean edit(@Valid ModelConfigFormRequest formRequest, @RequestParam(name="file",required = false) MultipartFile file)  throws IOException {
         this.storeFile(file,formRequest.getFileName());
-        ModuleConfig bean = baseService.getObject(ModuleConfig.class,formRequest.getId());
+        ModelConfig bean = baseService.getObject(ModelConfig.class,formRequest.getId());
         BeanCopy.copyProperties(formRequest, bean);
         bean.setLastModifyTime(new Date());
         baseService.updateObject(bean);
@@ -130,13 +130,13 @@ public class ModuleConfigController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/publish", method = RequestMethod.POST)
-    public ResultBean publish(@RequestBody @Valid ModuleConfigPublishRequest re) {
-        ModuleConfig bean = baseService.getObject(ModuleConfig.class,re.getId());
+    public ResultBean publish(@RequestBody @Valid ModelConfigPublishRequest re) {
+        ModelConfig bean = baseService.getObject(ModelConfig.class,re.getId());
         boolean b = modelEvaluatorManager.initEvaluator(bean.getCode(),bean.getFileName());
         if(!b){
             return callbackErrorInfo("初始化模型失败");
         }
-        moduleConfigService.publish(bean);
+        modelConfigService.publish(bean);
         return callback(bean);
     }
 
@@ -146,8 +146,8 @@ public class ModuleConfigController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/refresh", method = RequestMethod.POST)
-    public ResultBean refresh(@RequestBody @Valid ModuleConfigPublishRequest re) {
-        ModuleConfig bean = baseService.getObject(ModuleConfig.class,re.getId());
+    public ResultBean refresh(@RequestBody @Valid ModelConfigPublishRequest re) {
+        ModelConfig bean = baseService.getObject(ModelConfig.class,re.getId());
         boolean b = modelEvaluatorManager.initEvaluator(bean.getCode(),bean.getFileName());
         if(!b){
             return callbackErrorInfo("初始化模型失败");
@@ -162,8 +162,8 @@ public class ModuleConfigController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/revoke", method = RequestMethod.POST)
-    public ResultBean revoke(@RequestBody @Valid ModuleConfigPublishRequest re) {
-        ModuleConfig bean = baseService.getObject(ModuleConfig.class,re.getId());
+    public ResultBean revoke(@RequestBody @Valid ModelConfigPublishRequest re) {
+        ModelConfig bean = baseService.getObject(ModelConfig.class,re.getId());
         modelEvaluatorManager.removeEvaluator(bean.getCode());
         bean.setStatus(CommonStatus.DISABLE);
         bean.setLastModifyTime(new Date());
@@ -180,11 +180,11 @@ public class ModuleConfigController extends BaseController {
     public ResultBean delete(@RequestBody @Valid CommonBeanDeleteRequest deleteRequest) {
         String[] ids = deleteRequest.getIds().split(",");
         for(String id : ids){
-            ModuleConfig bean = baseService.getObject(ModuleConfig.class,Long.valueOf(id));
+            ModelConfig bean = baseService.getObject(ModelConfig.class,Long.valueOf(id));
             if(bean.getStatus()==CommonStatus.ENABLE){
                 modelEvaluatorManager.removeEvaluator(bean.getCode());
             }
-            baseService.deleteObject(ModuleConfig.class,Long.valueOf(id));
+            baseService.deleteObject(ModelConfig.class,Long.valueOf(id));
         }
         return callback(null);
     }

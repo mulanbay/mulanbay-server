@@ -1,7 +1,7 @@
 package cn.mulanbay.ai.ml.dataset.impl;
 
-import cn.mulanbay.ai.ml.dataset.ModuleHandle;
-import cn.mulanbay.ai.ml.dataset.bean.ModuleFile;
+import cn.mulanbay.ai.ml.dataset.ModelHandle;
+import cn.mulanbay.ai.ml.dataset.bean.ModelFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,14 +16,14 @@ import java.util.Set;
  * @author fenghong
  * @create 2023-06-21
  */
-public class ModuleHandleFileImpl implements ModuleHandle {
+public class ModelHandleFileImpl implements ModelHandle {
 
-    private static final Logger logger = LoggerFactory.getLogger(ModuleHandleFileImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(ModelHandleFileImpl.class);
 
-    private Map<String,ModuleFile> map = new HashMap<>();
+    private Map<String, ModelFile> map = new HashMap<>();
 
     @Override
-    public ModuleFile getModuleFile(String code) {
+    public ModelFile getModelFile(String code) {
         return map.get(code);
     }
 
@@ -35,7 +35,7 @@ public class ModuleHandleFileImpl implements ModuleHandle {
         Set<String> keys = rb.keySet();
         for(String code:keys){
             String v = rb.getString(code);
-            ModuleFile mf = new ModuleFile();
+            ModelFile mf = new ModelFile();
             String[] vs = v.split(",");
             mf.setCode(code);
             mf.setFileName(vs[0]);

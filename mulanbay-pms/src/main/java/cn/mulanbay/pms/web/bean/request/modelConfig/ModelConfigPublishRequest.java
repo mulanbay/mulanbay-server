@@ -1,4 +1,4 @@
-package cn.mulanbay.pms.web.bean.request.moduleConfig;
+package cn.mulanbay.pms.web.bean.request.modelConfig;
 
 import cn.mulanbay.common.aop.BindUser;
 
@@ -10,7 +10,7 @@ import javax.validation.constraints.NotNull;
  * @author fenghong
  * @create 2017-07-10 21:44
  */
-public class ModuleConfigPublishRequest implements BindUser {
+public class ModelConfigPublishRequest implements BindUser {
 
     @NotNull(message = "{validate.moduleConfig.id.NotNull}")
     private Long id;

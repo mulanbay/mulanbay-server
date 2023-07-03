@@ -1,8 +1,8 @@
 package cn.mulanbay.ai.ml.processor;
 
-import cn.mulanbay.ai.ml.dataset.ModuleHandle;
-import cn.mulanbay.ai.ml.dataset.bean.ModuleFile;
-import cn.mulanbay.ai.ml.dataset.impl.ModuleHandleFileImpl;
+import cn.mulanbay.ai.ml.dataset.ModelHandle;
+import cn.mulanbay.ai.ml.dataset.bean.ModelFile;
+import cn.mulanbay.ai.ml.dataset.impl.ModelHandleFileImpl;
 import cn.mulanbay.common.util.StringUtil;
 import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.Evaluator;
@@ -36,11 +36,11 @@ public class ModelEvaluatorManager {
     /**
      * 模型文件路径
      */
-    @Value("${ml.pmml.modulePath}")
-    protected String modulePath;
+    @Value("${ml.pmml.modelPath}")
+    protected String modelPath;
 
     @Autowired(required = false)
-    ModuleHandle moduleHandle;
+    ModelHandle modelHandle;
 
     /**
      * 初始化评估器
@@ -73,7 +73,7 @@ public class ModelEvaluatorManager {
      * @return
      */
     public String getModuleFile(String code){
-        ModuleFile mf = moduleHandle.getModuleFile(code);
+        ModelFile mf = modelHandle.getModelFile(code);
         if(mf==null){
             logger.warn("找不到code={}的模型配置",code);
             return null;
@@ -83,12 +83,12 @@ public class ModelEvaluatorManager {
 
     @PostConstruct
     public void initModuleFiles(){
-        if(this.moduleHandle==null){
+        if(this.modelHandle==null){
             //默认为文件实现
             logger.debug("模型文件处理器为空，采用默认的文件实现");
-            ModuleHandleFileImpl fi = new ModuleHandleFileImpl();
+            ModelHandleFileImpl fi = new ModelHandleFileImpl();
             fi.load();
-            this.moduleHandle = fi;
+            this.modelHandle = fi;
         }
     }
 
@@ -117,7 +117,7 @@ public class ModelEvaluatorManager {
      * @param modeFile
      */
     public synchronized boolean initEvaluator(String code,String modeFile){
-        Evaluator evaluator = this.createEvaluator(modulePath,modeFile);
+        Evaluator evaluator = this.createEvaluator(modelPath,modeFile);
         if(evaluator==null){
             return false;
         }

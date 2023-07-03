@@ -1,4 +1,4 @@
-package cn.mulanbay.pms.web.bean.request.moduleConfig;
+package cn.mulanbay.pms.web.bean.request.modelConfig;
 
 import cn.mulanbay.persistent.query.CrossType;
 import cn.mulanbay.persistent.query.Parameter;
@@ -6,7 +6,7 @@ import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.web.bean.request.PageSearch;
 
-public class ModuleConfigSearch extends PageSearch  {
+public class ModelConfigSearch extends PageSearch  {
 
     @Query(fieldName = "name,code,fileName", op = Parameter.Operator.LIKE, crossType = CrossType.OR)
     private String name;
