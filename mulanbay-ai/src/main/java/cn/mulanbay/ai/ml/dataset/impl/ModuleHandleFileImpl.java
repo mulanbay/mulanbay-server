@@ -31,7 +31,7 @@ public class ModuleHandleFileImpl implements ModuleHandle {
      * 加载
      */
     public void load(){
-        ResourceBundle rb = ResourceBundle.getBundle("moduleConfig");
+        ResourceBundle rb = ResourceBundle.getBundle("modelConfig");
         Set<String> keys = rb.keySet();
         for(String code:keys){
             String v = rb.getString(code);
