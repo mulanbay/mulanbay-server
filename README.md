@@ -121,6 +121,9 @@ source /xx/xx/xx/mulanbay_config_update.sql
     pip3 install wordcloud -i https://pypi.tuna.tsinghua.edu.cn/simple
   * NLP所需要的ahanlpData文件包，请到百度网盘下载：（链接：https://pan.baidu.com/share/init?surl=zECO4re43orEOwdZrO7rUg 提取码：w86y ）
     或者直接去原作者项目处下载：https://github.com/jsksxs360/AHANLP/blob/master/github/w2v.md
+    说明：
+    【模型】Google_word2vec_zhwiki210720_300d.bin
+    【语料】zhwiki_210720_preprocessed.simplied.zip
 
 # Step 3：打包&运行
 
