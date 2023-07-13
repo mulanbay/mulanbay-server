@@ -116,7 +116,9 @@ public class ReadingRecordAnalyseStatSearch extends QueryBuilder implements Date
         //完成天数，开始时间--结束时间
         PERIOD("period"),
         //花费的时间
-        TIME("time");
+        TIME("time"),
+        //来源
+        SOURCE("source");
 
         private String fieldName;
 

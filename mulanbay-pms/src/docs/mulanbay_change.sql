@@ -87,4 +87,6 @@ CREATE TABLE `model_config` (
   `last_modify_time` DATETIME NULL,
   PRIMARY KEY (`id`));
 
-
+#阅读记录增加图书来源
+ALTER TABLE `reading_record` ADD COLUMN `source` SMALLINT(5) NULL AFTER `status`;
+ALTER TABLE `reading_record` ADD COLUMN `secondhand` TINYINT NULL DEFAULT 0 AFTER `source`;

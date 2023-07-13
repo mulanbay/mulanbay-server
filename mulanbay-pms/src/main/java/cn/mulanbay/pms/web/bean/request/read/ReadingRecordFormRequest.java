@@ -2,6 +2,7 @@ package cn.mulanbay.pms.web.bean.request.read;
 
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.pms.persistent.enums.BookLanguage;
+import cn.mulanbay.pms.persistent.enums.BookSource;
 import cn.mulanbay.pms.persistent.enums.BookType;
 import cn.mulanbay.pms.persistent.enums.ReadingStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -66,6 +67,12 @@ public class ReadingRecordFormRequest implements BindUser {
 
     @NotNull(message = "{validate.readingRecord.status.NotNull}")
     private ReadingStatus status;
+
+    //@NotNull(message = "{validate.readingRecord.source.NotNull}")
+    private BookSource source;
+
+    private Boolean secondhand;
+
     //读完花费时间
     private Integer costDays;
 
@@ -207,6 +214,22 @@ public class ReadingRecordFormRequest implements BindUser {
 
     public void setStatus(ReadingStatus status) {
         this.status = status;
+    }
+
+    public BookSource getSource() {
+        return source;
+    }
+
+    public void setSource(BookSource source) {
+        this.source = source;
+    }
+
+    public Boolean getSecondhand() {
+        return secondhand;
+    }
+
+    public void setSecondhand(Boolean secondhand) {
+        this.secondhand = secondhand;
     }
 
     public Integer getCostDays() {

@@ -9,10 +9,7 @@ import cn.mulanbay.pms.persistent.domain.BookCategory;
 import cn.mulanbay.pms.persistent.domain.ReadingRecord;
 import cn.mulanbay.pms.persistent.domain.ReadingRecordDetail;
 import cn.mulanbay.pms.persistent.dto.*;
-import cn.mulanbay.pms.persistent.enums.BookLanguage;
-import cn.mulanbay.pms.persistent.enums.BookType;
-import cn.mulanbay.pms.persistent.enums.DateGroupType;
-import cn.mulanbay.pms.persistent.enums.ReadingStatus;
+import cn.mulanbay.pms.persistent.enums.*;
 import cn.mulanbay.pms.persistent.util.MysqlUtil;
 import cn.mulanbay.pms.web.bean.request.read.*;
 import org.springframework.stereotype.Service;
@@ -237,6 +234,9 @@ public class ReadingRecordService extends BaseHibernateDao {
             } else if (groupType == ReadingRecordAnalyseStatSearch.GroupType.STATUS) {
                 ReadingStatus readingStatus = ReadingStatus.getReadingStatus(Integer.valueOf(idStr));
                 return readingStatus == null ? idStr : readingStatus.getName();
+            } else if (groupType == ReadingRecordAnalyseStatSearch.GroupType.SOURCE) {
+                BookSource source = BookSource.getBookSource(Integer.valueOf(idStr));
+                return source == null ? idStr : source.getName();
             } else {
                 return idStr;
             }

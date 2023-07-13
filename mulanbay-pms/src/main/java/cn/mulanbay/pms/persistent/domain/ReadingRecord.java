@@ -1,6 +1,7 @@
 package cn.mulanbay.pms.persistent.domain;
 
 import cn.mulanbay.pms.persistent.enums.BookLanguage;
+import cn.mulanbay.pms.persistent.enums.BookSource;
 import cn.mulanbay.pms.persistent.enums.BookType;
 import cn.mulanbay.pms.persistent.enums.ReadingStatus;
 
@@ -41,6 +42,9 @@ public class ReadingRecord implements java.io.Serializable {
     //保存日期：如购入、借入
     private Date storeDate;
     private ReadingStatus status;
+    private BookSource source;
+    // 是否二手
+    private Boolean secondhand;
     //读完花费时间
     private Integer costDays;
     private String remark;
@@ -169,6 +173,16 @@ public class ReadingRecord implements java.io.Serializable {
     }
 
     @Basic
+    @Column(name = "secondhand")
+    public Boolean getSecondhand() {
+        return secondhand;
+    }
+
+    public void setSecondhand(Boolean secondhand) {
+        this.secondhand = secondhand;
+    }
+
+    @Basic
     @Temporal(TemporalType.DATE)
     @Column(name = "proposed_date")
     public Date getProposedDate() {
@@ -220,6 +234,16 @@ public class ReadingRecord implements java.io.Serializable {
 
     public void setStatus(ReadingStatus status) {
         this.status = status;
+    }
+
+    @Basic
+    @Column(name = "source")
+    public BookSource getSource() {
+        return source;
+    }
+
+    public void setSource(BookSource source) {
+        this.source = source;
     }
 
     @Basic
@@ -289,4 +313,8 @@ public class ReadingRecord implements java.io.Serializable {
         }
     }
 
+    @Transient
+    public String getSourceName() {
+        return this.source==null ? null:source.getName();
+    }
 }
