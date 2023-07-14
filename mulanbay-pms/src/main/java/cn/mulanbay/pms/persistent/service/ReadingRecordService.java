@@ -6,6 +6,7 @@ import cn.mulanbay.persistent.common.BaseException;
 import cn.mulanbay.persistent.dao.BaseHibernateDao;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.pms.persistent.domain.BookCategory;
+import cn.mulanbay.pms.persistent.domain.Country;
 import cn.mulanbay.pms.persistent.domain.ReadingRecord;
 import cn.mulanbay.pms.persistent.domain.ReadingRecordDetail;
 import cn.mulanbay.pms.persistent.dto.*;
@@ -237,6 +238,9 @@ public class ReadingRecordService extends BaseHibernateDao {
             } else if (groupType == ReadingRecordAnalyseStatSearch.GroupType.SOURCE) {
                 BookSource source = BookSource.getBookSource(Integer.valueOf(idStr));
                 return source == null ? idStr : source.getName();
+            }else if (groupType == ReadingRecordAnalyseStatSearch.GroupType.COUNTRY) {
+                Country c = (Country) this.getEntityById(Country.class,Integer.valueOf(idStr));
+                return c == null ? idStr : c.getCnName();
             } else {
                 return idStr;
             }

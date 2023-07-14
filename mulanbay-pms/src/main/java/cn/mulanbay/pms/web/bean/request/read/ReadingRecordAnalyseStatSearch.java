@@ -112,7 +112,7 @@ public class ReadingRecordAnalyseStatSearch extends QueryBuilder implements Date
         STATUS("status"),
         PUBLISHEDYEAR("published_year"),
         PRESS("press"),
-        NATION("nation"),
+        COUNTRY("country_id"),
         //完成天数，开始时间--结束时间
         PERIOD("period"),
         //花费的时间

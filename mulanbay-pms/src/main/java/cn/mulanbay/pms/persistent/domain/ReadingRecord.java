@@ -30,8 +30,7 @@ public class ReadingRecord implements java.io.Serializable {
     private Integer publishedYear;
     //出版社
     private String press;
-    //国家
-    private String nation;
+    private Country country;
     private BookType bookType;
     private BookLanguage language;
     // 评分(0-5)
@@ -132,14 +131,14 @@ public class ReadingRecord implements java.io.Serializable {
         this.press = press;
     }
 
-    @Basic
-    @Column(name = "nation")
-    public String getNation() {
-        return nation;
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    public Country getCountry() {
+        return country;
     }
 
-    public void setNation(String nation) {
-        this.nation = nation;
+    public void setCountry(Country country) {
+        this.country = country;
     }
 
     @Basic

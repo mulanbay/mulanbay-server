@@ -90,3 +90,21 @@ CREATE TABLE `model_config` (
 #阅读记录增加图书来源
 ALTER TABLE `reading_record` ADD COLUMN `source` SMALLINT(5) NULL AFTER `status`;
 ALTER TABLE `reading_record` ADD COLUMN `secondhand` TINYINT NULL DEFAULT 0 AFTER `source`;
+
+#国家
+CREATE TABLE `country` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `cn_name` VARCHAR(64) NULL,
+  `en_name` VARCHAR(64) NULL,
+  `en_code2` VARCHAR(32) NULL,
+  `en_code3` VARCHAR(32) NULL,
+  `code` VARCHAR(32) NULL,
+  `location` VARCHAR(64) NULL,
+  `order_index` SMALLINT(5) NULL,
+  `status` SMALLINT(5) NULL DEFAULT 1,
+  `remark` VARCHAR(200) NULL,
+  PRIMARY KEY (`id`));
+
+#阅读记录的国家修改为国家表
+ALTER TABLE `reading_record` ADD COLUMN `country_id` INT NULL AFTER `press`;
+ALTER TABLE `reading_record` DROP COLUMN `nation`;

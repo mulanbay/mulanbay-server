@@ -5,6 +5,7 @@ import cn.mulanbay.common.exception.PersistentException;
 import cn.mulanbay.persistent.common.BaseException;
 import cn.mulanbay.persistent.dao.BaseHibernateDao;
 import cn.mulanbay.pms.persistent.domain.City;
+import cn.mulanbay.pms.persistent.domain.Country;
 import cn.mulanbay.pms.persistent.domain.District;
 import cn.mulanbay.pms.persistent.domain.Province;
 import org.springframework.stereotype.Service;
@@ -35,6 +36,22 @@ public class GeoService extends BaseHibernateDao {
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "获取省份列表异常", e);
+        }
+    }
+
+    /**
+     * 获取国家列表
+     *
+     * @return
+     */
+    public List<Country> getCountryList() {
+        try {
+            String hql = "from Country where status=1 order by orderIndex ";
+            List<Country> list = this.getEntityListNoPageHQL(hql);
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取获取国家列表异常", e);
         }
     }
 

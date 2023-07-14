@@ -38,8 +38,8 @@ public class ReadingRecordFormRequest implements BindUser {
     private String press;
 
     //国家
-    @NotEmpty(message = "{validate.readingRecord.nation.notEmpty}")
-    private String nation;
+    @NotNull(message = "{validate.readingRecord.countryId.NotNull}")
+    private Integer countryId;
 
     @NotNull(message = "{validate.readingRecord.bookType.NotNull}")
     private BookType bookType;
@@ -144,12 +144,12 @@ public class ReadingRecordFormRequest implements BindUser {
         this.press = press;
     }
 
-    public String getNation() {
-        return nation;
+    public Integer getCountryId() {
+        return countryId;
     }
 
-    public void setNation(String nation) {
-        this.nation = nation;
+    public void setCountryId(Integer countryId) {
+        this.countryId = countryId;
     }
 
     public BookType getBookType() {

@@ -10,6 +10,7 @@ import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.persistent.domain.BookCategory;
+import cn.mulanbay.pms.persistent.domain.Country;
 import cn.mulanbay.pms.persistent.domain.ReadingRecord;
 import cn.mulanbay.pms.persistent.domain.ReadingRecordDetail;
 import cn.mulanbay.pms.persistent.dto.*;
@@ -87,6 +88,8 @@ public class ReadingRecordController extends BaseController {
         BeanCopy.copyProperties(formRequest, bean);
         BookCategory bookCategory = this.getUserEntity(BookCategory.class, formRequest.getBookCategoryId(), formRequest.getUserId());
         bean.setBookCategory(bookCategory);
+        Country country = baseService.getObject(Country.class,formRequest.getCountryId());
+        bean.setCountry(country);
         checkAndSetReadingRecord(bean);
         bean.setCreatedTime(new Date());
         baseService.saveObject(bean);
@@ -117,6 +120,8 @@ public class ReadingRecordController extends BaseController {
         BeanCopy.copyProperties(formRequest, bean, true);
         BookCategory bookCategory = this.getUserEntity(BookCategory.class, formRequest.getBookCategoryId(), formRequest.getUserId());
         bean.setBookCategory(bookCategory);
+        Country country = baseService.getObject(Country.class,formRequest.getCountryId());
+        bean.setCountry(country);
         checkAndSetReadingRecord(bean);
         if (bs != ReadingStatus.READED && formRequest.getStatus() == ReadingStatus.READED) {
             //如果状态改变为已完成，则自动算出开始、结束日期
