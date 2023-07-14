@@ -108,3 +108,6 @@ CREATE TABLE `country` (
 #阅读记录的国家修改为国家表
 ALTER TABLE `reading_record` ADD COLUMN `country_id` INT NULL AFTER `press`;
 ALTER TABLE `reading_record` DROP COLUMN `nation`;
+ALTER TABLE `life_experience_detail` ADD COLUMN `country_id` INT NULL AFTER `life_experience_id`;
+ALTER TABLE `life_experience_detail` DROP COLUMN `country`;
+

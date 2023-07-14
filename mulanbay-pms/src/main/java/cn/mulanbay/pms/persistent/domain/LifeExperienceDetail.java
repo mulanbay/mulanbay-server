@@ -18,7 +18,7 @@ public class LifeExperienceDetail implements java.io.Serializable {
     private Long id;
     private Long userId;
     private LifeExperience lifeExperience;
-    private String country;
+    private Integer countryId;
     private String countryLocation;
     private Integer provinceId;
     private Integer cityId;
@@ -71,13 +71,13 @@ public class LifeExperienceDetail implements java.io.Serializable {
     }
 
     @Basic
-    @Column(name = "country")
-    public String getCountry() {
-        return country;
+    @Column(name = "country_id")
+    public Integer getCountryId() {
+        return countryId;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setCountryId(Integer countryId) {
+        this.countryId = countryId;
     }
 
     @Basic

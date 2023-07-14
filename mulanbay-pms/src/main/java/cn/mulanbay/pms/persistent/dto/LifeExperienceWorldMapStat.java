@@ -5,6 +5,8 @@ import java.math.BigInteger;
 
 public class LifeExperienceWorldMapStat {
 
+    private Integer countryId;
+
     private String country;
 
     private String countryLocation;
@@ -15,6 +17,14 @@ public class LifeExperienceWorldMapStat {
     private BigInteger totalDays;
 
     private BigDecimal totalCost;
+
+    public Integer getCountryId() {
+        return countryId;
+    }
+
+    public void setCountryId(Integer countryId) {
+        this.countryId = countryId;
+    }
 
     public String getCountry() {
         return country;

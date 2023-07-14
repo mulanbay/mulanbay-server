@@ -83,12 +83,17 @@ public class LifeExperienceService extends BaseHibernateDao {
         try {
             PageRequest pr = sf.buildQuery();
             StringBuffer sb = new StringBuffer();
-            sb.append("select country,max(country_location) as countryLocation,count(0) as totalCount,count(0) as totalDays,sum(cost) as totalCost ");
+            sb.append("select country_id as countryId,max(country_location) as countryLocation,count(0) as totalCount,count(0) as totalDays,sum(cost) as totalCost ");
             sb.append(" from life_experience_detail ");
             sb.append(pr.getParameterString());
             sb.append(" and map_stat=1 ");
-            sb.append(" group by country ");
+            sb.append(" group by country_id ");
             List<LifeExperienceWorldMapStat> list = this.getEntityListWithClassSQL(sb.toString(), pr.getPage(), pr.getPageSize(), LifeExperienceWorldMapStat.class, pr.getParameterValue());
+            for(LifeExperienceWorldMapStat ms : list){
+                //toDo 后期缓存或者map
+                Country c = (Country) this.getEntityById(Country.class,ms.getCountryId());
+                ms.setCountry(c.getCnName());
+            }
             return list;
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,

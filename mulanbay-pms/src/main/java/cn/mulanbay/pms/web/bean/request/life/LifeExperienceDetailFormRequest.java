@@ -15,8 +15,9 @@ public class LifeExperienceDetailFormRequest implements BindUser {
     @NotNull(message = "{validate.lifeExperienceDetail.lifeExperienceId.NotNull}")
     private Long lifeExperienceId;
 
-    @NotEmpty(message = "{validate.lifeExperienceDetail.country.NotEmpty}")
-    private String country;
+    @NotNull(message = "{validate.lifeExperienceDetail.countryId.NotNull}")
+    private Integer countryId;
+
     private String countryLocation;
 
     private Integer provinceId;
@@ -79,12 +80,12 @@ public class LifeExperienceDetailFormRequest implements BindUser {
         this.lifeExperienceId = lifeExperienceId;
     }
 
-    public String getCountry() {
-        return country;
+    public Integer getCountryId() {
+        return countryId;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
+    public void setCountryId(Integer countryId) {
+        this.countryId = countryId;
     }
 
     public String getCountryLocation() {
