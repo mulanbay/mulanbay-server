@@ -42,14 +42,13 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
     }
 
     /**
-     * 评估，单个标签
-     * @param args
+     * 转换为浮点
+     * @param targetValue
      * @return
      */
-    public Float evaluateFloat(Map<FieldName, Number> args,String label){
-        Object targetValue = this.evaluate(args,label);
+    protected Float convertValueToFloat(Object targetValue){
         if(targetValue==null){
-            logger.warn("标签={}的预测值为空",label);
+            logger.warn("标签的预测值为空");
             return null;
         }
         if (targetValue instanceof Computable) {
@@ -59,6 +58,15 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
         }else{
             return Float.valueOf(targetValue.toString());
         }
+    }
+    /**
+     * 评估，单个标签
+     * @param args
+     * @return
+     */
+    public Float evaluateFloat(Map<FieldName, Number> args,String label){
+        Object targetValue = this.evaluate(args,label);
+        return this.convertValueToFloat(targetValue);
     }
 
     /**
@@ -88,6 +96,25 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
             FieldName targetFieldName = targetField.getName();
             Object targetFieldValue = results.get(targetFieldName);
             ets.put(targetFieldName.getValue(),targetFieldValue);
+        }
+        return ets;
+    }
+
+    /**
+     * 返回所有标签的评估预测结果集(结果是浮点类型)
+     *
+     * @param args
+     * @return
+     */
+    public Map<String,Float> evaluateFloats(Map<FieldName, Number> args){
+        Evaluator modelEvaluator = this.getEvaluator();
+        Map<FieldName, ?> results = modelEvaluator.evaluate(args);
+        List<TargetField> targetFields = modelEvaluator.getTargetFields();
+        Map<String,Float> ets = new HashMap<>();
+        for (TargetField targetField : targetFields) {
+            FieldName targetFieldName = targetField.getName();
+            Object targetFieldValue = results.get(targetFieldName);
+            ets.put(targetFieldName.getValue(),this.convertValueToFloat(targetFieldValue));
         }
         return ets;
     }

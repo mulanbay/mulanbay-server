@@ -20,15 +20,36 @@ public class BudgetConsumeMEvaluateProcessor extends AbstractEvaluateProcessor {
     }
 
     /**
-     * 评估
+     * 创建参数
+     * @param month
+     * @param score
+     * @param dayIndex
      * @return
      */
-    public Float evaluate(int month,int score,int dayIndex){
+    private Map<FieldName, Number> createArgs(int month,int score,int dayIndex){
         Map<FieldName, Number> args = new HashMap<>();
         args.put(FieldName.create("month"), month);
         args.put(FieldName.create("score"), score);
         args.put(FieldName.create("dayIndex"), dayIndex);
+        return args;
+    }
+
+    /**
+     * 评估
+     * @return
+     */
+    public Float evaluate(int month,int score,int dayIndex){
+        Map<FieldName, Number> args = this.createArgs(month,score,dayIndex);
         return this.evaluateFloat(args,"rate");
+    }
+
+    /**
+     * 评估(多标签)
+     * @return
+     */
+    public Map<String,Float> evaluateMulti(int month,int score,int dayIndex){
+        Map<FieldName, Number> args = this.createArgs(month,score,dayIndex);
+        return this.evaluateFloats(args);
     }
 
 }
