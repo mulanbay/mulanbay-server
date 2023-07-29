@@ -207,7 +207,7 @@ public class BudgetService extends BaseHibernateDao {
                 args.add(userId);
             }
             if (bindFlow!=null&&true == bindFlow) {
-                hql += " and feeType is not null" ;
+                hql += " and goodsTypeId is not null" ;
             }
             if (StringUtil.isNotEmpty(name)) {
                 hql += " and name like '%" + name + "%' ";
