@@ -129,7 +129,7 @@ public class WxpayHandler extends BaseHandler {
         mc.setTouser(uw.getOpenId());
         mc.setTemplate_id(userMessageTemplateId);
         mc.addMessageData("title", title, color);
-        mc.addMessageData("content", "\n" + content);
+        mc.addMessageData("content", content);
         if (time != null) {
             mc.addMessageData("time", DateUtil.getFormatDate(time, DateUtil.Format24Datetime));
         }
