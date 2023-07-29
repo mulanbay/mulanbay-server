@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.persistent.query.PageRequest;
@@ -7,7 +8,6 @@ import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.ConsumeHandler;
 import cn.mulanbay.pms.handler.bean.GoodsLifetimeMatchBean;
-import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.GoodsLifetime;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
@@ -36,7 +36,7 @@ public class GoodsLifetimeController extends BaseController {
     private static Class<GoodsLifetime> beanClass = GoodsLifetime.class;
 
     @Autowired
-    AhaNLPHandler ahaNLPHandler;
+    NLPProcessor nlpProcessor;
 
     @Autowired
     ConsumeHandler consumeHandler;
@@ -152,7 +152,7 @@ public class GoodsLifetimeController extends BaseController {
     @RequestMapping(value = "/compareAndMath", method = RequestMethod.POST)
     public ResultBean compareAndMath(@RequestBody @Valid GoodsLifetimeCompareAndMatchRequest mr) {
         GoodsLifetime bean = baseService.getObject(beanClass,mr.getId());
-        float m = ahaNLPHandler.sentenceSimilarity(bean.getKeywords(),mr.getGoodsName());
+        float m = nlpProcessor.sentenceSimilarity(bean.getKeywords(),mr.getGoodsName());
         GoodsLifetimeMatchBean match = new GoodsLifetimeMatchBean();
         BeanCopy.copyProperties(bean,match);
         match.setMatch(m);

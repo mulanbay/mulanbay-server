@@ -1,12 +1,10 @@
-package cn.mulanbay.pms.handler.qa;
+package cn.mulanbay.ai.nlp.processor;
 
 import cn.mulanbay.business.handler.BaseHandler;
-import cn.mulanbay.pms.handler.ThreadPoolHandler;
 import com.hankcs.hanlp.seg.common.Term;
 import me.xiaosheng.chnlp.AHANLP;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -20,20 +18,17 @@ import java.util.UUID;
  * @see {https://github.com/jsksxs360/AHANLP}
  */
 @Component
-public class AhaNLPHandler extends BaseHandler {
+public class NLPProcessor extends BaseHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(AhaNLPHandler.class);
+    private static final Logger logger = LoggerFactory.getLogger(NLPProcessor.class);
 
-    @Value("${system.word2Vector.model.init}")
+    @Value("${system.word2Vector.model.init:false}")
     boolean modelInit;
 
-    @Value("${system.wordCloud.picPath}")
+    @Value("${system.wordCloud.picPath:}")
     String picPath;
 
-    @Autowired
-    ThreadPoolHandler threadPoolHandler;
-
-    public AhaNLPHandler() {
+    public NLPProcessor() {
         super("AHA自然语言处理");
     }
 
@@ -48,15 +43,12 @@ public class AhaNLPHandler extends BaseHandler {
      * 初始化Word2Vector训练后的模型文件，加载需要一点时间，所有可以预加载
      */
     private void initWord2VectorModel() {
-        threadPoolHandler.pushThread(new Runnable() {
-            @Override
-            public void run() {
-                logger.info("开始初始化 Word2Vector model...");
-                sentenceSimilarity("test", "test");
-                logger.info("初始化 Word2Vector model成功");
-            }
+        Thread thread = new Thread(() -> {
+            logger.info("开始初始化 Word2Vector model...");
+            sentenceSimilarity("test", "test");
+            logger.info("初始化 Word2Vector model成功");
         });
-
+        thread.start();
     }
 
     /**
@@ -135,6 +127,11 @@ public class AhaNLPHandler extends BaseHandler {
         return picPath;
     }
 
+    /**
+     * 生成词云图片路径
+     * 后期词云处理不再以NLP模块生成，修改为NLP分词，然后Echarts画词云
+     * @return
+     */
     private String generatePicPath() {
         String uuid = UUID.randomUUID().toString();
         String fullPicPath = picPath + "/" + uuid + ".png";

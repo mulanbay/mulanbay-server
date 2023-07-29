@@ -64,6 +64,14 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <!--自然语言处理 -->
+        <dependency>
+            <groupId>com.ahanlp</groupId>
+            <artifactId>ahanlp</artifactId>
+            <scope>system</scope>
+            <version>1.2</version>
+            <systemPath>${basedir}/src/main/lib/ahanlp-1.2.jar</systemPath>
+        </dependency>
     </dependencies>
 
 </project>

@@ -1,12 +1,12 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.*;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
-import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.LifeExperience;
 import cn.mulanbay.pms.persistent.domain.LifeExperienceDetail;
 import cn.mulanbay.pms.persistent.dto.*;
@@ -49,7 +49,7 @@ public class LifeExperienceController extends BaseController {
     LifeExperienceService lifeExperienceService;
 
     @Autowired
-    AhaNLPHandler ahaNLPHandler;
+    NLPProcessor nlpProcessor;
 
     private static Class<LifeExperience> beanClass = LifeExperience.class;
 

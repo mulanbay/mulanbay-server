@@ -1,11 +1,11 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.pms.common.ConfigKey;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
-import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.User;
 import cn.mulanbay.pms.persistent.domain.UserQa;
 import cn.mulanbay.pms.persistent.service.AuthService;
@@ -48,7 +48,7 @@ public class UserQaController extends BaseController {
     SystemConfigHandler systemConfigHandler;
 
     @Autowired
-    AhaNLPHandler ahaNLPHandler;
+    NLPProcessor nlpProcessor;
 
     /**
      * 获取列表数据
@@ -92,7 +92,7 @@ public class UserQaController extends BaseController {
         Integer num = systemConfigHandler.getIntegerConfig(ConfigKey.NLP_USERQA_REQUESTCONTENT_EKNUM);
         for(String req : reList){
             //先分词
-            List<String> keywords = ahaNLPHandler.extractKeyword(req,num);
+            List<String> keywords =  nlpProcessor.extractKeyword(req,num);
             for(String s : keywords){
                 Integer n = statData.get(s);
                 if(n==null){

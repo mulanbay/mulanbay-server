@@ -1,4 +1,4 @@
-package cn.mulanbay.pms.handler.qa;
+package cn.mulanbay.ai.nlp.processor;
 
 import me.xiaosheng.chnlp.Config;
 import org.slf4j.Logger;

@@ -1,7 +1,7 @@
 package cn.mulanbay.pms.handler;
 
+import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.business.handler.BaseHandler;
-import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.service.DietService;
 import cn.mulanbay.pms.web.bean.request.diet.DietVarietySearch;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class DietHandler extends BaseHandler {
     DietService dietService;
 
     @Autowired
-    AhaNLPHandler ahaNLPHandler;
+    NLPProcessor nlpProcessor;
 
     public DietHandler() {
         super("饮食处理器");
@@ -37,7 +37,7 @@ public class DietHandler extends BaseHandler {
      */
     public float getFoodsAvgSimilarity(DietVarietySearch sf) {
         List<String> foodsList = this.getFoodsList(sf);
-        return ahaNLPHandler.avgSentenceSimilarity(foodsList);
+        return nlpProcessor.avgSentenceSimilarity(foodsList);
     }
 
     private List<String> getFoodsList(DietVarietySearch sf) {

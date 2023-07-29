@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
@@ -9,7 +10,6 @@ import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.ConfigKey;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
-import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.UserOperationConfig;
 import cn.mulanbay.pms.persistent.service.UserBehaviorService;
 import cn.mulanbay.pms.util.TreeBeanUtil;
@@ -56,7 +56,7 @@ public class UserOperationConfigController extends BaseController {
     UserBehaviorService userBehaviorService;
 
     @Autowired
-    AhaNLPHandler ahaNLPHandler;
+    NLPProcessor nlpProcessor;
 
     @Autowired
     SystemConfigHandler systemConfigHandler;
@@ -236,7 +236,7 @@ public class UserOperationConfigController extends BaseController {
             List<UserOperationVo> operations = uo.getOperations();
             for (UserOperationVo op : operations) {
                 //先分词
-                List<String> list = ahaNLPHandler.extractKeyword(op.getTitle(),num);
+                List<String> list = nlpProcessor.extractKeyword(op.getTitle(),num);
                 for(String s : list){
                     //忽略分词后为词长度为1的
                     if(sf.getIgnoreShort()!=null&&sf.getIgnoreShort()){

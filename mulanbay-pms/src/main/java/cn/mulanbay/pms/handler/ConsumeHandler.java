@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.handler;
 
+import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.queue.LimitQueue;
@@ -10,7 +11,6 @@ import cn.mulanbay.persistent.service.BaseService;
 import cn.mulanbay.pms.common.CacheKey;
 import cn.mulanbay.pms.handler.bean.BuyRecordMatchBean;
 import cn.mulanbay.pms.handler.bean.GoodsLifetimeMatchBean;
-import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.BuyRecord;
 import cn.mulanbay.pms.persistent.domain.GoodsLifetime;
 import cn.mulanbay.pms.persistent.domain.GoodsType;
@@ -60,7 +60,7 @@ public class ConsumeHandler extends BaseHandler {
     CacheHandler cacheHandler;
 
     @Autowired
-    AhaNLPHandler ahaNLPHandler;
+    NLPProcessor nlpProcessor;
 
     public ConsumeHandler() {
         super("消费处理类");
@@ -102,7 +102,7 @@ public class ConsumeHandler extends BaseHandler {
         List<BuyRecordMatchBean> list  = this.getGoodsTypeList(userId);
         for(BuyRecordMatchBean br : list){
             String name = br.getCompareName();
-            float m = ahaNLPHandler.sentenceSimilarity(goodsName,name);
+            float m = nlpProcessor.sentenceSimilarity(goodsName,name);
             if(m>bean.getMatch()){
                 bean.setGoodsTypeId(br.getGoodsTypeId());
                 bean.setSubGoodsTypeId(br.getSubGoodsTypeId());
@@ -133,7 +133,7 @@ public class ConsumeHandler extends BaseHandler {
             return bean;
         }else{
             for(BuyRecord br : queue.getList()){
-                float m = ahaNLPHandler.sentenceSimilarity(goodsName,br.getGoodsName());
+                float m = nlpProcessor.sentenceSimilarity(goodsName,br.getGoodsName());
                 if(m>bean.getMatch()){
                     bean.setGoodsTypeId(br.getGoodsType().getId());
                     if(br.getSubGoodsType()!=null){
@@ -220,7 +220,7 @@ public class ConsumeHandler extends BaseHandler {
     public GoodsLifetimeMatchBean matchLifetime(String goodsName,List<GoodsLifetime> list,boolean skipMin){
         GoodsLifetimeMatchBean bean = new GoodsLifetimeMatchBean();
         for(GoodsLifetime lt : list){
-            float m = ahaNLPHandler.sentenceSimilarity(goodsName,lt.getKeywords());
+            float m = nlpProcessor.sentenceSimilarity(goodsName,lt.getKeywords());
             if(m>bean.getMatch()){
                 BeanCopy.copyProperties(lt,bean);
                 bean.setMatch(m);

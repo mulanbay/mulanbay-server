@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.handler.qa;
 
+import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.util.BeanCopy;
@@ -50,7 +51,7 @@ public class QaHandler extends BaseHandler {
     BaseService baseService;
 
     @Autowired
-    AhaNLPHandler ahaNLPHandler;
+    NLPProcessor nlpProcessor;
 
     @Autowired
     CacheHandler cacheHandler;
@@ -263,7 +264,7 @@ public class QaHandler extends BaseHandler {
         //匹配度
         float v = 0;
         for (QaConfigBean qa : qas) {
-            float n = ahaNLPHandler.sentenceSimilarity(content, qa.getKeywords());
+            float n = nlpProcessor.sentenceSimilarity(content, qa.getKeywords());
             //logger.debug(content+" 和 "+qa.getKeywords()+" 的匹配度:"+n+",QAId:"+qa.getId());
             if (n > v) {
                 v = n;

@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.util.*;
 import cn.mulanbay.persistent.query.PageRequest;
@@ -11,7 +12,6 @@ import cn.mulanbay.pms.handler.BudgetHandler;
 import cn.mulanbay.pms.handler.ConsumeHandler;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
 import cn.mulanbay.pms.handler.bean.BuyRecordMatchBean;
-import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.*;
 import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.*;
@@ -70,7 +70,7 @@ public class BuyRecordController extends BaseController {
     IncomeService incomeService;
 
     @Autowired
-    AhaNLPHandler ahaNLPHandler;
+    NLPProcessor nlpProcessor;
 
     @Autowired
     ConsumeHandler consumeHandler;
@@ -1028,7 +1028,7 @@ public class BuyRecordController extends BaseController {
     @RequestMapping(value = "/getGoodsNameAvgSimilarity", method = RequestMethod.GET)
     public ResultBean getGoodsNameAvgSimilarity(@Valid BuyRecordVarietyStatSearch sf) {
         List<String> list = buyRecordService.getGoodsNameList(sf);
-        return callback(ahaNLPHandler.avgSentenceSimilarity(list));
+        return callback(nlpProcessor.avgSentenceSimilarity(list));
     }
 
     /**
@@ -1045,7 +1045,7 @@ public class BuyRecordController extends BaseController {
         for (String d : list) {
             if("goodsName".equals(field)||"skuInfo".equals(field)){
                 //先分词
-                List<String> keywords = ahaNLPHandler.extractKeyword(d,num);
+                List<String> keywords = nlpProcessor.extractKeyword(d,num);
                 for(String s : keywords){
                     //忽略分词后为词长度为1的
                     if(sf.getIgnoreShort()!=null&&sf.getIgnoreShort()){
@@ -1107,7 +1107,7 @@ public class BuyRecordController extends BaseController {
                 bean = new BuyRecordMatchBean();
             }
             Integer num = systemConfigHandler.getIntegerConfig(ConfigKey.NLP_BUYRECORD_GOODSNAME_EKNUM);
-            List<String> keywords = ahaNLPHandler.extractKeyword(mr.getGoodsName(),num);
+            List<String> keywords = nlpProcessor.extractKeyword(mr.getGoodsName(),num);
             bean.setKeywords(keywords);
             if(bean.getCompareId()==null){
                 //说明没有匹配,设置默认的配置

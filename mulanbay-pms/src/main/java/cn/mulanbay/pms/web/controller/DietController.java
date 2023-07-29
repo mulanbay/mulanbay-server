@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.DateUtil;
@@ -10,7 +11,6 @@ import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.handler.DietHandler;
 import cn.mulanbay.pms.handler.SystemConfigHandler;
-import cn.mulanbay.pms.handler.qa.AhaNLPHandler;
 import cn.mulanbay.pms.persistent.domain.Diet;
 import cn.mulanbay.pms.persistent.domain.DietCategory;
 import cn.mulanbay.pms.persistent.domain.DietVarietyLog;
@@ -64,7 +64,7 @@ public class DietController extends BaseController {
     DietHandler dietHandler;
 
     @Autowired
-    AhaNLPHandler ahaNLPHandler;
+    NLPProcessor nlpProcessor;
 
     @Autowired
     SystemConfigHandler systemConfigHandler;
