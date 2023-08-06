@@ -68,6 +68,8 @@ public class WxpayHandler extends BaseHandler {
     @Value("${wx.oa.qrUrl}")
     private String qrUrl;
 
+    @Value("${system.mobile.baseUrl}")
+    private String mobileBaseUrl;
     @Autowired
     CacheHandler cacheHandler;
 
@@ -109,7 +111,18 @@ public class WxpayHandler extends BaseHandler {
         return uw;
     }
 
-    public boolean sendTemplateMessage(Long userId, String title, String content, Date time, LogLevel level, String url) {
+    /**
+     *
+     * @param id 微信不支持过长的消息内容显示，因此公众号消息先跳转到消息详情页
+     * @param userId
+     * @param title
+     * @param content
+     * @param time
+     * @param level
+     * @param url
+     * @return
+     */
+    public boolean sendTemplateMessage(Long id,Long userId, String title, String content, Date time, LogLevel level, String url) {
         UserWxpayInfo uw = this.getWxpayInfo(userId);
         if (uw == null) {
             logger.warn("无法获取到userId=" + userId + "的用户微信信息");
@@ -133,7 +146,13 @@ public class WxpayHandler extends BaseHandler {
         if (time != null) {
             mc.addMessageData("time", DateUtil.getFormatDate(time, DateUtil.Format24Datetime));
         }
-        mc.setUrl(getFullUrl(url));
+        String mcUrl =null;
+        if(id!=null){
+            mcUrl = mobileBaseUrl+"/user/message/detail/"+id;
+        }else{
+            mcUrl = this.getFullUrl(url);
+        }
+        mc.setUrl(mcUrl);
         HttpResult hr = this.sendTemplateMessage(mc);
         //logger.debug("发送模板消息,mc:"+JsonUtil.beanToJson(mc));
         //logger.debug("发送模板消息,hr:"+JsonUtil.beanToJson(hr));
@@ -147,12 +166,12 @@ public class WxpayHandler extends BaseHandler {
 
     private String getFullUrl(String url) {
         if (StringUtil.isEmpty(url)) {
-            url = systemConfigHandler.getStringConfig("system.mobile.mainUrl");
+            url = mobileBaseUrl;
         }
         if (url.startsWith("http")) {
             return url;
         } else {
-            return systemConfigHandler.getStringConfig("system.mobile.baseUrl") + url;
+            return mobileBaseUrl + url;
         }
     }
 

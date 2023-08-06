@@ -234,7 +234,7 @@ public class MainController extends BaseController {
             if (user.getSecAuthType() == AuthType.EMAIL) {
                 res = pmsMessageSendHandler.sendMail(title, content, user.getEmail());
             } else if (user.getSecAuthType() == AuthType.WECHAT) {
-                res = wxpayHandler.sendTemplateMessage(user.getId(), title, content, new Date(), LogLevel.NORMAL, null);
+                res = wxpayHandler.sendTemplateMessage(null,user.getId(), title, content, new Date(), LogLevel.NORMAL, null);
             }
             serverAuthCode = tokenHandler.encodePassword(code);
         }

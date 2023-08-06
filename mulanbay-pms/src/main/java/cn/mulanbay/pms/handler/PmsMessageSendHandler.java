@@ -193,7 +193,7 @@ public class PmsMessageSendHandler extends BaseHandler {
         }
         boolean b2 = true;
         if (userSetting.getSendWxMessage()) {
-            b2 = this.sendWxMessage(message.getUserId(), message.getTitle(), message.getContent(), message.getCreatedTime(), message.getLogLevel(), message.getUrl());
+            b2 = this.sendWxMessage(message.getId(),message.getUserId(), message.getTitle(), message.getContent(), message.getCreatedTime(), message.getLogLevel(), message.getUrl());
         }
         //只要有一个发送成功算成功
         return b1 || b2;
@@ -259,11 +259,11 @@ public class PmsMessageSendHandler extends BaseHandler {
      * @param level
      * @return
      */
-    public boolean sendWxMessage(Long userId, String title, String content, Date time, LogLevel level, String url) {
+    public boolean sendWxMessage(Long id,Long userId, String title, String content, Date time, LogLevel level, String url) {
         if(StringUtil.isNotEmpty(url)&& !url.startsWith("http")){
             url = mobileBaseUrl+url;
         }
-        return wxpayHandler.sendTemplateMessage(userId, title, content, time, level, url);
+        return wxpayHandler.sendTemplateMessage(id,userId, title, content, time, level, url);
 
     }
 

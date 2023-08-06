@@ -130,7 +130,7 @@ public class UserMessageController extends BaseController {
             Integer code = um.getCode();
             if (code == null) {
                 //直接发送
-                boolean b = wxpayHandler.sendTemplateMessage(user.getId(), um.getTitle(), um.getContent(), um.getNotifyTime(), LogLevel.NORMAL, null);
+                boolean b = wxpayHandler.sendTemplateMessage(null,user.getId(), um.getTitle(), um.getContent(), um.getNotifyTime(), LogLevel.NORMAL, null);
                 return callback(b);
             } else {
                 if (code == 0) {

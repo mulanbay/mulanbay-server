@@ -22,32 +22,32 @@ public class UserCalendarListSearch extends QueryBuilder implements BindUser, Fu
     /**
      * 是否包含已经完成的
      */
-    private Boolean needFinished;
+    private Boolean needFinished = false;
 
     /**
      * 是否包含周期性的
      */
-    private Boolean needPeriod;
+    private Boolean needPeriod = true;
 
     /**
      * 是否包含周期性日历
      */
-    private Boolean needBudget;
+    private Boolean needBudget = false;
 
     /**
      * 是否包含用药日历
      */
-    private Boolean needTreatDrug;
+    private Boolean needTreatDrug = true;
 
     /**
      * 是否包含消费
      */
-    private Boolean needBuyRecord;
+    private Boolean needBuyRecord = false;
 
     /**
      * 是否包含日志
      */
-    private Boolean needBandLog;
+    private Boolean needBandLog = false;
 
     private UserCalendarSource sourceType;
 
