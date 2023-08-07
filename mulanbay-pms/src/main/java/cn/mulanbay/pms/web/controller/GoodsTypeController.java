@@ -84,35 +84,39 @@ public class GoodsTypeController extends BaseController {
      */
     @RequestMapping(value = "/getData", method = RequestMethod.GET)
     public ResultBean getData(GoodsTypeSearch sf) {
-        //先获取第一级目录
-        sf.setPid(0);
         PageResult<GoodsType> pageResult = getGoodsTypeResult(sf);
-        List<GoodsTypeVo> parentGoodsType = new ArrayList<>();
-        for (GoodsType gt : pageResult.getBeanList()) {
-            GoodsTypeVo response = new GoodsTypeVo();
-            BeanCopy.copyProperties(gt, response);
-            response.setParentName(gt.getParentName());
-            //获取子商品类型
-            sf.setPid(gt.getId());
-            PageResult<GoodsType> childrenResult = getGoodsTypeResult(sf);
-            if (childrenResult.getMaxRow() > 0) {
-                List<GoodsTypeVo> children = new ArrayList<>();
-                for (GoodsType cc : childrenResult.getBeanList()) {
-                    GoodsTypeVo child = new GoodsTypeVo();
-                    BeanCopy.copyProperties(cc, child);
-                    child.setParentId(cc.getParentId());
-                    child.setParentName(cc.getParentName());
-                    children.add(child);
-                }
-                response.setChildren(children);
-            }
-            parentGoodsType.add(response);
-        }
+        //构造树
+        List<GoodsTypeVo> voList = this.getChildren(0,pageResult.getBeanList());
         PageResult<GoodsTypeVo> result = new PageResult();
-        result.setBeanList(parentGoodsType);
+        result.setBeanList(voList);
         result.setMaxRow(pageResult.getMaxRow());
         result.setPageSize(pageResult.getPageSize());
         return callbackDataGrid(result);
+    }
+
+    /**
+     * 获取子列表
+     * @param pid
+     * @param list
+     * @return
+     */
+    private List<GoodsTypeVo> getChildren(int pid,List<GoodsType> list){
+        List<GoodsTypeVo> children = new ArrayList<>();
+        for(GoodsType cc : list){
+            int myPid = cc.getParentId().intValue();
+            if(myPid==pid){
+                GoodsTypeVo child = new GoodsTypeVo();
+                BeanCopy.copyProperties(cc, child);
+                child.setParentId(cc.getParentId());
+                child.setParentName(cc.getParentName());
+                //寻找下一个子列表
+                List<GoodsTypeVo> c2 = getChildren(cc.getId(), list);
+                child.setChildren(c2);
+                //加入到结果集
+                children.add(child);
+            }
+        }
+        return children;
     }
 
     /**
