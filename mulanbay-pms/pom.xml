@@ -279,22 +279,75 @@
             <artifactId>jjwt</artifactId>
             <version>${jwt.version}</version>
         </dependency>
-        <!--机器学习jpmml -->
+        <!--机器学习start -->
+        <!--JPMML处理-pmml start -->
         <dependency>
             <groupId>org.jpmml</groupId>
             <artifactId>pmml-evaluator</artifactId>
-            <version>${jpmml.version}</version>
+            <version>1.6.4</version>
         </dependency>
         <dependency>
             <groupId>org.jpmml</groupId>
             <artifactId>pmml-evaluator-extension</artifactId>
-            <version>${jpmml.version}</version>
+            <version>1.5.16</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jpmml</groupId>
+                    <artifactId>pmml-evaluator</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jpmml</groupId>
             <artifactId>pmml-model</artifactId>
-            <version>${jpmml.version}</version>
+            <version>1.6.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.xml.bind</groupId>
+                    <artifactId>jakarta.xml.bind-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <!--JPMML处理-pmml end -->
+        <!--JPMML处理-xml start -->
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-core</artifactId>
+            <version>3.0.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>jakarta.xml.bind</groupId>
+                    <artifactId>jakarta.xml.bind-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>3.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.activation</groupId>
+            <artifactId>jakarta.activation-api</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.xml.bind</groupId>
+            <artifactId>jaxb-impl</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <!--JPMML处理-xml end -->
+        <!--机器学习end -->
         <!--自然语言处理 -->
         <dependency>
             <groupId>com.ahanlp</groupId>

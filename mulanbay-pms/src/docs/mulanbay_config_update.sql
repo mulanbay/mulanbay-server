@@ -1459,6 +1459,6 @@ INSERT INTO `role_function` (`id`, `role_id`, `function_id`) VALUES (6738,1,1129
 truncate table `model_config`;
 
 INSERT INTO `model_config` (`id`, `name`, `code`, `file_name`, `du`, `algorithm`, `status`, `remark`, `created_time`, `last_modify_time`) VALUES (1,''月度预算与消费比例预测'',''budgetConsume.m'',''RandomTreeRegressor_budget_consume_m.pmml'',0,3,0,NULL,''2023-06-25 10:20:22'',''2023-06-25 11:03:28'');
-INSERT INTO `model_config` (`id`, `name`, `code`, `file_name`, `du`, `algorithm`, `status`, `remark`, `created_time`, `last_modify_time`) VALUES (2,''年度预算与消费比例预测'',''budgetConsume.y'',''LinearRegressor_budget_consume_y.pmml'',0,4,1,NULL,''2023-06-25 10:47:52'',''2023-06-27 20:51:11'');
-INSERT INTO `model_config` (`id`, `name`, `code`, `file_name`, `du`, `algorithm`, `status`, `remark`, `created_time`, `last_modify_time`) VALUES (3,''月度预算与消费比例预测'',''budgetConsume.m'',''LinearRegressor_budget_consume_m.pmml'',0,4,1,NULL,''2023-06-25 10:50:22'',''2023-06-27 20:50:24'');
+INSERT INTO `model_config` (`id`, `name`, `code`, `file_name`, `du`, `algorithm`, `status`, `remark`, `created_time`, `last_modify_time`) VALUES (2,''年度预算与消费比例预测'',''budgetConsume.y'',''LinearRegressor_budget_consume_y_m.pmml'',0,4,1,NULL,''2023-06-25 10:47:52'',''2023-06-27 20:51:11'');
+INSERT INTO `model_config` (`id`, `name`, `code`, `file_name`, `du`, `algorithm`, `status`, `remark`, `created_time`, `last_modify_time`) VALUES (3,''月度预算与消费比例预测'',''budgetConsume.m'',''LinearRegressor_budget_consume_m_m.pmml'',0,4,1,NULL,''2023-06-25 10:50:22'',''2023-06-27 20:50:24'');
 

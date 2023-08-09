@@ -1585,7 +1585,7 @@ CREATE TABLE `model_config` (
 
 LOCK TABLES `model_config` WRITE;
 /*!40000 ALTER TABLE `model_config` DISABLE KEYS */;
-INSERT INTO `model_config` VALUES (1,'月度预算与消费比例预测','budgetConsume.m','RandomTreeRegressor_budget_consume_m.pmml',0,3,0,NULL,'2023-06-25 10:20:22','2023-06-25 11:03:28'),(2,'年度预算与消费比例预测','budgetConsume.y','LinearRegressor_budget_consume_y.pmml',0,4,1,NULL,'2023-06-25 10:47:52','2023-06-27 20:51:11'),(3,'月度预算与消费比例预测','budgetConsume.m','LinearRegressor_budget_consume_m.pmml',0,4,1,NULL,'2023-06-25 10:50:22','2023-06-27 20:50:24');
+INSERT INTO `model_config` VALUES (1,'月度预算与消费比例预测','budgetConsume.m','RandomTreeRegressor_budget_consume_m.pmml',0,3,0,NULL,'2023-06-25 10:20:22','2023-06-25 11:03:28'),(2,'年度预算与消费比例预测','budgetConsume.y','LinearRegressor_budget_consume_y_m.pmml',0,4,1,NULL,'2023-06-25 10:47:52','2023-06-27 20:51:11'),(3,'月度预算与消费比例预测','budgetConsume.m','LinearRegressor_budget_consume_m_m.pmml',0,4,1,NULL,'2023-06-25 10:50:22','2023-06-27 20:50:24');
 /*!40000 ALTER TABLE `model_config` ENABLE KEYS */;
 UNLOCK TABLES;
 

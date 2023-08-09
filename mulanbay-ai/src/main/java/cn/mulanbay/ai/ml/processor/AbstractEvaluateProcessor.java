@@ -1,7 +1,6 @@
 package cn.mulanbay.ai.ml.processor;
 
 import cn.mulanbay.business.handler.BaseHandler;
-import org.dmg.pmml.FieldName;
 import org.jpmml.evaluator.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +63,7 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
      * @param args
      * @return
      */
-    public Float evaluateFloat(Map<FieldName, Number> args,String label){
+    public Float evaluateFloat(Map<String, Number> args,String label){
         Object targetValue = this.evaluate(args,label);
         return this.convertValueToFloat(targetValue);
     }
@@ -74,10 +73,10 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
      * @param args
      * @return
      */
-    public Object evaluate(Map<FieldName, Number> args,String label){
+    public Object evaluate(Map<String, Number> args,String label){
         Evaluator modelEvaluator = this.getEvaluator();
-        Map<FieldName, ?> results = modelEvaluator.evaluate(args);
-        Object rateFieldValue = results.get(FieldName.create(label));
+        Map<String, ?> results = modelEvaluator.evaluate(args);
+        Object rateFieldValue = results.get(label);
         return rateFieldValue;
     }
 
@@ -87,15 +86,15 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
      * @param args
      * @return
      */
-    public Map<String,Object> evaluate(Map<FieldName, Number> args){
+    public Map<String,Object> evaluate(Map<String, Number> args){
         Evaluator modelEvaluator = this.getEvaluator();
-        Map<FieldName, ?> results = modelEvaluator.evaluate(args);
+        Map<String, ?> results = modelEvaluator.evaluate(args);
         List<TargetField> targetFields = modelEvaluator.getTargetFields();
         Map<String,Object> ets = new HashMap<>();
         for (TargetField targetField : targetFields) {
-            FieldName targetFieldName = targetField.getName();
+            String targetFieldName = targetField.getName();
             Object targetFieldValue = results.get(targetFieldName);
-            ets.put(targetFieldName.getValue(),targetFieldValue);
+            ets.put(targetFieldName,targetFieldValue);
         }
         return ets;
     }
@@ -106,15 +105,15 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
      * @param args
      * @return
      */
-    public Map<String,Float> evaluateFloats(Map<FieldName, Number> args){
+    public Map<String,Float> evaluateFloats(Map<String, Number> args){
         Evaluator modelEvaluator = this.getEvaluator();
-        Map<FieldName, ?> results = modelEvaluator.evaluate(args);
+        Map<String, ?> results = modelEvaluator.evaluate(args);
         List<TargetField> targetFields = modelEvaluator.getTargetFields();
         Map<String,Float> ets = new HashMap<>();
         for (TargetField targetField : targetFields) {
-            FieldName targetFieldName = targetField.getName();
+            String targetFieldName = targetField.getName();
             Object targetFieldValue = results.get(targetFieldName);
-            ets.put(targetFieldName.getValue(),this.convertValueToFloat(targetFieldValue));
+            ets.put(targetFieldName,this.convertValueToFloat(targetFieldValue));
         }
         return ets;
     }
@@ -128,8 +127,8 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
      * @param fieldName
      * @return
      */
-    protected ValueMap<String,Double> get(Map<FieldName, ?> results,String fieldName){
-        ProbabilityDistribution speciesField = (ProbabilityDistribution) results.get(FieldName.create(fieldName));
+    protected ValueMap<String,Double> get(Map<String, ?> results,String fieldName){
+        ProbabilityDistribution speciesField = (ProbabilityDistribution) results.get(fieldName);
         if(speciesField!=null){
             return speciesField.getValues();
         }

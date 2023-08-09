@@ -1,6 +1,5 @@
 package cn.mulanbay.ai.ml.processor;
 
-import org.dmg.pmml.FieldName;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -25,10 +24,10 @@ public class BudgetConsumeYEvaluateProcessor extends AbstractEvaluateProcessor {
      * @param dayIndex
      * @return
      */
-    private Map<FieldName, Number> createArgs(int score,int dayIndex){
-        Map<FieldName, Number> args = new HashMap<>();
-        args.put(FieldName.create("score"), score);
-        args.put(FieldName.create("dayIndex"), dayIndex);
+    private Map<String, Number> createArgs(int score,int dayIndex){
+        Map<String, Number> args = new HashMap<>();
+        args.put("score", score);
+        args.put("dayIndex", dayIndex);
         return args;
     }
     /**
@@ -36,7 +35,7 @@ public class BudgetConsumeYEvaluateProcessor extends AbstractEvaluateProcessor {
      * @return
      */
     public Float evaluate(int score,int dayIndex){
-        Map<FieldName, Number> args = this.createArgs(score,dayIndex);
+        Map<String, Number> args = this.createArgs(score,dayIndex);
         return this.evaluateFloat(args,"rate");
     }
 
@@ -45,7 +44,7 @@ public class BudgetConsumeYEvaluateProcessor extends AbstractEvaluateProcessor {
      * @return
      */
     public Map<String,Float> evaluateMulti(int score,int dayIndex){
-        Map<FieldName, Number> args = this.createArgs(score,dayIndex);
+        Map<String, Number> args = this.createArgs(score,dayIndex);
         return this.evaluateFloats(args);
     }
 }

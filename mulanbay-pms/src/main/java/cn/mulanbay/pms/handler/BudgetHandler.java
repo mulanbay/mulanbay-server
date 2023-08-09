@@ -4,6 +4,7 @@ import cn.mulanbay.ai.ml.processor.BudgetConsumeMEvaluateProcessor;
 import cn.mulanbay.ai.ml.processor.BudgetConsumeYEvaluateProcessor;
 import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.DateUtil;
+import cn.mulanbay.pms.common.MLConstant;
 import cn.mulanbay.pms.handler.bean.BudgetAmountBean;
 import cn.mulanbay.pms.handler.bean.ConsumeBean;
 import cn.mulanbay.pms.persistent.domain.Budget;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 预算处理
@@ -382,12 +384,18 @@ public class BudgetHandler extends BaseHandler {
      * @param dayIndex
      * @return
      */
-    public Float predictMonthRate(Long userId,int month,Integer score,int dayIndex){
+    public Float predictMonthRate(Long userId,int month,Integer score,int dayIndex,Boolean needOutBurst){
         try {
             if(score==null){
                 score = userScoreHandler.getLatestScore(userId);
             }
-            Float v = budgetConsumeMEvaluateProcessor.evaluate(month,score,dayIndex);
+            Map<String,Float> pm = budgetConsumeMEvaluateProcessor.evaluateMulti(month,score,dayIndex);
+            Float v = null;
+            if(needOutBurst){
+                v = pm.get(MLConstant.BUDGET_CONSUME_RATE_LABEL_OB);
+            }else{
+                v = pm.get(MLConstant.BUDGET_CONSUME_RATE_LABEL);
+            }
             return v;
         } catch (Exception e) {
             logger.error("预测月度消费比例异常",e);
@@ -401,12 +409,18 @@ public class BudgetHandler extends BaseHandler {
      * @param dayIndex
      * @return
      */
-    public Float predictYearRate(Long userId,Integer score,int dayIndex){
+    public Float predictYearRate(Long userId,Integer score,int dayIndex,Boolean needOutBurst){
         try {
             if(score==null){
                 score = userScoreHandler.getLatestScore(userId);
             }
-            Float v = budgetConsumeYEvaluateProcessor.evaluate(score,dayIndex);
+            Map<String,Float> pm = budgetConsumeYEvaluateProcessor.evaluateMulti(score,dayIndex);
+            Float v = null;
+            if(needOutBurst){
+                v = pm.get(MLConstant.BUDGET_CONSUME_RATE_LABEL_OB);
+            }else{
+                v = pm.get(MLConstant.BUDGET_CONSUME_RATE_LABEL);
+            }
             return v;
         } catch (Exception e) {
             logger.error("预测年度消费比例异常",e);

@@ -415,6 +415,7 @@ public class BudgetController extends BaseController {
     public ResultBean timelineStat(@Valid BudgetTimelineStatSearch sf) {
         Date bussDay = sf.getBussDay();
         Long userId = sf.getUserId();
+        Boolean needOutBurst = sf.getNeedOutBurst();
         String bussKey = budgetHandler.createBussKey(sf.getPeriod(), bussDay);
         List<BudgetTimeline> list = budgetService.selectBudgetTimelineList(bussKey, userId);
         String dateFormat = "yyyy-MM";
@@ -483,7 +484,7 @@ public class BudgetController extends BaseController {
                 timeData.getData().add(null);
             }else{
                 double consumeAmount = timeline.getNcAmount() + timeline.getBcAmount();
-                if(true==sf.getNeedOutBurst()){
+                if(true==needOutBurst){
                     consumeAmount += timeline.getBcAmount() ;
                 }
                 if (sf.getStatType() == BudgetTimelineStatSearch.StatType.RATE) {
@@ -504,9 +505,9 @@ public class BudgetController extends BaseController {
                     score = scoreMap.get("0");
                 }
                 if (sf.getPeriod() == PeriodType.MONTHLY) {
-                    pv = budgetHandler.predictMonthRate(userId,month,score,i);
+                    pv = budgetHandler.predictMonthRate(userId,month,score,i,needOutBurst);
                 }else{
-                    pv = budgetHandler.predictYearRate(userId,score,i);
+                    pv = budgetHandler.predictYearRate(userId,score,i,needOutBurst);
                 }
                 if (sf.getStatType() == BudgetTimelineStatSearch.StatType.RATE){
                     predictData.getData().add(NumberUtil.getDoubleValue(pv*100,0));

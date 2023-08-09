@@ -15,21 +15,22 @@ public class SimulateBudgetConsumeMData {
     public static void main(String[] args){
         //第一步：设置输出的文件路径
         //如果该目录下不存在该文件，则文件会被创建到指定目录下。如果该目录有同名文件，那么该文件将被覆盖。
-        File writeFile = new File("/**/mulanbay-sklearn/datasets/budget_consume_m.csv");
+        File writeFile = new File("/**/mulanbay-sklearn/datasets/budget_consume_m_m.csv");
 
         try{
             //第二步：通过BufferedReader类创建一个使用默认大小输出缓冲区的缓冲字符输出流
             BufferedWriter writeText = new BufferedWriter(new FileWriter(writeFile));
 
             //写入标题
-            writeText.write("month,score,dayIndex,rate");
+            writeText.write("month,score,dayIndex,rate1,rate2");
             for(int month = 1;month<=12;month++){
                 for(int score = 0;score<=100;score++){
                     for(int dayIndex = 1;dayIndex<=31;dayIndex++){
-                        double rate = dayIndex / 31.0 + Math.random()*0.1;
+                        double rate1 = dayIndex / 31.0 + Math.random()*0.1;
+                        double rate2 = dayIndex / 31.0 + Math.random()*0.12;
                         writeText.newLine();    //换行
                         //调用write的方法将字符串写到流中
-                        writeText.write(month+","+score+","+dayIndex+","+rate);
+                        writeText.write(month+","+score+","+dayIndex+","+rate1+","+rate2);
                         System.out.println("写入一行");
                     }
                 }

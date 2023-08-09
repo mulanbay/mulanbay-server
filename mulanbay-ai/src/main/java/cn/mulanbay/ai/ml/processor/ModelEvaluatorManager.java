@@ -7,7 +7,6 @@ import cn.mulanbay.common.util.StringUtil;
 import org.dmg.pmml.PMML;
 import org.jpmml.evaluator.Evaluator;
 import org.jpmml.evaluator.ModelEvaluatorBuilder;
-import org.jpmml.evaluator.ModelEvaluatorFactory;
 import org.jpmml.model.PMMLUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +38,9 @@ public class ModelEvaluatorManager {
     @Value("${ml.pmml.modelPath}")
     protected String modelPath;
 
+    /**
+     * 模型文件处理器
+     */
     @Autowired(required = false)
     ModelHandle modelHandle;
 
@@ -52,16 +54,16 @@ public class ModelEvaluatorManager {
                 logger.warn("modulePath:{},moduleFile:{}",folder,moduleFile);
                 return null;
             }
+            logger.debug("init Evaluator with moduleFile:{}",moduleFile);
             FileInputStream inputStream = new FileInputStream(folder+"/"+moduleFile);
             PMML pmml = PMMLUtil.unmarshal(inputStream);
-            ModelEvaluatorBuilder modelEvaluatorBuilder = new ModelEvaluatorBuilder(pmml);
-            ModelEvaluatorFactory modelEvaluatorFactory = ModelEvaluatorFactory.newInstance();
-            modelEvaluatorBuilder.setModelEvaluatorFactory(modelEvaluatorFactory);
-            Evaluator modelEvaluator = modelEvaluatorBuilder.build();
+            Evaluator modelEvaluator = new ModelEvaluatorBuilder(pmml)
+                    .build();
             modelEvaluator.verify();
             logger.info(moduleFile+"模型加载成功");
             return modelEvaluator;
         } catch (Exception e) {
+            e.printStackTrace();
             logger.error("加载模型文件"+moduleFile+"异常",e);
         }
         return null;
