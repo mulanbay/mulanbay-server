@@ -20,6 +20,11 @@ public class PlanReportTimelineStatSearch implements BindUser {
 
     private DateGroupType dateGroupType;
 
+    /**
+     * 是否要预测
+     */
+    private Boolean predict = false;
+
     public Integer getYear() {
         return year;
     }
@@ -60,5 +65,13 @@ public class PlanReportTimelineStatSearch implements BindUser {
 
     public void setDateGroupType(DateGroupType dateGroupType) {
         this.dateGroupType = dateGroupType;
+    }
+
+    public Boolean getPredict() {
+        return predict;
+    }
+
+    public void setPredict(Boolean predict) {
+        this.predict = predict;
     }
 }

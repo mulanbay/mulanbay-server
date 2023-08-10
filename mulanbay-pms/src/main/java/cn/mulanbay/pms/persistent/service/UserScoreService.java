@@ -90,6 +90,23 @@ public class UserScoreService extends BaseHibernateDao {
     }
 
     /**
+     * 获取用户最新的评分
+     *
+     * @param userId
+     * @param date
+     * @return
+     */
+    public UserScore getScore(Long userId,Date date) {
+        try {
+            String hql = "from UserScore where userId=?0 and endTime<=?1 order by endTime desc";
+            return (UserScore) this.getEntityForOne(hql, userId,date);
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_ERROR,
+                    "获取用户最新的评分异常", e);
+        }
+    }
+
+    /**
      * 获取用户评分列表
      *
      * @param userId

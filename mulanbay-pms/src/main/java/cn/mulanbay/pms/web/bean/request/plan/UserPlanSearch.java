@@ -34,6 +34,11 @@ public class UserPlanSearch extends PageSearch implements BindUser {
 
     private Boolean statNow;
 
+    /**
+     * 是否要预测
+     */
+    private Boolean predict = false;
+
     private PlanReportDataStatFilterType filterType;
 
     public Long getUserPlanId() {
@@ -108,5 +113,13 @@ public class UserPlanSearch extends PageSearch implements BindUser {
 
     public void setStatNow(Boolean statNow) {
         this.statNow = statNow;
+    }
+
+    public Boolean getPredict() {
+        return predict;
+    }
+
+    public void setPredict(Boolean predict) {
+        this.predict = predict;
     }
 }

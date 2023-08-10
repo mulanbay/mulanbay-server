@@ -9,8 +9,11 @@ import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
+import cn.mulanbay.pms.common.MLConstant;
 import cn.mulanbay.pms.common.PmsErrorCode;
+import cn.mulanbay.pms.handler.ReportHandler;
 import cn.mulanbay.pms.handler.ThreadPoolHandler;
+import cn.mulanbay.pms.handler.UserScoreHandler;
 import cn.mulanbay.pms.persistent.domain.PlanReport;
 import cn.mulanbay.pms.persistent.domain.PlanReportTimeline;
 import cn.mulanbay.pms.persistent.domain.UserPlan;
@@ -29,6 +32,7 @@ import cn.mulanbay.pms.web.bean.request.plan.*;
 import cn.mulanbay.pms.web.bean.request.report.PlanReportReStatTimelineRequest;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
 import cn.mulanbay.pms.web.bean.response.chart.*;
+import cn.mulanbay.pms.web.bean.response.plan.PlanReportPredictVo;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,9 +42,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 计划执行报告
@@ -59,6 +61,12 @@ public class PlanReportController extends BaseController {
 
     @Autowired
     ThreadPoolHandler threadPoolHandler;
+
+    @Autowired
+    UserScoreHandler userScoreHandler;
+
+    @Autowired
+    ReportHandler reportHandler;
 
     /**
      * 计划报告树
@@ -92,7 +100,51 @@ public class PlanReportController extends BaseController {
      */
     @RequestMapping(value = "/getData", method = RequestMethod.GET)
     public ResultBean getData(PlanReportSearch sf) {
-        return callbackDataGrid(getPlanReportData(sf));
+        PageResult<PlanReport> pr = this.getPlanReportData(sf);
+        Boolean predict = sf.getPredict();
+        if(predict){
+            List<PlanReportPredictVo> voList = this.predictPlanReport(pr.getBeanList(),sf.getUserId());
+            PageResult<PlanReportPredictVo> result = new PageResult<>();
+            result.setBeanList(voList);
+            result.setMaxRow(pr.getMaxRow());
+            result.setPageSize(pr.getPageSize());
+            return callbackDataGrid(result);
+        }else{
+            return callbackDataGrid(pr);
+        }
+    }
+
+    /**
+     * 预测数据
+     * @param list
+     * @param userId
+     * @return
+     */
+    private List<PlanReportPredictVo> predictPlanReport(List<PlanReport> list, Long userId){
+        List<PlanReportPredictVo> voList = new ArrayList<>();
+        for(PlanReport re : list){
+            PlanReportPredictVo vo = new PlanReportPredictVo();
+            BeanCopy.copyProperties(re,vo);
+            //预测
+            Map<String,Float> pv = null;
+            PlanType planType = re.getUserPlan().getPlanConfig().getPlanType();
+            Date bussDay = re.getBussStatDate();
+            int score = userScoreHandler.getScore(userId,bussDay);
+            int month = DateUtil.getMonth(bussDay)+1;
+            if(planType==PlanType.YEAR){
+                int dayIndex = DateUtil.getDayOfYear(bussDay);
+                pv = reportHandler.predictYearRate(userId,re.getUserPlan().getPlanConfig().getId(),score,dayIndex);
+            }else{
+                int dayIndex = DateUtil.getDayOfMonth(bussDay);
+                pv = reportHandler.predictMonthRate(userId,re.getUserPlan().getPlanConfig().getId(),month,score,dayIndex);
+            }
+            if(pv!=null){
+                vo.setPredictCount(pv.get(MLConstant.PLAN_REPORT_COUNT_LABEL));
+                vo.setPredictValue(pv.get(MLConstant.PLAN_REPORT_VALUE_LABEL));
+            }
+            voList.add(vo);
+        }
+        return voList;
     }
 
     private PageResult<PlanReport> getPlanReportData(PlanReportSearch sf) {
@@ -427,53 +479,122 @@ public class PlanReportController extends BaseController {
      */
     @RequestMapping(value = "/timelineStat")
     public ResultBean timelineStat(@Valid PlanReportTimelineStatSearch sf) {
-        Date startDate = null;
-        Date endDate = null;
-        if (sf.getDateGroupType() == DateGroupType.MONTH) {
-            startDate = DateUtil.getDate(sf.getYear() + "-" + sf.getMonth() + "-01", DateUtil.FormatDay1);
-            endDate = DateUtil.getLastDayOfMonth(startDate);        //界面传过来的只有开始时间，需要转换为当月第一天及最后一天
-        } else {
-            startDate = DateUtil.getDate(sf.getYear() + "-01" + "-01", DateUtil.FormatDay1);
-            endDate = DateUtil.getLastDayOfYear(sf.getYear());
+        Date bussDay = null;
+        PeriodType period = null;
+        if(sf.getDateGroupType()==DateGroupType.YEAR){
+            period = PeriodType.YEARLY;
+            bussDay = DateUtil.getDate(sf.getYear() + "-01" + "-01", DateUtil.FormatDay1);
+        }else{
+            period = PeriodType.MONTHLY;
+            bussDay = DateUtil.getDate(sf.getYear() + "-" + sf.getMonth() + "-01", DateUtil.FormatDay1);
+        }
+        Long userId = sf.getUserId();
+        int totalDays =0;
+        //获取评分使用
+        Date startDate;
+        Date endDate;
+        int month = DateUtil.getMonth(bussDay);
+        if (PeriodType.YEARLY == period) {
+            totalDays = DateUtil.getYearDays(bussDay);
+            startDate = DateUtil.getYearFirst(bussDay);
+            endDate = DateUtil.getLastDayOfYear(bussDay);
+        }else{
+            totalDays = DateUtil.getMonthDays(bussDay);
+            startDate = DateUtil.getFirstDayOfMonth(bussDay);
+            endDate = DateUtil.getLastDayOfMonth(bussDay);
         }
         List<PlanReportTimeline> list = planService.getPlanReportTimelineList(startDate, endDate, sf.getUserPlanId());
         ChartData chartData = new ChartData();
-        if (!list.isEmpty()) {
-            PlanReportTimeline pr0 = list.get(0);
-            UserPlan userPlan = pr0.getUserPlan();
-            chartData.setTitle(userPlan.getTitle() + "统计");
-            chartData.setUnit("%");
-            chartData.setSubTitle("计划次数:" + pr0.getPlanCountValue() + ",计划值:" + pr0.getPlanValue() + "(" + userPlan.getPlanConfig().getUnit() + ")");
-            chartData.setLegendData(new String[]{"计划次数完成进度(%)", "计划值完成进度(%)", "时间进度(%)"});
-            ChartYData countData = new ChartYData();
-            countData.setName("计划次数完成进度(%)");
-            ChartYData valueData = new ChartYData();
-            valueData.setName("计划值完成进度(%)");
-            ChartYData timeData = new ChartYData();
-            timeData.setName("时间进度(%)");
-            for (PlanReportTimeline tl : list) {
-                int dayIndex = 0;
-                int totalDays = 0;
-                if (sf.getDateGroupType() == DateGroupType.MONTH) {
-                    dayIndex = DateUtil.getDayOfMonth(tl.getBussStatDate());
-                    totalDays = DateUtil.getMonthDays(tl.getBussStatDate());
-                    chartData.getXdata().add(dayIndex + "号");
-                } else {
-                    dayIndex = DateUtil.getDayOfYear(tl.getBussStatDate());
-                    totalDays = DateUtil.getYearDays(tl.getBussStatDate());
-                    chartData.getXdata().add(DateUtil.getFormatDate(tl.getBussStatDate(), "MM-dd"));
-                }
-                chartData.getIntXData().add(dayIndex);
-                double planCountRate = NumberUtil.getPercentValue(tl.getReportCountValue(), tl.getPlanCountValue(), 2);
-                double planValueRate = NumberUtil.getPercentValue(tl.getReportValue(), tl.getPlanValue(), 2);
-                double rate = NumberUtil.getPercentValue(dayIndex, totalDays, 0);
+        PlanReportTimeline pr0 = list.get(0);
+        UserPlan userPlan = pr0.getUserPlan();
+        chartData.setTitle(userPlan.getTitle() + "统计");
+        chartData.setUnit("%");
+        chartData.setSubTitle("计划次数:" + pr0.getPlanCountValue() + ",计划值:" + pr0.getPlanValue() + "(" + userPlan.getPlanConfig().getUnit() + ")");
+        List<String> legends = new ArrayList<>();
+        legends.add("计划次数完成进度(%)");
+        legends.add("计划值完成进度(%)");
+        legends.add("时间进度(%)");
+        ChartYData countData = new ChartYData();
+        countData.setName("计划次数完成进度(%)");
+        ChartYData valueData = new ChartYData();
+        valueData.setName("计划值完成进度(%)");
+        ChartYData timeData = new ChartYData();
+        timeData.setName("时间进度(%)");
+        boolean predict = sf.getPredict();
+        Map<String, Integer> scoreMap = null;
+        ChartYData predictCountData = new ChartYData();
+        ChartYData predictValueData = new ChartYData();
+        if(predict){
+            scoreMap = userScoreHandler.getUserScoreMap(userId,startDate,endDate,period);
+            legends.add("次数预测值(%)");
+            predictCountData.setName("次数预测值(%)");
+            legends.add("值预测值(%)");
+            predictValueData.setName("值预测值(%)");
+        }
+        chartData.setLegendData(legends.toArray(new String[legends.size()]));
+        if (list.isEmpty()) {
+            return callback(chartData);
+        }
+        //缓存计划报告
+        Map<String,PlanReportTimeline> prMap = new HashMap<>();
+        PlanType planType = pr0.getUserPlan().getPlanConfig().getPlanType();
+        for (PlanReportTimeline tl : list){
+            int passDays=0;
+            if(planType == PlanType.YEAR){
+                passDays = DateUtil.getDayOfYear(tl.getBussStatDate());
+            }else{
+                passDays = DateUtil.getDayOfMonth(tl.getBussStatDate());
+            }
+            prMap.put(passDays+"",tl);
+        }
+        PlanReportTimeline lastPr = list.get(list.size()-1);
+        //需要以完整的天数为准，因为BudgetTimeline有可能缺失，而且如果是当月的，后续数据也不全
+        for(int i=1;i<=totalDays;i++){
+            String key = i+"";
+            if (period == PeriodType.MONTHLY) {
+                chartData.getXdata().add(i + "号");
+            } else {
+                Date date = DateUtil.getDate(i-1,bussDay);
+                chartData.getXdata().add(DateUtil.getFormatDate(date, "MM-dd"));
+            }
+            chartData.getIntXData().add(i);
+            PlanReportTimeline pr = prMap.get(key);
+            double rate = NumberUtil.getPercentValue(i, totalDays, 0);
+            if(pr==null){
+                countData.getData().add(null);
+                valueData.getData().add(null);
+            }else{
+                double planCountRate = NumberUtil.getPercentValue(pr.getReportCountValue(), pr.getPlanCountValue(), 2);
+                double planValueRate = NumberUtil.getPercentValue(pr.getReportValue(), pr.getPlanValue(), 2);
                 countData.getData().add(planCountRate);
                 valueData.getData().add(planValueRate);
-                timeData.getData().add(rate);
             }
-            chartData.getYdata().add(countData);
-            chartData.getYdata().add(valueData);
-            chartData.getYdata().add(timeData);
+            timeData.getData().add(rate);
+            if(predict){
+                Integer score = scoreMap.get(key);
+                if(score==null){
+                    //取默认的最后一天的
+                    score = scoreMap.get("0");
+                }
+                long planConfigId = pr.getUserPlan().getPlanConfig().getId();
+                Map<String,Float> predictValue = null;
+                if (period == PeriodType.MONTHLY) {
+                    predictValue = reportHandler.predictMonthRate(userId,planConfigId,month,score,i);
+                }else{
+                    predictValue = reportHandler.predictYearRate(userId,planConfigId,score,i);
+                }
+                predictCountData.getData().add(NumberUtil.getDoubleValue(predictValue.get(MLConstant.PLAN_REPORT_COUNT_LABEL)*100,0));
+                predictValueData.getData().add(NumberUtil.getDoubleValue(predictValue.get(MLConstant.PLAN_REPORT_VALUE_LABEL)*100,0));
+
+            }
+        }
+        chartData.getYdata().add(countData);
+        chartData.getYdata().add(valueData);
+        chartData.getYdata().add(timeData);
+        //预测
+        if(predict){
+            chartData.getYdata().add(predictCountData);
+            chartData.getYdata().add(predictValueData);
         }
         return callback(chartData);
     }

@@ -18,4 +18,14 @@ public class MLConstant {
      */
     public static final String BUDGET_CONSUME_RATE_LABEL_OB = "rate2";
 
+    /**
+     * 月度计划次数标签
+     */
+    public static final String PLAN_REPORT_COUNT_LABEL = "countRate";
+
+    /**
+     * 月度计划值标签
+     */
+    public static final String PLAN_REPORT_VALUE_LABEL = "valueRate";
+
 }

@@ -5,11 +5,15 @@ import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
+import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.CacheKey;
+import cn.mulanbay.pms.common.MLConstant;
 import cn.mulanbay.pms.common.PmsErrorCode;
+import cn.mulanbay.pms.handler.ReportHandler;
+import cn.mulanbay.pms.handler.UserScoreHandler;
 import cn.mulanbay.pms.persistent.domain.PlanConfig;
 import cn.mulanbay.pms.persistent.domain.PlanReport;
 import cn.mulanbay.pms.persistent.domain.UserPlan;
@@ -26,7 +30,7 @@ import cn.mulanbay.pms.web.bean.request.plan.UserPlanRemindFormRequest;
 import cn.mulanbay.pms.web.bean.request.plan.UserPlanSearch;
 import cn.mulanbay.pms.web.bean.request.plan.UserPlanTreeSearch;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
-import cn.mulanbay.pms.web.bean.response.plan.UserPlanResponse;
+import cn.mulanbay.pms.web.bean.response.plan.UserPlanVo;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +42,7 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 用户计划
@@ -61,7 +66,11 @@ public class UserPlanController extends BaseController {
     @Autowired
     CacheHandler cacheHandler;
 
+    @Autowired
+    ReportHandler reportHandler;
 
+    @Autowired
+    UserScoreHandler userScoreHandler;
     /**
      * 用户计划树
      *
@@ -125,19 +134,37 @@ public class UserPlanController extends BaseController {
         Sort s = new Sort("orderIndex", Sort.ASC);
         pr.addSort(s);
         PageResult<UserPlan> qr = baseService.getBeanResult(pr);
+        Boolean predict = sf.getPredict();
         if (sf.getStatNow() != null && sf.getStatNow()) {
             //需要统计当前的报表
             Date now = new Date();
             long userId = sf.getUserId();
-            PageResult<UserPlanResponse> result = new PageResult<>();
-            List<UserPlanResponse> list = new ArrayList<>();
+            PageResult<UserPlanVo> result = new PageResult<>();
+            List<UserPlanVo> list = new ArrayList<>();
             for (UserPlan pc : qr.getBeanList()) {
-                UserPlanResponse response = new UserPlanResponse();
-                BeanCopy.copyProperties(pc, response);
+                UserPlanVo vo = new UserPlanVo();
+                BeanCopy.copyProperties(pc, vo);
                 //设置PlanReport
                 PlanReport report = planService.statPlanReport(pc, now, userId, sf.getFilterType());
-                response.setPlanReport(report);
-                list.add(response);
+                vo.setPlanReport(report);
+                if(predict){
+                    Map<String,Float> pv = null;
+                    PlanType planType = pc.getPlanConfig().getPlanType();
+                    int score = userScoreHandler.getLatestScore(userId);
+                    int month = DateUtil.getMonth(now)+1;
+                    if(planType==PlanType.YEAR){
+                        int dayIndex = DateUtil.getDayOfYear(now);
+                        pv = reportHandler.predictYearRate(userId,pc.getPlanConfig().getId(),score,dayIndex);
+                    }else{
+                        int dayIndex = DateUtil.getDayOfMonth(now);
+                        pv = reportHandler.predictMonthRate(userId,pc.getPlanConfig().getId(),month,score,dayIndex);
+                    }
+                    if(pv!=null){
+                        vo.setPredictCount(pv.get(MLConstant.PLAN_REPORT_COUNT_LABEL));
+                        vo.setPredictValue(pv.get(MLConstant.PLAN_REPORT_VALUE_LABEL));
+                    }
+                }
+                list.add(vo);
             }
             result.setBeanList(list);
             result.setMaxRow(qr.getMaxRow());

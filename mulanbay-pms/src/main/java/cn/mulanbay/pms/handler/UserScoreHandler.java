@@ -4,23 +4,27 @@ import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.common.util.StringUtil;
+import cn.mulanbay.persistent.query.PageRequest;
+import cn.mulanbay.persistent.service.BaseService;
 import cn.mulanbay.pms.common.ConfigKey;
 import cn.mulanbay.pms.persistent.domain.ScoreConfig;
 import cn.mulanbay.pms.persistent.domain.UserScore;
 import cn.mulanbay.pms.persistent.domain.UserScoreDetail;
 import cn.mulanbay.pms.persistent.domain.UserSetting;
 import cn.mulanbay.pms.persistent.enums.CompareType;
+import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.service.AuthService;
 import cn.mulanbay.pms.persistent.service.UserScoreService;
+import cn.mulanbay.pms.web.bean.request.user.UserScoreSearch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+
+import static cn.mulanbay.persistent.query.PageRequest.NO_PAGE;
 
 /**
  * @author fenghong
@@ -45,6 +49,9 @@ public class UserScoreHandler extends BaseHandler {
 
     @Autowired
     UserScoreService userScoreService;
+
+    @Autowired
+    BaseService baseService;
 
     @Autowired
     SystemConfigHandler systemConfigHandler;
@@ -177,5 +184,55 @@ public class UserScoreHandler extends BaseHandler {
         }else {
             return us.getScore();
         }
+    }
+
+    /**
+     * 获取用户最新的评分
+     * @param userId
+     * @return
+     */
+    public int getScore(Long userId,Date date){
+        UserScore us = userScoreService.getScore(userId,date);
+        if(us==null){
+            return this.getLatestScore(userId);
+        }else {
+            return us.getScore();
+        }
+    }
+
+    /**
+     * 用户用户评分
+     * @param userId
+     * @param startDate
+     * @param endDate
+     * @param period
+     * @return
+     */
+    public Map<String, Integer> getUserScoreMap(Long userId, Date startDate, Date endDate, PeriodType period){
+        UserScoreSearch sf = new UserScoreSearch();
+        sf.setUserId(userId);
+        sf.setStartDate(startDate);
+        sf.setEndDate(DateUtil.getTodayTillMiddleNightDate(endDate));
+        PageRequest pr = sf.buildQuery();
+        pr.setBeanClass(UserScore.class);
+        pr.setPage(NO_PAGE);
+        List<UserScore> list = baseService.getBeanList(pr);
+        int n = list.size();
+        Map<String, Integer> map = new HashMap<>();
+        for(int i=0;i<n;i++){
+            UserScore us = list.get(i);
+            int dayIndex = 0;
+            if (PeriodType.YEARLY == period) {
+                dayIndex = DateUtil.getDayOfYear(us.getStartTime());
+            }else{
+                dayIndex = DateUtil.getDayOfMonth(us.getStartTime());
+            }
+            map.put(dayIndex+"",us.getScore());
+        }
+        //设置最后一个为默认值
+        if(n>0){
+            map.put("0",list.get(n-1).getScore());
+        }
+        return map;
     }
 }

@@ -53,6 +53,11 @@ public class PlanReportSearch extends PageSearch implements DateStatSearch, Bind
 
     private PlanReportDataStatType dataStatType;
 
+    /**
+     * 是否要预测
+     */
+    private Boolean predict = false;
+
     @Override
     public Date getStartDate() {
         return startDate;
@@ -172,4 +177,11 @@ public class PlanReportSearch extends PageSearch implements DateStatSearch, Bind
         this.dataStatType = dataStatType;
     }
 
+    public Boolean getPredict() {
+        return predict;
+    }
+
+    public void setPredict(Boolean predict) {
+        this.predict = predict;
+    }
 }

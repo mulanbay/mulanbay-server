@@ -10,6 +10,7 @@ import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.BudgetHandler;
+import cn.mulanbay.pms.handler.UserScoreHandler;
 import cn.mulanbay.pms.handler.bean.BudgetAmountBean;
 import cn.mulanbay.pms.handler.bean.ConsumeBean;
 import cn.mulanbay.pms.persistent.domain.Budget;
@@ -65,6 +66,9 @@ public class BudgetController extends BaseController {
 
     @Autowired
     BudgetHandler budgetHandler;
+
+    @Autowired
+    UserScoreHandler userScoreHandler;
 
     @Autowired
     BuyRecordService buyRecordService;
@@ -451,7 +455,7 @@ public class BudgetController extends BaseController {
         ChartYData predictData = new ChartYData();
         if(predict){
             legends.add("预测值");
-            scoreMap = this.getUserScoreMap(userId,startDate,endDate,sf.getPeriod());
+            scoreMap = userScoreHandler.getUserScoreMap(userId,startDate,endDate,sf.getPeriod());
             predictData.setName(legends.get(2));
         }
         chartData.setLegendData(legends.toArray(new String[legends.size()]));
@@ -536,42 +540,6 @@ public class BudgetController extends BaseController {
             chartData.getYdata().add(predictData);
         }
         return callback(chartData);
-    }
-
-    /**
-     * 用户用户评分
-     * @param userId
-     * @param startDate
-     * @param endDate
-     * @param period
-     * @return
-     */
-    private Map<String, Integer> getUserScoreMap(Long userId,Date startDate,Date endDate,PeriodType period){
-        UserScoreSearch sf = new UserScoreSearch();
-        sf.setUserId(userId);
-        sf.setStartDate(startDate);
-        sf.setEndDate(DateUtil.getTodayTillMiddleNightDate(endDate));
-        PageRequest pr = sf.buildQuery();
-        pr.setBeanClass(UserScore.class);
-        pr.setPage(NO_PAGE);
-        List<UserScore> list = baseService.getBeanList(pr);
-        int n = list.size();
-        Map<String, Integer> map = new HashMap<>();
-        for(int i=0;i<n;i++){
-            UserScore us = list.get(i);
-            int dayIndex = 0;
-            if (PeriodType.YEARLY == period) {
-                dayIndex = DateUtil.getDayOfYear(us.getStartTime());
-            }else{
-                dayIndex = DateUtil.getDayOfMonth(us.getStartTime());
-            }
-            map.put(dayIndex+"",us.getScore());
-        }
-        //设置最后一个为默认值
-        if(n>0){
-            map.put("0",list.get(n-1).getScore());
-        }
-        return map;
     }
 
     /**
