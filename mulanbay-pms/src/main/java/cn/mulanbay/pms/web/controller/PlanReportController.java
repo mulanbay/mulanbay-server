@@ -123,25 +123,7 @@ public class PlanReportController extends BaseController {
     private List<PlanReportPredictVo> predictPlanReport(List<PlanReport> list, Long userId){
         List<PlanReportPredictVo> voList = new ArrayList<>();
         for(PlanReport re : list){
-            PlanReportPredictVo vo = new PlanReportPredictVo();
-            BeanCopy.copyProperties(re,vo);
-            //预测
-            Map<String,Float> pv = null;
-            PlanType planType = re.getUserPlan().getPlanConfig().getPlanType();
-            Date bussDay = re.getBussStatDate();
-            int score = userScoreHandler.getScore(userId,bussDay);
-            int month = DateUtil.getMonth(bussDay)+1;
-            if(planType==PlanType.YEAR){
-                int dayIndex = DateUtil.getDayOfYear(bussDay);
-                pv = reportHandler.predictYearRate(userId,re.getUserPlan().getPlanConfig().getId(),score,dayIndex);
-            }else{
-                int dayIndex = DateUtil.getDayOfMonth(bussDay);
-                pv = reportHandler.predictMonthRate(userId,re.getUserPlan().getPlanConfig().getId(),month,score,dayIndex);
-            }
-            if(pv!=null){
-                vo.setPredictCount(pv.get(MLConstant.PLAN_REPORT_COUNT_LABEL));
-                vo.setPredictValue(pv.get(MLConstant.PLAN_REPORT_VALUE_LABEL));
-            }
+            PlanReportPredictVo vo = reportHandler.predictAndSetPlanReport(re);
             voList.add(vo);
         }
         return voList;

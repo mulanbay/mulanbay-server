@@ -17,6 +17,11 @@ public class CommonBeanGetRequest implements BindUser {
 
     private Long userId;
 
+    /**
+     * 是否要预测
+     */
+    private Boolean predict = false;
+
     public Long getId() {
         return id;
     }
@@ -35,4 +40,11 @@ public class CommonBeanGetRequest implements BindUser {
         this.userId = userId;
     }
 
+    public Boolean getPredict() {
+        return predict;
+    }
+
+    public void setPredict(Boolean predict) {
+        this.predict = predict;
+    }
 }

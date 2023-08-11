@@ -5,7 +5,6 @@ import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
-import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
@@ -30,6 +29,7 @@ import cn.mulanbay.pms.web.bean.request.plan.UserPlanRemindFormRequest;
 import cn.mulanbay.pms.web.bean.request.plan.UserPlanSearch;
 import cn.mulanbay.pms.web.bean.request.plan.UserPlanTreeSearch;
 import cn.mulanbay.pms.web.bean.response.TreeBean;
+import cn.mulanbay.pms.web.bean.response.plan.PlanReportPredictVo;
 import cn.mulanbay.pms.web.bean.response.plan.UserPlanVo;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -148,17 +148,7 @@ public class UserPlanController extends BaseController {
                 PlanReport report = planService.statPlanReport(pc, now, userId, sf.getFilterType());
                 vo.setPlanReport(report);
                 if(predict){
-                    Map<String,Float> pv = null;
-                    PlanType planType = pc.getPlanConfig().getPlanType();
-                    int score = userScoreHandler.getLatestScore(userId);
-                    int month = DateUtil.getMonth(now)+1;
-                    if(planType==PlanType.YEAR){
-                        int dayIndex = DateUtil.getDayOfYear(now);
-                        pv = reportHandler.predictYearRate(userId,pc.getPlanConfig().getId(),score,dayIndex);
-                    }else{
-                        int dayIndex = DateUtil.getDayOfMonth(now);
-                        pv = reportHandler.predictMonthRate(userId,pc.getPlanConfig().getId(),month,score,dayIndex);
-                    }
+                    Map<String,Float> pv = reportHandler.predictPlanReport(report);
                     if(pv!=null){
                         vo.setPredictCount(pv.get(MLConstant.PLAN_REPORT_COUNT_LABEL));
                         vo.setPredictValue(pv.get(MLConstant.PLAN_REPORT_VALUE_LABEL));
@@ -212,11 +202,17 @@ public class UserPlanController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/getStat", method = RequestMethod.GET)
-    @MCache(key = "'userPlan:stat:'+ #cbr.userId+':'+ #cbr.id")
+    @MCache(key = "'userPlan:stat:'+ #cbr.userId+':'+ #cbr.id+':'+ #cbr.predict")
     public ResultBean getStat(@Valid CommonBeanGetRequest cbr) {
         UserPlan userPlan = this.getUserEntity(beanClass, cbr.getId(), cbr.getUserId());
         PlanReport planReport = planService.statPlanReport(userPlan, new Date(), cbr.getUserId(), PlanReportDataStatFilterType.ORIGINAL);
-        return callback(planReport);
+        Boolean predict = cbr.getPredict();
+        if(predict){
+            PlanReportPredictVo vo = reportHandler.predictAndSetPlanReport(planReport);
+            return callback(vo);
+        }else{
+            return callback(planReport);
+        }
     }
 
     /**
