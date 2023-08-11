@@ -80,8 +80,8 @@ public class ReportHandler extends BaseHandler {
         BeanCopy.copyProperties(re,vo);
         Map<String,Float> pv = this.predictPlanReport(re);
         if(pv!=null){
-            vo.setPredictCount(pv.get(MLConstant.PLAN_REPORT_COUNT_LABEL));
-            vo.setPredictValue(pv.get(MLConstant.PLAN_REPORT_VALUE_LABEL));
+            vo.setPredictCount(pv.get(MLConstant.PLAN_REPORT_COUNT_LABEL)*re.getPlanCountValue());
+            vo.setPredictValue(pv.get(MLConstant.PLAN_REPORT_VALUE_LABEL)*re.getPlanValue());
         }
         return vo;
     }
@@ -89,7 +89,7 @@ public class ReportHandler extends BaseHandler {
     /**
      * 预测计划报告
      * @param re
-     * @return
+     * @return 返回的比例值
      */
     public Map<String,Float> predictPlanReport(PlanReport  re){
         PlanType planType = re.getUserPlan().getPlanConfig().getPlanType();
