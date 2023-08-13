@@ -202,7 +202,7 @@ public class UserPlanController extends BaseController {
      * @return
      */
     @RequestMapping(value = "/getStat", method = RequestMethod.GET)
-    //@MCache(key = "'userPlan:stat:'+ #cbr.userId+':'+ #cbr.id+':'+ #cbr.predict")
+    @MCache(key = "'userPlan:stat:'+ #cbr.userId+':'+ #cbr.id+':'+ #cbr.predict")
     public ResultBean getStat(@Valid CommonBeanGetRequest cbr) {
         UserPlan userPlan = this.getUserEntity(beanClass, cbr.getId(), cbr.getUserId());
         PlanReport planReport = planService.statPlanReport(userPlan, new Date(), cbr.getUserId(), PlanReportDataStatFilterType.ORIGINAL);
