@@ -8,6 +8,9 @@ import cn.mulanbay.web.bean.request.PageSearch;
 
 public class ModelConfigSearch extends PageSearch  {
 
+    @Query(fieldName = "code", op = Parameter.Operator.EQ)
+    private String code;
+
     @Query(fieldName = "name,code,fileName", op = Parameter.Operator.LIKE, crossType = CrossType.OR)
     private String name;
 
@@ -16,6 +19,14 @@ public class ModelConfigSearch extends PageSearch  {
 
     @Query(fieldName = "du", op = Parameter.Operator.EQ)
     private Boolean du;
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
 
     public String getName() {
         return name;

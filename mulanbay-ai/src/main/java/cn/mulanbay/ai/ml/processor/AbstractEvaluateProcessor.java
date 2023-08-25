@@ -1,5 +1,6 @@
 package cn.mulanbay.ai.ml.processor;
 
+import cn.mulanbay.ai.ml.manager.ModelEvaluatorManager;
 import cn.mulanbay.business.handler.BaseHandler;
 import org.jpmml.evaluator.*;
 import org.slf4j.Logger;
@@ -28,6 +29,10 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
     public AbstractEvaluateProcessor(String handlerName,String code) {
         super(handlerName);
         this.code = code;
+    }
+
+    public String getCode() {
+        return code;
     }
 
     @Override

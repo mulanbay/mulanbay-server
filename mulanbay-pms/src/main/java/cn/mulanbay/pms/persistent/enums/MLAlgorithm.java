@@ -12,7 +12,8 @@ public enum MLAlgorithm {
     DTR(1, "决策树回归"),
     RTC(2, "随机森林"),
     RTR(3, "随机森林回归"),
-    LR(4, "线性回归");
+    LR(4, "线性回归"),
+    XGBR(5, "XGBoost回归");
 
     private int value;
 

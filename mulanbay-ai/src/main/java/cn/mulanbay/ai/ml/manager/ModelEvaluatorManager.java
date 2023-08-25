@@ -1,4 +1,4 @@
-package cn.mulanbay.ai.ml.processor;
+package cn.mulanbay.ai.ml.manager;
 
 import cn.mulanbay.ai.ml.dataset.ModelHandle;
 import cn.mulanbay.ai.ml.dataset.bean.ModelFile;
@@ -39,6 +39,12 @@ public class ModelEvaluatorManager {
     protected String modelPath;
 
     /**
+     * 是否需要验证模型
+     */
+    @Value("${ml.pmml.verify:false}")
+    protected boolean verify;
+
+    /**
      * 模型文件处理器
      */
     @Autowired(required = false)
@@ -59,7 +65,9 @@ public class ModelEvaluatorManager {
             PMML pmml = PMMLUtil.unmarshal(inputStream);
             Evaluator modelEvaluator = new ModelEvaluatorBuilder(pmml)
                     .build();
-            modelEvaluator.verify();
+            if(verify){
+                modelEvaluator.verify();
+            }
             logger.info(moduleFile+"模型加载成功");
             return modelEvaluator;
         } catch (Exception e) {

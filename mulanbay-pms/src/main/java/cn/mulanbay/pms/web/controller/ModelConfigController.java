@@ -1,19 +1,27 @@
 package cn.mulanbay.pms.web.controller;
 
-import cn.mulanbay.ai.ml.processor.ModelEvaluatorManager;
+import cn.mulanbay.ai.ml.manager.EvaluateProcessorManager;
+import cn.mulanbay.ai.ml.manager.ModelEvaluatorManager;
+import cn.mulanbay.ai.ml.processor.AbstractEvaluateProcessor;
+import cn.mulanbay.common.exception.ApplicationException;
+import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.FileUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
+import cn.mulanbay.pms.persistent.domain.BuyType;
 import cn.mulanbay.pms.persistent.domain.ModelConfig;
 import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.service.ModelConfigService;
+import cn.mulanbay.pms.util.TreeBeanUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
+import cn.mulanbay.pms.web.bean.request.buy.BuyTypeSearch;
 import cn.mulanbay.pms.web.bean.request.modelConfig.ModelConfigFormRequest;
 import cn.mulanbay.pms.web.bean.request.modelConfig.ModelConfigPublishRequest;
 import cn.mulanbay.pms.web.bean.request.modelConfig.ModelConfigSearch;
+import cn.mulanbay.pms.web.bean.response.TreeBean;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -23,7 +31,9 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.validation.Valid;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 机器学习模型配置
@@ -47,7 +57,33 @@ public class ModelConfigController extends BaseController {
     ModelEvaluatorManager modelEvaluatorManager;
 
     @Autowired
+    EvaluateProcessorManager evaluateProcessorManager;
+
+    @Autowired
     ModelConfigService modelConfigService;
+
+    /**
+     * Processor树
+     * @return
+     */
+    @RequestMapping(value = "/getProcessorTree")
+    public ResultBean getProcessorTree(Boolean needRoot) {
+        try {
+            List<TreeBean> list = new ArrayList<TreeBean>();
+            List<AbstractEvaluateProcessor> processorList = evaluateProcessorManager.getProcessorList();
+            for (AbstractEvaluateProcessor gt : processorList) {
+                TreeBean tb = new TreeBean();
+                tb.setId(gt.getCode());
+                tb.setText(gt.getHandlerName());
+                list.add(tb);
+            }
+            return callback(TreeBeanUtil.addRoot(list, needRoot));
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.SYSTEM_ERROR, "获取Processor树异常",
+                    e);
+        }
+    }
+
     /**
      * 获取任务列表
      *
