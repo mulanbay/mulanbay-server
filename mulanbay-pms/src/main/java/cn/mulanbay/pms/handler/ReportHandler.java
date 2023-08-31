@@ -46,11 +46,11 @@ public class ReportHandler extends BaseHandler {
      * @param dayIndex
      * @return
      */
-    public Map<String,Float> predictMonthRate(Long userId,long planConfigId,int month,Integer score,int dayIndex){
+    public Map<String,Double> predictMonthRate(Long userId,long planConfigId,int month,Integer score,int dayIndex){
         if(score==null){
             score = userScoreHandler.getLatestScore(userId);
         }
-        Map<String,Float> pm = mEvaluateProcessor.evaluateMulti(planConfigId,month,score,dayIndex);
+        Map<String,Double> pm = mEvaluateProcessor.evaluateMulti(planConfigId,month,score,dayIndex);
         return pm;
     }
 
@@ -62,11 +62,11 @@ public class ReportHandler extends BaseHandler {
      * @param dayIndex
      * @return
      */
-    public Map<String,Float> predictYearRate(Long userId,long planConfigId,Integer score,int dayIndex){
+    public Map<String,Double> predictYearRate(Long userId,long planConfigId,Integer score,int dayIndex){
         if(score==null){
             score = userScoreHandler.getLatestScore(userId);
         }
-        Map<String,Float> pm = yEvaluateProcessor.evaluateMulti(planConfigId,score,dayIndex);
+        Map<String,Double> pm = yEvaluateProcessor.evaluateMulti(planConfigId,score,dayIndex);
         return pm;
     }
 
@@ -78,7 +78,7 @@ public class ReportHandler extends BaseHandler {
     public PlanReportPredictVo predictAndSetPlanReport(PlanReport  re){
         PlanReportPredictVo vo = new PlanReportPredictVo();
         BeanCopy.copyProperties(re,vo);
-        Map<String,Float> pv = this.predictPlanReport(re);
+        Map<String,Double> pv = this.predictPlanReport(re);
         if(pv!=null){
             vo.setPredictCount(pv.get(MLConstant.PLAN_REPORT_COUNT_LABEL)*re.getPlanCountValue());
             vo.setPredictValue(pv.get(MLConstant.PLAN_REPORT_VALUE_LABEL)*re.getPlanValue());
@@ -91,14 +91,14 @@ public class ReportHandler extends BaseHandler {
      * @param re
      * @return 返回的比例值
      */
-    public Map<String,Float> predictPlanReport(PlanReport  re){
+    public Map<String,Double> predictPlanReport(PlanReport  re){
         PlanType planType = re.getUserPlan().getPlanConfig().getPlanType();
         Date bussDay = re.getBussStatDate();
         long userId = re.getUserId();
         int score = userScoreHandler.getScore(userId,bussDay);
         int month = DateUtil.getMonth(bussDay)+1;
         //预测
-        Map<String,Float> pv = null;
+        Map<String,Double> pv = null;
         if(planType==PlanType.YEAR){
             int dayIndex = DateUtil.getDayOfYear(bussDay);
             pv = this.predictYearRate(userId,re.getUserPlan().getPlanConfig().getId(),score,dayIndex);

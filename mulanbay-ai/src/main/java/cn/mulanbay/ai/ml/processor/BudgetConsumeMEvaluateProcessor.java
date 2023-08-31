@@ -37,18 +37,18 @@ public class BudgetConsumeMEvaluateProcessor extends AbstractEvaluateProcessor {
      * 评估
      * @return
      */
-    public Float evaluate(int month,int score,int dayIndex){
+    public Double evaluate(int month,int score,int dayIndex){
         Map<String, Number> args = this.createArgs(month,score,dayIndex);
-        return this.evaluateFloat(args,"rate");
+        return this.evaluateDouble(args,"rate");
     }
 
     /**
      * 评估(多标签)
      * @return
      */
-    public Map<String,Float> evaluateMulti(int month,int score,int dayIndex){
+    public Map<String,Double> evaluateMulti(int month,int score,int dayIndex){
         Map<String, Number> args = this.createArgs(month,score,dayIndex);
-        return this.evaluateFloats(args);
+        return this.evaluateDoubles(args);
     }
 
 }

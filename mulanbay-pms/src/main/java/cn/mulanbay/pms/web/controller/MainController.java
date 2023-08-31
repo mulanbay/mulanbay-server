@@ -353,7 +353,7 @@ public class MainController extends BaseController {
             res.setYearBudget(bab.getYearBudget());
             //年度消费预测(最后一天)
             int days = DateUtil.getYearDays(today);
-            Float rate = budgetHandler.predictYearRate(userId,null,days,false);
+            Double rate = budgetHandler.predictYearRate(userId,null,days,false);
             res.setYearPredict(rate==null ? null : rate*res.getYearBudget());
         }
         BuyRecordAnalyseStatSearch sf = new BuyRecordAnalyseStatSearch();
@@ -381,7 +381,7 @@ public class MainController extends BaseController {
         res.setMonthPassDays(a);
         //获取月度预测(最后一天)
         int month = DateUtil.getMonth(today)+1;
-        Float rate = budgetHandler.predictMonthRate(userId,month,null,n,false);
+        Double rate = budgetHandler.predictMonthRate(userId,month,null,n,false);
         res.setMonthPredict(rate==null ? null : rate*res.getMonthBudget());
 
         Date[] dd = getStatDateRange(DateGroupType.MONTH, today);

@@ -384,13 +384,13 @@ public class BudgetHandler extends BaseHandler {
      * @param dayIndex
      * @return
      */
-    public Float predictMonthRate(Long userId,int month,Integer score,int dayIndex,Boolean needOutBurst){
+    public Double predictMonthRate(Long userId,int month,Integer score,int dayIndex,Boolean needOutBurst){
         try {
             if(score==null){
                 score = userScoreHandler.getLatestScore(userId);
             }
-            Map<String,Float> pm = budgetConsumeMEvaluateProcessor.evaluateMulti(month,score,dayIndex);
-            Float v = null;
+            Map<String,Double> pm = budgetConsumeMEvaluateProcessor.evaluateMulti(month,score,dayIndex);
+            Double v = null;
             if(needOutBurst){
                 v = pm.get(MLConstant.BUDGET_CONSUME_RATE_LABEL_OB);
             }else{
@@ -409,13 +409,13 @@ public class BudgetHandler extends BaseHandler {
      * @param dayIndex
      * @return
      */
-    public Float predictYearRate(Long userId,Integer score,int dayIndex,Boolean needOutBurst){
+    public Double predictYearRate(Long userId,Integer score,int dayIndex,Boolean needOutBurst){
         try {
             if(score==null){
                 score = userScoreHandler.getLatestScore(userId);
             }
-            Map<String,Float> pm = budgetConsumeYEvaluateProcessor.evaluateMulti(score,dayIndex);
-            Float v = null;
+            Map<String,Double> pm = budgetConsumeYEvaluateProcessor.evaluateMulti(score,dayIndex);
+            Double v = null;
             if(needOutBurst){
                 v = pm.get(MLConstant.BUDGET_CONSUME_RATE_LABEL_OB);
             }else{

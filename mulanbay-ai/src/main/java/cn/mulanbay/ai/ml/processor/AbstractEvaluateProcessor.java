@@ -50,7 +50,7 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
      * @param targetValue
      * @return
      */
-    protected Float convertValueToFloat(Object targetValue){
+    protected Double convertValueToDouble(Object targetValue){
         if(targetValue==null){
             logger.warn("标签的预测值为空");
             return null;
@@ -58,9 +58,9 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
         if (targetValue instanceof Computable) {
             Computable computable = (Computable) targetValue;
             Object v = computable.getResult();
-            return Float.valueOf(v.toString());
+            return Double.valueOf(v.toString());
         }else{
-            return Float.valueOf(targetValue.toString());
+            return Double.valueOf(targetValue.toString());
         }
     }
     /**
@@ -68,9 +68,9 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
      * @param args
      * @return
      */
-    public Float evaluateFloat(Map<String, Number> args,String label){
+    public Double evaluateDouble(Map<String, Number> args, String label){
         Object targetValue = this.evaluate(args,label);
-        return this.convertValueToFloat(targetValue);
+        return this.convertValueToDouble(targetValue);
     }
 
     /**
@@ -110,15 +110,15 @@ public abstract class AbstractEvaluateProcessor extends BaseHandler {
      * @param args
      * @return
      */
-    public Map<String,Float> evaluateFloats(Map<String, Number> args){
+    public Map<String,Double> evaluateDoubles(Map<String, Number> args){
         Evaluator modelEvaluator = this.getEvaluator();
         Map<String, ?> results = modelEvaluator.evaluate(args);
         List<TargetField> targetFields = modelEvaluator.getTargetFields();
-        Map<String,Float> ets = new HashMap<>();
+        Map<String,Double> ets = new HashMap<>();
         for (TargetField targetField : targetFields) {
             String targetFieldName = targetField.getName();
             Object targetFieldValue = results.get(targetFieldName);
-            ets.put(targetFieldName,this.convertValueToFloat(targetFieldValue));
+            ets.put(targetFieldName,this.convertValueToDouble(targetFieldValue));
         }
         return ets;
     }

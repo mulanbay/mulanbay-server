@@ -22,9 +22,9 @@ public class TestBudgetConsumeYEvaluateProcessor {
     @Autowired
     BudgetConsumeYEvaluateProcessor evaluateProcessor;
 
-    private float min = 0f;
+    private double min = 0f;
 
-    private float max = 1.5f;
+    private double max = 1.5f;
 
     @Before
     public void init() {
@@ -38,11 +38,11 @@ public class TestBudgetConsumeYEvaluateProcessor {
     //@Test
     @Deprecated
     public void testEvaluate() {
-        float evMin = max;
-        float evMax = min;
+        double evMin = max;
+        double evMax = min;
         for (int score = 0; score <= 100; score++) {
             for (int dayIndex = 1; dayIndex <= 366; dayIndex++) {
-                Float v = evaluateProcessor.evaluate(score, dayIndex);
+                Double v = evaluateProcessor.evaluate(score, dayIndex);
                 String vs = "score=" + score + ",dayIndex=" + dayIndex + ",预测值=" + v;
                 Assert.notNull(v, "预测值为空," + vs);
                 Assert.isTrue(v >= min, "预测值低于最低值," + vs);
@@ -66,9 +66,9 @@ public class TestBudgetConsumeYEvaluateProcessor {
     public void testMultiEvaluate() {
         for (int score = 0; score <= 100; score++) {
             for (int dayIndex = 1; dayIndex <= 366; dayIndex++) {
-                Map<String, Float> es = evaluateProcessor.evaluateMulti(score, dayIndex);
-                Float predictRate1 = es.get("rate1");
-                Float predictRate2 = es.get("rate2");
+                Map<String, Double> es = evaluateProcessor.evaluateMulti(score, dayIndex);
+                Double predictRate1 = es.get("rate1");
+                Double predictRate2 = es.get("rate2");
                 String vs1 = "score=" + score + ",dayIndex=" + dayIndex + ",rate1预测值=" + predictRate1;
                 String vs2 = "score=" + score + ",dayIndex=" + dayIndex + ",rate2预测值=" + predictRate2;
                 Assert.notNull(predictRate1, "预测值为空," + vs1);

@@ -502,7 +502,7 @@ public class BudgetController extends BaseController {
                 }
             }
             if(predict){
-                Float pv = null;
+                Double pv = null;
                 Integer score = scoreMap.get(key);
                 if(score==null){
                     //取默认的最后一天的

@@ -148,7 +148,7 @@ public class UserPlanController extends BaseController {
                 PlanReport report = planService.statPlanReport(pc, now, userId, sf.getFilterType());
                 vo.setPlanReport(report);
                 if(predict){
-                    Map<String,Float> pv = reportHandler.predictPlanReport(report);
+                    Map<String,Double> pv = reportHandler.predictPlanReport(report);
                     if(pv!=null){
                         vo.setPredictCount(pv.get(MLConstant.PLAN_REPORT_COUNT_LABEL)*report.getPlanCountValue());
                         vo.setPredictValue(pv.get(MLConstant.PLAN_REPORT_VALUE_LABEL)*report.getPlanValue());

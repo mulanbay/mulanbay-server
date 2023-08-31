@@ -11,12 +11,12 @@ public class UserPlanVo extends UserPlan {
     /**
      * 次数预测
      */
-    private Float predictCount;
+    private Double predictCount;
 
     /**
      * 计划值预测
      */
-    private Float predictValue;
+    private Double predictValue;
 
     public PlanReport getPlanReport() {
         return planReport;
@@ -26,19 +26,19 @@ public class UserPlanVo extends UserPlan {
         this.planReport = planReport;
     }
 
-    public Float getPredictCount() {
+    public Double getPredictCount() {
         return predictCount;
     }
 
-    public void setPredictCount(Float predictCount) {
+    public void setPredictCount(Double predictCount) {
         this.predictCount = predictCount;
     }
 
-    public Float getPredictValue() {
+    public Double getPredictValue() {
         return predictValue;
     }
 
-    public void setPredictValue(Float predictValue) {
+    public void setPredictValue(Double predictValue) {
         this.predictValue = predictValue;
     }
 }

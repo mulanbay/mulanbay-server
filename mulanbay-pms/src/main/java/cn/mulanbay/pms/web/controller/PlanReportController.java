@@ -559,7 +559,7 @@ public class PlanReportController extends BaseController {
                     score = scoreMap.get("0");
                 }
                 long planConfigId = pr.getUserPlan().getPlanConfig().getId();
-                Map<String,Float> predictValue = null;
+                Map<String,Double> predictValue = null;
                 if (period == PeriodType.MONTHLY) {
                     predictValue = reportHandler.predictMonthRate(userId,planConfigId,month,score,i);
                 }else{

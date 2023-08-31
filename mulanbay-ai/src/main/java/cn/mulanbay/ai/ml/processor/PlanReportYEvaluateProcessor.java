@@ -37,9 +37,9 @@ public class PlanReportYEvaluateProcessor extends AbstractEvaluateProcessor {
      * 评估(多标签)
      * @return
      */
-    public Map<String,Float> evaluateMulti(long planConfigId,int score,int dayIndex){
+    public Map<String,Double> evaluateMulti(long planConfigId,int score,int dayIndex){
         Map<String, Number> args = this.createArgs(planConfigId,score,dayIndex);
-        return this.evaluateFloats(args);
+        return this.evaluateDoubles(args);
     }
 
 }
