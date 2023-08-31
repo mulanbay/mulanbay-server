@@ -27,6 +27,11 @@ public class UserScoreSearch extends PageSearch implements BindUser {
 
     private ChartType chartType;
 
+    /**
+     * 是否要预测
+     */
+    private Boolean predict = false;
+
     public Date getStartDate() {
         return startDate;
     }
@@ -75,5 +80,13 @@ public class UserScoreSearch extends PageSearch implements BindUser {
 
     public void setChartType(ChartType chartType) {
         this.chartType = chartType;
+    }
+
+    public Boolean getPredict() {
+        return predict;
+    }
+
+    public void setPredict(Boolean predict) {
+        this.predict = predict;
     }
 }

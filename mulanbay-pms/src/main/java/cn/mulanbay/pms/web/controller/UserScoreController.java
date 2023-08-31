@@ -118,7 +118,7 @@ public class UserScoreController extends BaseController {
         pr.setPage(-1);
         List<UserScore> list = baseService.getBeanList(pr);
         if (sf.getChartType() == ChartType.LINE) {
-            return callback(this.createLineStatChartData(list));
+            return callback(this.createLineStatChartData(list,sf.getUserId(),sf.getPredict()));
         } else {
             return callback(this.createPieStatChartData(list));
         }
@@ -170,22 +170,31 @@ public class UserScoreController extends BaseController {
      * @param list
      * @return
      */
-    private ChartData createLineStatChartData(List<UserScore> list) {
+    private ChartData createLineStatChartData(List<UserScore> list,Long userId,Boolean predict) {
         ChartData chartData = new ChartData();
         chartData.setTitle("用户评分统计分析");
         chartData.setUnit("分");
-        chartData.setLegendData(new String[]{"分数"});
+        chartData.setLegendData(new String[]{"分数","预测"});
         ChartYData yData1 = new ChartYData();
         yData1.setName("分数");
+        ChartYData yData2 = new ChartYData();
+        yData2.setName("预测");
         int totalScore = 0;
         int total = 0;
+        int lastScore =0;
         for (UserScore bean : list) {
             chartData.getXdata().add(DateUtil.getFormatDate(bean.getEndTime(), DateUtil.FormatDay1));
             yData1.getData().add(bean.getScore());
+            if(predict){
+                int predictScore = userScoreHandler.predict(userId,lastScore);
+                yData2.getData().add(predictScore);
+            }
             totalScore += bean.getScore();
             total++;
+            lastScore = bean.getScore();
         }
         chartData.getYdata().add(yData1);
+        chartData.getYdata().add(yData2);
         String subTitle = "平均分：" + NumberUtil.getAverageValue(totalScore, total, 1);
         chartData.setSubTitle(subTitle);
         return chartData;

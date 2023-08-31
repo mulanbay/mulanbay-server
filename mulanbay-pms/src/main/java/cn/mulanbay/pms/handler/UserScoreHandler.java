@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.handler;
 
+import cn.mulanbay.ai.ml.processor.UserScoreEvaluateProcessor;
 import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.common.util.NumberUtil;
@@ -55,6 +56,9 @@ public class UserScoreHandler extends BaseHandler {
 
     @Autowired
     SystemConfigHandler systemConfigHandler;
+
+    @Autowired
+    UserScoreEvaluateProcessor userScoreEvaluateProcessor;
 
     public UserScoreHandler() {
         super("用户评分");
@@ -201,7 +205,36 @@ public class UserScoreHandler extends BaseHandler {
     }
 
     /**
-     * 用户用户评分
+     * 预测
+     * @param preScore 上一次的评分
+     * @return
+     */
+    public int predict(Long userId,int preScore){
+        Double b = userScoreEvaluateProcessor.evaluate(preScore);
+        if(b==null){
+            return -1;
+        }else{
+            return b.intValue();
+        }
+    }
+
+    /**
+     * 获取score
+     * @param scoreMap
+     * @param index
+     * @return
+     */
+    public Integer getScore(Map<String, Integer> scoreMap,int index){
+        Integer score = scoreMap.get(this.createIndexKey(index));
+        if(score==null){
+            //取默认的最后一天的
+            score = scoreMap.get(this.createIndexKey(0));
+        }
+        return score==null ? defaultUserScore : score;
+    }
+
+    /**
+     * 用户评分
      * @param userId
      * @param startDate
      * @param endDate
@@ -227,12 +260,21 @@ public class UserScoreHandler extends BaseHandler {
             }else{
                 dayIndex = DateUtil.getDayOfMonth(us.getStartTime());
             }
-            map.put(dayIndex+"",us.getScore());
+            map.put(this.createIndexKey(dayIndex),us.getScore());
         }
         //设置最后一个为默认值
         if(n>0){
-            map.put("0",list.get(n-1).getScore());
+            map.put(this.createIndexKey(0),list.get(n-1).getScore());
         }
         return map;
+    }
+
+    /**
+     * key规则
+     * @param index
+     * @return
+     */
+    private String createIndexKey(int index){
+        return index+"";
     }
 }

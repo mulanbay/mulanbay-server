@@ -503,11 +503,7 @@ public class BudgetController extends BaseController {
             }
             if(predict){
                 Double pv = null;
-                Integer score = scoreMap.get(key);
-                if(score==null){
-                    //取默认的最后一天的
-                    score = scoreMap.get("0");
-                }
+                Integer score = userScoreHandler.getScore(scoreMap,i);
                 if (sf.getPeriod() == PeriodType.MONTHLY) {
                     pv = budgetHandler.predictMonthRate(userId,month,score,i,needOutBurst);
                 }else{

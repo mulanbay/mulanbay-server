@@ -553,11 +553,7 @@ public class PlanReportController extends BaseController {
             }
             timeData.getData().add(rate);
             if(predict){
-                Integer score = scoreMap.get(key);
-                if(score==null){
-                    //取默认的最后一天的
-                    score = scoreMap.get("0");
-                }
+                Integer score = userScoreHandler.getScore(scoreMap,i);
                 long planConfigId = pr.getUserPlan().getPlanConfig().getId();
                 Map<String,Double> predictValue = null;
                 if (period == PeriodType.MONTHLY) {
