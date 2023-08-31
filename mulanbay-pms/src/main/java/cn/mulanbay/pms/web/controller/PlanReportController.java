@@ -9,7 +9,7 @@ import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
-import cn.mulanbay.pms.common.MLConstant;
+import cn.mulanbay.ai.ml.common.MLConstant;
 import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.handler.ReportHandler;
 import cn.mulanbay.pms.handler.ThreadPoolHandler;

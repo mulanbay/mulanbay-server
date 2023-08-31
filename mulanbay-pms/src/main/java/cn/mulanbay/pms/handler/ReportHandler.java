@@ -5,7 +5,7 @@ import cn.mulanbay.ai.ml.processor.PlanReportYEvaluateProcessor;
 import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.DateUtil;
-import cn.mulanbay.pms.common.MLConstant;
+import cn.mulanbay.ai.ml.common.MLConstant;
 import cn.mulanbay.pms.persistent.domain.PlanReport;
 import cn.mulanbay.pms.persistent.enums.PlanType;
 import cn.mulanbay.pms.web.bean.response.plan.PlanReportPredictVo;

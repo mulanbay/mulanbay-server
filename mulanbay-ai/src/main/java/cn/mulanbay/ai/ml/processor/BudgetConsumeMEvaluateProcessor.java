@@ -1,5 +1,6 @@
 package cn.mulanbay.ai.ml.processor;
 
+import cn.mulanbay.ai.ml.common.MLConstant;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -39,7 +40,7 @@ public class BudgetConsumeMEvaluateProcessor extends AbstractEvaluateProcessor {
      */
     public Double evaluate(int month,int score,int dayIndex){
         Map<String, Number> args = this.createArgs(month,score,dayIndex);
-        return this.evaluateDouble(args,"rate");
+        return this.evaluateDouble(args, MLConstant.RATE_LABEL);
     }
 
     /**

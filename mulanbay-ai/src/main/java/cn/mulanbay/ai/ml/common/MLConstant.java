@@ -1,4 +1,4 @@
-package cn.mulanbay.pms.common;
+package cn.mulanbay.ai.ml.common;
 
 /**
  * 机器学习配置常量
@@ -7,6 +7,11 @@ package cn.mulanbay.pms.common;
  * @create 2023-08-09
  */
 public class MLConstant {
+
+    /**
+     * 通用的rate字段标签
+     */
+    public static final String RATE_LABEL = "rate";
 
     /**
      * 预算消费比例(不包含突发消费)

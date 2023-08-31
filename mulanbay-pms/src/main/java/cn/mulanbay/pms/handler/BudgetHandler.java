@@ -4,7 +4,7 @@ import cn.mulanbay.ai.ml.processor.BudgetConsumeMEvaluateProcessor;
 import cn.mulanbay.ai.ml.processor.BudgetConsumeYEvaluateProcessor;
 import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.DateUtil;
-import cn.mulanbay.pms.common.MLConstant;
+import cn.mulanbay.ai.ml.common.MLConstant;
 import cn.mulanbay.pms.handler.bean.BudgetAmountBean;
 import cn.mulanbay.pms.handler.bean.ConsumeBean;
 import cn.mulanbay.pms.persistent.domain.Budget;
