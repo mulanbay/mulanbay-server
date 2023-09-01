@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,6 +44,12 @@ public class ModelEvaluatorManager {
      */
     @Value("${ml.pmml.verify:false}")
     protected boolean verify;
+
+    /**
+     * 是否需要初始化模型
+     */
+    @Value("${ml.pmml.initModel:true}")
+    protected boolean initModel;
 
     /**
      * 模型文件处理器
@@ -95,10 +102,23 @@ public class ModelEvaluatorManager {
     public void initModuleFiles(){
         if(this.modelHandle==null){
             //默认为文件实现
-            logger.debug("模型文件处理器为空，采用默认的文件实现");
+            logger.info("模型文件处理器为空，采用默认的文件实现");
             ModelHandleFileImpl fi = new ModelHandleFileImpl();
             fi.load();
             this.modelHandle = fi;
+        }
+        if(initModel){
+            List<ModelFile> list = this.modelHandle.getModelFileList();
+            if(StringUtil.isEmpty(list)){
+                logger.warn("模型文件列表为空");
+            }else{
+                for(ModelFile mf : list){
+                    if(!mf.getDu()){
+                        //只有不区分用户的才会初始化
+
+                    }
+                }
+            }
         }
     }
 

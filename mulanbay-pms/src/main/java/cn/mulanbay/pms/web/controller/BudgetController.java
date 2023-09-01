@@ -24,7 +24,9 @@ import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.PeriodType;
 import cn.mulanbay.pms.persistent.service.BudgetService;
 import cn.mulanbay.pms.persistent.service.BuyRecordService;
+import cn.mulanbay.pms.util.BussDayUtil;
 import cn.mulanbay.pms.util.TreeBeanUtil;
+import cn.mulanbay.pms.util.bean.PeriodDateBean;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.GroupType;
@@ -422,24 +424,10 @@ public class BudgetController extends BaseController {
         Boolean needOutBurst = sf.getNeedOutBurst();
         String bussKey = budgetHandler.createBussKey(sf.getPeriod(), bussDay);
         List<BudgetTimeline> list = budgetService.selectBudgetTimelineList(bussKey, userId);
-        String dateFormat = "yyyy-MM";
-        int totalDays =0;
-        //获取评分使用
-        Date startDate;
-        Date endDate;
+        PeriodDateBean pdb = BussDayUtil.calPeriod(bussDay,sf.getPeriod());
         int month = DateUtil.getMonth(bussDay);
-        if (PeriodType.YEARLY == sf.getPeriod()) {
-            dateFormat = "yyyy";
-            totalDays = DateUtil.getYearDays(bussDay);
-            startDate = DateUtil.getYearFirst(bussDay);
-            endDate = DateUtil.getLastDayOfYear(bussDay);
-        }else{
-            totalDays = DateUtil.getMonthDays(bussDay);
-            startDate = DateUtil.getFirstDayOfMonth(bussDay);
-            endDate = DateUtil.getLastDayOfMonth(bussDay);
-        }
         ChartData chartData = new ChartData();
-        chartData.setTitle("[" + DateUtil.getFormatDate(bussDay, dateFormat) + "]预算与消费统计");
+        chartData.setTitle("[" + DateUtil.getFormatDate(bussDay, pdb.getDateFormat()) + "]预算与消费统计");
         List<String> legends = new ArrayList<>();
         if (sf.getStatType() == BudgetTimelineStatSearch.StatType.RATE) {
             legends.add("消费/预算比例");
@@ -455,7 +443,7 @@ public class BudgetController extends BaseController {
         ChartYData predictData = new ChartYData();
         if(predict){
             legends.add("预测值");
-            scoreMap = userScoreHandler.getUserScoreMap(userId,startDate,endDate,sf.getPeriod());
+            scoreMap = userScoreHandler.getUserScoreMap(userId,pdb.getStartDate(),pdb.getEndDate(),sf.getPeriod());
             predictData.setName(legends.get(2));
         }
         chartData.setLegendData(legends.toArray(new String[legends.size()]));
@@ -473,6 +461,7 @@ public class BudgetController extends BaseController {
         }
         BudgetTimeline lastBudget = list.get(list.size()-1);
         //需要以完整的天数为准，因为BudgetTimeline有可能缺失，而且如果是当月的，后续数据也不全
+        int totalDays = pdb.getTotalDays();
         for(int i=1;i<=totalDays;i++){
             String key = i+"";
             if (sf.getPeriod() == PeriodType.MONTHLY) {

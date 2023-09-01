@@ -13,6 +13,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -20,14 +22,15 @@ public class ModelConfigService extends BaseHibernateDao implements ModelHandle 
 
     /**
      * 发布模型
+     *
      * @param bean
      */
-    public void publish(ModelConfig bean){
+    public void publish(ModelConfig bean) {
         try {
             //把其他的都设置为无效
             //todo 后期修改为同时支持多种算法类型，那么前端需要传入算法类型
             String hql = "update ModelConfig set status = ?0 where code=?1 ";
-            this.updateEntities(hql, CommonStatus.DISABLE,bean.getCode());
+            this.updateEntities(hql, CommonStatus.DISABLE, bean.getCode());
 
             bean.setStatus(CommonStatus.ENABLE);
             bean.setLastModifyTime(new Date());
@@ -40,6 +43,7 @@ public class ModelConfigService extends BaseHibernateDao implements ModelHandle 
 
     /**
      * 查询有效的模型文件
+     *
      * @param code
      * @return
      */
@@ -48,17 +52,41 @@ public class ModelConfigService extends BaseHibernateDao implements ModelHandle 
         try {
             String hql = "from ModelConfig where status = ?0  and code=?1  ";
             //只查第一条
-            ModelConfig mc = (ModelConfig) this.getEntityForOne(hql,CommonStatus.ENABLE,code);
-            if(mc==null){
+            ModelConfig mc = (ModelConfig) this.getEntityForOne(hql, CommonStatus.ENABLE, code);
+            if (mc == null) {
                 return null;
-            }else{
+            } else {
                 ModelFile mf = new ModelFile();
-                BeanCopy.copyProperties(mc,mf);
+                BeanCopy.copyProperties(mc, mf);
                 return mf;
             }
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_ERROR,
                     "查询有效的模型文件异常", e);
+        }
+    }
+
+    /**
+     * 模型文件列表
+     *
+     * @return
+     */
+    @Override
+    public List<ModelFile> getModelFileList() {
+        try {
+            String hql = "from ModelConfig where status = ?0 ";
+            List<ModelConfig> mcList = this.getEntityListNoPageHQL(hql, CommonStatus.ENABLE);
+            List<ModelFile> list = mcList.stream().map(
+                    mc -> {
+                        ModelFile mf = new ModelFile();
+                        BeanCopy.copyProperties(mc, mf);
+                        return mf;
+                    }
+            ).collect(Collectors.toList());
+            return list;
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "查询模型文件列表异常", e);
         }
     }
 }

@@ -552,7 +552,11 @@ public class DateUtil {
 
 	/**
 	 * 根据年 月 获取对应的月份 天数
-	 * */
+	 *
+	 * @param year
+	 * @param month
+	 * @return
+	 */
 	public static int getDaysByYearMonth(int year, int month) {
 		Calendar a = Calendar.getInstance();
 		a.set(Calendar.YEAR, year);
@@ -563,6 +567,12 @@ public class DateUtil {
 		return maxDate;
 	}
 
+	/**
+	 * 分钟转换为小时
+	 *
+	 * @param minutes
+	 * @return
+	 */
 	public static double minutesToHours(Double minutes){
 		if(minutes==null){
 			return 0;

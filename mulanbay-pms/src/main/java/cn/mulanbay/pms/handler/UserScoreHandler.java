@@ -206,6 +206,7 @@ public class UserScoreHandler extends BaseHandler {
 
     /**
      * 预测
+     * 该模型并不是很合理
      * @param preScore 上一次的评分
      * @return
      */

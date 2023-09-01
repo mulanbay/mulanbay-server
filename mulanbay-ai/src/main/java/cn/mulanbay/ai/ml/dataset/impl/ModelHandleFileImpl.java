@@ -5,10 +5,8 @@ import cn.mulanbay.ai.ml.dataset.bean.ModelFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 基于文件的实现
@@ -25,6 +23,13 @@ public class ModelHandleFileImpl implements ModelHandle {
     @Override
     public ModelFile getModelFile(String code) {
         return map.get(code);
+    }
+
+    @Override
+    public List<ModelFile> getModelFileList() {
+        List<ModelFile> list =  map.values().stream()
+                .collect(Collectors.toList());
+        return list;
     }
 
     /**

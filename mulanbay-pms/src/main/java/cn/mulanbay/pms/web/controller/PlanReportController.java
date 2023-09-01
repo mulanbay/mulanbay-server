@@ -24,8 +24,10 @@ import cn.mulanbay.pms.persistent.dto.PlanReportResultGroupStat;
 import cn.mulanbay.pms.persistent.dto.PlanReportSummaryStat;
 import cn.mulanbay.pms.persistent.enums.*;
 import cn.mulanbay.pms.persistent.service.PlanService;
+import cn.mulanbay.pms.util.BussDayUtil;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.util.TreeBeanUtil;
+import cn.mulanbay.pms.util.bean.PeriodDateBean;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonTreeSearch;
 import cn.mulanbay.pms.web.bean.request.plan.*;
@@ -471,22 +473,13 @@ public class PlanReportController extends BaseController {
             bussDay = DateUtil.getDate(sf.getYear() + "-" + sf.getMonth() + "-01", DateUtil.FormatDay1);
         }
         Long userId = sf.getUserId();
-        int totalDays =0;
-        //获取评分使用
-        Date startDate;
-        Date endDate;
         int month = DateUtil.getMonth(bussDay);
-        if (PeriodType.YEARLY == period) {
-            totalDays = DateUtil.getYearDays(bussDay);
-            startDate = DateUtil.getYearFirst(bussDay);
-            endDate = DateUtil.getLastDayOfYear(bussDay);
-        }else{
-            totalDays = DateUtil.getMonthDays(bussDay);
-            startDate = DateUtil.getFirstDayOfMonth(bussDay);
-            endDate = DateUtil.getLastDayOfMonth(bussDay);
-        }
-        List<PlanReportTimeline> list = planService.getPlanReportTimelineList(startDate, endDate, sf.getUserPlanId());
+        PeriodDateBean pdb = BussDayUtil.calPeriod(bussDay,period);
+        List<PlanReportTimeline> list = planService.getPlanReportTimelineList(pdb.getStartDate(), pdb.getEndDate(), sf.getUserPlanId());
         ChartData chartData = new ChartData();
+        if (list.isEmpty()) {
+            return callback(chartData);
+        }
         PlanReportTimeline pr0 = list.get(0);
         UserPlan userPlan = pr0.getUserPlan();
         chartData.setTitle(userPlan.getTitle() + "统计");
@@ -507,16 +500,13 @@ public class PlanReportController extends BaseController {
         ChartYData predictCountData = new ChartYData();
         ChartYData predictValueData = new ChartYData();
         if(predict){
-            scoreMap = userScoreHandler.getUserScoreMap(userId,startDate,endDate,period);
+            scoreMap = userScoreHandler.getUserScoreMap(userId,pdb.getStartDate(),pdb.getEndDate(),period);
             legends.add("次数预测值(%)");
             predictCountData.setName("次数预测值(%)");
             legends.add("值预测值(%)");
             predictValueData.setName("值预测值(%)");
         }
         chartData.setLegendData(legends.toArray(new String[legends.size()]));
-        if (list.isEmpty()) {
-            return callback(chartData);
-        }
         //缓存计划报告
         Map<String,PlanReportTimeline> prMap = new HashMap<>();
         PlanType planType = pr0.getUserPlan().getPlanConfig().getPlanType();
@@ -531,6 +521,7 @@ public class PlanReportController extends BaseController {
         }
         PlanReportTimeline lastPr = list.get(list.size()-1);
         //需要以完整的天数为准，因为BudgetTimeline有可能缺失，而且如果是当月的，后续数据也不全
+        int totalDays = pdb.getTotalDays();
         for(int i=1;i<=totalDays;i++){
             String key = i+"";
             if (period == PeriodType.MONTHLY) {

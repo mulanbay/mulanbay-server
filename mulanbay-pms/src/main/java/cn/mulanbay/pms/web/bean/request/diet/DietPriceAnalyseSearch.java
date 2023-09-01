@@ -50,7 +50,15 @@ public class DietPriceAnalyseSearch extends QueryBuilder implements BindUser, Da
     @Query(fieldName = "user_id", op = Parameter.Operator.EQ)
     public Long userId;
 
+    /**
+     * 因为有自定义的类型
+     */
     private String dateGroupTypeStr;
+
+    /**
+     * 是否要预测
+     */
+    private Boolean predict = false;
 
     @Override
     public Date getStartDate() {
@@ -177,5 +185,13 @@ public class DietPriceAnalyseSearch extends QueryBuilder implements BindUser, Da
 
     public void setMinPrice(Double minPrice) {
         this.minPrice = minPrice;
+    }
+
+    public Boolean getPredict() {
+        return predict;
+    }
+
+    public void setPredict(Boolean predict) {
+        this.predict = predict;
     }
 }

@@ -2,6 +2,8 @@ package cn.mulanbay.ai.ml.dataset;
 
 import cn.mulanbay.ai.ml.dataset.bean.ModelFile;
 
+import java.util.List;
+
 /**
  * 模型处理
  *
@@ -16,4 +18,11 @@ public interface ModelHandle {
      * @return
      */
     ModelFile getModelFile(String code);
+
+    /**
+     * 模型文件列表
+     *
+     * @return
+     */
+    List<ModelFile> getModelFileList();
 }

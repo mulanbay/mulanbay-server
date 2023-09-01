@@ -4,6 +4,7 @@ import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.DateUtil;
+import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.common.util.PriceUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
@@ -19,8 +20,10 @@ import cn.mulanbay.pms.persistent.dto.*;
 import cn.mulanbay.pms.persistent.enums.*;
 import cn.mulanbay.pms.persistent.service.AuthService;
 import cn.mulanbay.pms.persistent.service.DietService;
+import cn.mulanbay.pms.util.BussDayUtil;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.util.TreeBeanUtil;
+import cn.mulanbay.pms.util.bean.PeriodDateBean;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.UserCommonRequest;
@@ -383,11 +386,23 @@ public class DietController extends BaseController {
         List<DietPriceAnalyseStat> list = dietService.statDietPrice(sf);
         if (sf.getDateGroupType() == DateGroupType.DAYCALENDAR) {
             return callback(createAnalyseStatPieData(list, sf));
+        }else {
+            return callback(createAnalyseStatLineData(list, sf));
         }
+    }
+
+    /**
+     * 饮食价格分析折线图
+     *
+     * @param list
+     * @param sf
+     * @return
+     */
+    private ChartData createAnalyseStatLineData(List<DietPriceAnalyseStat> list, DietPriceAnalyseSearch sf){
         ChartData chartData = new ChartData();
         chartData.setTitle("饮食价格统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"消费(元)","次数"});
+        chartData.setLegendData(new String[]{"消费(元)","次数","消费预测"});
         //混合图形下使用
         chartData.addYAxis("消费","元");
         chartData.addYAxis("次数","次");
@@ -395,25 +410,65 @@ public class DietController extends BaseController {
         yData1.setName("次数");
         ChartYData yData2 = new ChartYData();
         yData2.setName("消费(元)");
+        ChartYData yData3 = new ChartYData();
+        yData3.setName("消费预测(元)");
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
+        boolean predict = sf.getPredict();
         for (DietPriceAnalyseStat bean : list) {
             chartData.addXData(bean, sf.getDateGroupType());
             yData1.getData().add(bean.getTotalCount());
             yData2.getData().add(bean.getTotalPrice());
+            if(predict){
+                double predictPrice = this.predictPrice(sf.getUserId(),bean.getDateIndexValue(),sf.getDateGroupType(),sf.getStartDate());
+                yData3.getData().add(NumberUtil.getDoubleValue(predictPrice,2));
+            }
             totalCount = totalCount.add(new BigDecimal(bean.getTotalCount().longValue()));
             totalValue = totalValue.add(bean.getTotalPrice());
         }
         chartData.getYdata().add(yData2);
+        chartData.getYdata().add(yData3);
         chartData.getYdata().add(yData1);
         String subTitle = this.getDateTitle(sf, totalCount.longValue() + "次，" + totalValue.doubleValue() + "元");
         chartData.setSubTitle(subTitle);
         chartData = ChartUtil.completeDate(chartData, sf);
-        return callback(chartData);
+        return chartData;
     }
 
+    /**
+     * 预测价格
+     * @param userId
+     * @param indexValue
+     * @param dateGroupType
+     * @param startDate
+     * @return
+     */
+    private double predictPrice(Long userId,int indexValue,DateGroupType dateGroupType,Date startDate){
+        PeriodType period = null;
+        Date bussDay = null;
+        if(dateGroupType==DateGroupType.YEAR){
+            period = PeriodType.YEARLY;
+            bussDay = DateUtil.getDate(indexValue + "-01" + "-01", DateUtil.FormatDay1);
+        }else{
+            period = PeriodType.MONTHLY;
+            //只能在一年内
+            int year = DateUtil.getYear(startDate);
+            bussDay = DateUtil.getDate(year + "-" + indexValue + "-01", DateUtil.FormatDay1);
+        }
+        PeriodDateBean pdb = BussDayUtil.calPeriod(bussDay,period);
+        double price = dietHandler.predictPrice(userId,indexValue,pdb.getStartDate(),pdb.getEndDate(),period);
+        return price;
+    }
+
+    /**
+     * 饮食价格分析饼图：以价格区间分析
+     *
+     * @param list
+     * @param sf
+     * @return
+     */
     private ChartPieData createAnalyseStatPieData(List<DietPriceAnalyseStat> list, DietPriceAnalyseSearch sf) {
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setUnit("元");
@@ -449,7 +504,7 @@ public class DietController extends BaseController {
     }
 
     /**
-     * 以饮食的分类来统计
+     * 饮食价格分析饼图：以饮食的分类来统计
      *
      * @param sf
      * @return
