@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.ai.ml.processor.bean.PlanReportER;
 import cn.mulanbay.business.cache.MCache;
 import cn.mulanbay.business.handler.CacheHandler;
 import cn.mulanbay.common.exception.ApplicationException;
@@ -9,7 +10,6 @@ import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.common.CacheKey;
-import cn.mulanbay.ai.ml.common.MLConstant;
 import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.handler.ReportHandler;
 import cn.mulanbay.pms.handler.UserScoreHandler;
@@ -42,7 +42,6 @@ import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户计划
@@ -148,10 +147,10 @@ public class UserPlanController extends BaseController {
                 PlanReport report = planService.statPlanReport(pc, now, userId, sf.getFilterType());
                 vo.setPlanReport(report);
                 if(predict){
-                    Map<String,Double> pv = reportHandler.predictPlanReport(report);
+                    PlanReportER pv = reportHandler.predictPlanReport(report);
                     if(pv!=null){
-                        vo.setPredictCount(pv.get(MLConstant.PLAN_REPORT_COUNT_LABEL)*report.getPlanCountValue());
-                        vo.setPredictValue(pv.get(MLConstant.PLAN_REPORT_VALUE_LABEL)*report.getPlanValue());
+                        vo.setPredictCount(pv.getCountRate()*report.getPlanCountValue());
+                        vo.setPredictValue(pv.getValueRate()*report.getPlanValue());
                     }
                 }
                 list.add(vo);

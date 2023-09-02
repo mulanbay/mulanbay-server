@@ -2,9 +2,9 @@ package cn.mulanbay.pms.handler;
 
 import cn.mulanbay.ai.ml.processor.BudgetConsumeMEvaluateProcessor;
 import cn.mulanbay.ai.ml.processor.BudgetConsumeYEvaluateProcessor;
+import cn.mulanbay.ai.ml.processor.bean.BudgetConsumeER;
 import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.DateUtil;
-import cn.mulanbay.ai.ml.common.MLConstant;
 import cn.mulanbay.pms.handler.bean.BudgetAmountBean;
 import cn.mulanbay.pms.handler.bean.ConsumeBean;
 import cn.mulanbay.pms.persistent.domain.Budget;
@@ -28,7 +28,6 @@ import org.springframework.stereotype.Component;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 预算处理
@@ -389,12 +388,12 @@ public class BudgetHandler extends BaseHandler {
             if(score==null){
                 score = userScoreHandler.getLatestScore(userId);
             }
-            Map<String,Double> pm = budgetConsumeMEvaluateProcessor.evaluateMulti(month,score,dayIndex);
+            BudgetConsumeER er = budgetConsumeMEvaluateProcessor.evaluateMulti(month,score,dayIndex);
             Double v = null;
             if(needOutBurst){
-                v = pm.get(MLConstant.BUDGET_CONSUME_RATE_LABEL_OB);
+                v = er.getBcRate();
             }else{
-                v = pm.get(MLConstant.BUDGET_CONSUME_RATE_LABEL);
+                v = er.getNcRate();
             }
             return v;
         } catch (Exception e) {
@@ -414,12 +413,12 @@ public class BudgetHandler extends BaseHandler {
             if(score==null){
                 score = userScoreHandler.getLatestScore(userId);
             }
-            Map<String,Double> pm = budgetConsumeYEvaluateProcessor.evaluateMulti(score,dayIndex);
+            BudgetConsumeER er = budgetConsumeYEvaluateProcessor.evaluateMulti(score,dayIndex);
             Double v = null;
             if(needOutBurst){
-                v = pm.get(MLConstant.BUDGET_CONSUME_RATE_LABEL_OB);
+                v = er.getBcRate();
             }else{
-                v = pm.get(MLConstant.BUDGET_CONSUME_RATE_LABEL);
+                v = er.getNcRate();
             }
             return v;
         } catch (Exception e) {

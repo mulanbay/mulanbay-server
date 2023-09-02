@@ -1,5 +1,6 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.ai.ml.processor.bean.PlanReportER;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
@@ -9,7 +10,6 @@ import cn.mulanbay.common.util.StringUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
-import cn.mulanbay.ai.ml.common.MLConstant;
 import cn.mulanbay.pms.common.PmsErrorCode;
 import cn.mulanbay.pms.handler.ReportHandler;
 import cn.mulanbay.pms.handler.ThreadPoolHandler;
@@ -546,14 +546,14 @@ public class PlanReportController extends BaseController {
             if(predict){
                 Integer score = userScoreHandler.getScore(scoreMap,i);
                 long planConfigId = pr.getUserPlan().getPlanConfig().getId();
-                Map<String,Double> predictValue = null;
+                PlanReportER predictValue = null;
                 if (period == PeriodType.MONTHLY) {
                     predictValue = reportHandler.predictMonthRate(userId,planConfigId,month,score,i);
                 }else{
                     predictValue = reportHandler.predictYearRate(userId,planConfigId,score,i);
                 }
-                predictCountData.getData().add(NumberUtil.getDoubleValue(predictValue.get(MLConstant.PLAN_REPORT_COUNT_LABEL)*100,0));
-                predictValueData.getData().add(NumberUtil.getDoubleValue(predictValue.get(MLConstant.PLAN_REPORT_VALUE_LABEL)*100,0));
+                predictCountData.getData().add(NumberUtil.getDoubleValue(predictValue.getCountRate()*100,0));
+                predictValueData.getData().add(NumberUtil.getDoubleValue(predictValue.getValueRate()*100,0));
 
             }
         }

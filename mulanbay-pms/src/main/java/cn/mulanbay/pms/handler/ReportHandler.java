@@ -2,10 +2,10 @@ package cn.mulanbay.pms.handler;
 
 import cn.mulanbay.ai.ml.processor.PlanReportMEvaluateProcessor;
 import cn.mulanbay.ai.ml.processor.PlanReportYEvaluateProcessor;
+import cn.mulanbay.ai.ml.processor.bean.PlanReportER;
 import cn.mulanbay.business.handler.BaseHandler;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.DateUtil;
-import cn.mulanbay.ai.ml.common.MLConstant;
 import cn.mulanbay.pms.persistent.domain.PlanReport;
 import cn.mulanbay.pms.persistent.enums.PlanType;
 import cn.mulanbay.pms.web.bean.response.plan.PlanReportPredictVo;
@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.Map;
 
 /**
  * 报表处理类
@@ -46,11 +45,11 @@ public class ReportHandler extends BaseHandler {
      * @param dayIndex
      * @return
      */
-    public Map<String,Double> predictMonthRate(Long userId,long planConfigId,int month,Integer score,int dayIndex){
+    public PlanReportER predictMonthRate(Long userId, long planConfigId, int month, Integer score, int dayIndex){
         if(score==null){
             score = userScoreHandler.getLatestScore(userId);
         }
-        Map<String,Double> pm = mEvaluateProcessor.evaluateMulti(planConfigId,month,score,dayIndex);
+        PlanReportER pm = mEvaluateProcessor.evaluateMulti(planConfigId,month,score,dayIndex);
         return pm;
     }
 
@@ -62,11 +61,11 @@ public class ReportHandler extends BaseHandler {
      * @param dayIndex
      * @return
      */
-    public Map<String,Double> predictYearRate(Long userId,long planConfigId,Integer score,int dayIndex){
+    public PlanReportER predictYearRate(Long userId,long planConfigId,Integer score,int dayIndex){
         if(score==null){
             score = userScoreHandler.getLatestScore(userId);
         }
-        Map<String,Double> pm = yEvaluateProcessor.evaluateMulti(planConfigId,score,dayIndex);
+        PlanReportER pm = yEvaluateProcessor.evaluateMulti(planConfigId,score,dayIndex);
         return pm;
     }
 
@@ -78,10 +77,10 @@ public class ReportHandler extends BaseHandler {
     public PlanReportPredictVo predictAndSetPlanReport(PlanReport  re){
         PlanReportPredictVo vo = new PlanReportPredictVo();
         BeanCopy.copyProperties(re,vo);
-        Map<String,Double> pv = this.predictPlanReport(re);
+        PlanReportER pv = this.predictPlanReport(re);
         if(pv!=null){
-            vo.setPredictCount(pv.get(MLConstant.PLAN_REPORT_COUNT_LABEL)*re.getPlanCountValue());
-            vo.setPredictValue(pv.get(MLConstant.PLAN_REPORT_VALUE_LABEL)*re.getPlanValue());
+            vo.setPredictCount(pv.getCountRate()*re.getPlanCountValue());
+            vo.setPredictValue(pv.getValueRate()*re.getPlanValue());
         }
         return vo;
     }
@@ -91,14 +90,14 @@ public class ReportHandler extends BaseHandler {
      * @param re
      * @return 返回的比例值
      */
-    public Map<String,Double> predictPlanReport(PlanReport  re){
+    public PlanReportER predictPlanReport(PlanReport  re){
         PlanType planType = re.getUserPlan().getPlanConfig().getPlanType();
         Date bussDay = re.getBussStatDate();
         long userId = re.getUserId();
         int score = userScoreHandler.getScore(userId,bussDay);
         int month = DateUtil.getMonth(bussDay)+1;
         //预测
-        Map<String,Double> pv = null;
+        PlanReportER pv = null;
         if(planType==PlanType.YEAR){
             int dayIndex = DateUtil.getDayOfYear(bussDay);
             pv = this.predictYearRate(userId,re.getUserPlan().getPlanConfig().getId(),score,dayIndex);

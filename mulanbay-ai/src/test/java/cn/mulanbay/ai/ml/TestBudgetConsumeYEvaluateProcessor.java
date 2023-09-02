@@ -1,6 +1,7 @@
 package cn.mulanbay.ai.ml;
 
 import cn.mulanbay.ai.ml.processor.BudgetConsumeYEvaluateProcessor;
+import cn.mulanbay.ai.ml.processor.bean.BudgetConsumeER;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -8,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.util.Assert;
-
-import java.util.Map;
 
 /**
  * @author fenghong
@@ -66,9 +65,9 @@ public class TestBudgetConsumeYEvaluateProcessor {
     public void testMultiEvaluate() {
         for (int score = 0; score <= 100; score++) {
             for (int dayIndex = 1; dayIndex <= 366; dayIndex++) {
-                Map<String, Double> es = evaluateProcessor.evaluateMulti(score, dayIndex);
-                Double predictRate1 = es.get("rate1");
-                Double predictRate2 = es.get("rate2");
+                BudgetConsumeER er = evaluateProcessor.evaluateMulti(score,dayIndex);
+                Double predictRate1 = er.getNcRate();
+                Double predictRate2 = er.getBcRate();
                 String vs1 = "score=" + score + ",dayIndex=" + dayIndex + ",rate1预测值=" + predictRate1;
                 String vs2 = "score=" + score + ",dayIndex=" + dayIndex + ",rate2预测值=" + predictRate2;
                 Assert.notNull(predictRate1, "预测值为空," + vs1);

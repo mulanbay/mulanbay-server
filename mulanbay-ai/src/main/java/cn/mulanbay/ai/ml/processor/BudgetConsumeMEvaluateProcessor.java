@@ -1,6 +1,6 @@
 package cn.mulanbay.ai.ml.processor;
 
-import cn.mulanbay.ai.ml.common.MLConstant;
+import cn.mulanbay.ai.ml.processor.bean.BudgetConsumeER;
 import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
@@ -40,16 +40,20 @@ public class BudgetConsumeMEvaluateProcessor extends AbstractEvaluateProcessor {
      */
     public Double evaluate(int month,int score,int dayIndex){
         Map<String, Number> args = this.createArgs(month,score,dayIndex);
-        return this.evaluateDouble(args, MLConstant.RATE_LABEL);
+        return this.evaluateDouble(args, "rate");
     }
 
     /**
      * 评估(多标签)
      * @return
      */
-    public Map<String,Double> evaluateMulti(int month,int score,int dayIndex){
+    public BudgetConsumeER evaluateMulti(int month,int score,int dayIndex){
         Map<String, Number> args = this.createArgs(month,score,dayIndex);
-        return this.evaluateDoubles(args);
+        Map<String,Double> pm = this.evaluateDoubles(args);
+        BudgetConsumeER er = new BudgetConsumeER();
+        er.setNcRate(pm.get("rate1"));
+        er.setBcRate(pm.get("rate2"));
+        return er;
     }
 
 }
