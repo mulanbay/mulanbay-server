@@ -1,25 +1,27 @@
 package cn.mulanbay.pms.web.controller;
 
 import cn.mulanbay.common.util.BeanCopy;
+import cn.mulanbay.common.util.DateUtil;
+import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
 import cn.mulanbay.pms.handler.RewardPointsHandler;
 import cn.mulanbay.pms.persistent.domain.CommonRecord;
 import cn.mulanbay.pms.persistent.domain.CommonRecordType;
+import cn.mulanbay.pms.persistent.dto.CommonRecordAnalyseStat;
 import cn.mulanbay.pms.persistent.dto.CommonRecordDateStat;
+import cn.mulanbay.pms.persistent.dto.CommonRecordStat;
 import cn.mulanbay.pms.persistent.enums.RewardSource;
+import cn.mulanbay.pms.persistent.enums.ValueType;
+import cn.mulanbay.pms.persistent.service.CommonRecordService;
 import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.TreatService;
 import cn.mulanbay.pms.util.ChartUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
-import cn.mulanbay.pms.web.bean.request.commonrecord.CommonRecordDateStatSearch;
-import cn.mulanbay.pms.web.bean.request.commonrecord.CommonRecordFormRequest;
-import cn.mulanbay.pms.web.bean.request.commonrecord.CommonRecordSearch;
-import cn.mulanbay.pms.web.bean.response.chart.ChartCalendarData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartData;
-import cn.mulanbay.pms.web.bean.response.chart.ChartYData;
+import cn.mulanbay.pms.web.bean.request.commonrecord.*;
+import cn.mulanbay.pms.web.bean.response.chart.*;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,6 +53,9 @@ public class CommonRecordController extends BaseController {
 
     @Autowired
     DataService dataService;
+
+    @Autowired
+    CommonRecordService commonRecordService;
 
     @Autowired
     RewardPointsHandler rewardPointsHandler;
@@ -95,7 +100,7 @@ public class CommonRecordController extends BaseController {
 
 
     /**
-     * 创建
+     * 查询
      *
      * @return
      */
@@ -103,6 +108,40 @@ public class CommonRecordController extends BaseController {
     public ResultBean get(@Valid CommonBeanGetRequest getRequest) {
         CommonRecord bean = this.getUserEntity(beanClass, getRequest.getId(), getRequest.getUserId());
         return callback(bean);
+    }
+
+    /**
+     * 查询最新
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getLatest", method = RequestMethod.GET)
+    public ResultBean getLatest(@Valid CommonRecordLatestSearch ls) {
+        CommonRecordSearch sf = new CommonRecordSearch();
+        BeanCopy.copyProperties(ls,sf);
+        PageRequest pr = sf.buildQuery();
+        pr.setBeanClass(beanClass);
+        Sort sort = new Sort("occurTime", Sort.DESC);
+        pr.addSort(sort);
+        pr.setPage(1);
+        pr.setPageSize(1);
+        List<CommonRecord> list = baseService.getBeanList(pr);
+        if(list.isEmpty()){
+            return callback(null);
+        }else{
+            return callback(list.get(0));
+        }
+    }
+
+    /**
+     * 统计
+     *
+     * @return
+     */
+    @RequestMapping(value = "/stat", method = RequestMethod.GET)
+    public ResultBean stat(@Valid CommonRecordStatSearch ls) {
+        CommonRecordStat stat = commonRecordService.statCommonRecord(ls);
+        return callback(stat);
     }
 
     /**
@@ -131,6 +170,85 @@ public class CommonRecordController extends BaseController {
     public ResultBean delete(@RequestBody @Valid CommonBeanDeleteRequest deleteRequest) {
         this.deleteUserEntity(beanClass,deleteRequest.getIds(),Long.class,deleteRequest.getUserId());
         return callback(null);
+    }
+
+    /**
+     * 分析
+     *
+     * @return
+     */
+    @RequestMapping(value = "/analyse")
+    public ResultBean analyse(@Valid CommonRecordAnalyseSearch sf) {
+        CommonRecordType crt = this.getUserEntity(CommonRecordType.class, sf.getCommonRecordTypeId(), sf.getUserId());
+        List<CommonRecordAnalyseStat> list = commonRecordService.analyse(sf);
+        ChartPieData chartPieData = new ChartPieData();
+        chartPieData.setTitle("["+crt.getName()+"]记录分析");
+        chartPieData.setUnit(sf.getValueType().getName());
+        ChartPieSerieData serieData = new ChartPieSerieData();
+        serieData.setName("类型");
+        ValueType valueType = sf.getValueType();
+        for (CommonRecordAnalyseStat bean : list) {
+            chartPieData.getXdata().add(bean.getName());
+            ChartPieSerieDetailData dataDetail = new ChartPieSerieDetailData();
+            dataDetail.setName(bean.getName());
+            if(valueType==ValueType.TIMES){
+                dataDetail.setValue(bean.getTotalCount());
+            }else if(valueType==ValueType.MINUTE){
+                dataDetail.setValue(bean.getTotalValue());
+            }else if(valueType==ValueType.HOUR){
+                dataDetail.setValue(NumberUtil.getDoubleValue(bean.getTotalValue().doubleValue()/60,2));
+            }
+            serieData.getData().add(dataDetail);
+        }
+        chartPieData.getDetailData().add(serieData);
+        return callback(chartPieData);
+    }
+
+    /**
+     * 时间线
+     *
+     * @return
+     */
+    @RequestMapping(value = "/timeline")
+    public ResultBean timeline(@Valid CommonRecordTimelineSearch sf) {
+        CommonRecordType crt = this.getUserEntity(CommonRecordType.class, sf.getCommonRecordTypeId(), sf.getUserId());
+        ChartData chartData = new ChartData();
+        chartData.setTitle("["+crt.getName()+"]时间线分析");
+        chartData.setUnit("分钟");
+        //混合图形下使用
+        chartData.addYAxis("时长","分钟");
+        chartData.addYAxis("天数","天");
+        chartData.setLegendData(new String[]{"时长","距离上次"});
+        ChartYData yData1 = new ChartYData();
+        yData1.setName("时长");
+        ChartYData yData2 = new ChartYData();
+        yData2.setName("距离上次");
+        CommonRecordSearch crs = new CommonRecordSearch();
+        crs.setCommonRecordTypeId(sf.getCommonRecordTypeId());
+        crs.setUserId(sf.getUserId());
+        crs.setStartDate(sf.getStartDate());
+        crs.setEndDate(sf.getEndDate());
+        PageRequest pr = crs.buildQuery();
+        pr.setBeanClass(beanClass);
+        Sort sort = new Sort("occurTime", Sort.ASC);
+        pr.addSort(sort);
+        pr.setPage(PageRequest.NO_PAGE);
+        List<CommonRecord> list = baseService.getBeanList(pr);
+        Date lastDate = null;
+        for (CommonRecord bean : list) {
+            Date dt = bean.getOccurTime();
+            chartData.getXdata().add(DateUtil.getFormatDate(dt, DateUtil.FormatDay1));
+            yData1.getData().add(bean.getValue());
+            int days =0;
+            if(lastDate!=null){
+                days = DateUtil.getIntervalDays(lastDate,dt);
+            }
+            yData2.getData().add(days);
+            lastDate = dt;
+        }
+        chartData.getYdata().add(yData1);
+        chartData.getYdata().add(yData2);
+        return callback(chartData);
     }
 
     /**
