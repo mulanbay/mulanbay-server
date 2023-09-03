@@ -130,14 +130,12 @@ public class ReadingRecordDetailController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("阅读统计");
         //chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"小时","次数"});
+        chartData.setLegendData(new String[]{"时长","次数"});
         //混合图形下使用
         chartData.addYAxis("时长","小时");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("小时");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("时长","小时");
         //总的值
         BigDecimal totalCounts = new BigDecimal(0);
         BigDecimal totalMinutes = new BigDecimal(0);

@@ -835,14 +835,12 @@ public class BuyRecordController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("消费统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"消费(元)","次数"});
-        //混合图形下使用
+        chartData.setLegendData(new String[]{"消费","次数"});
+        //混合图形下使用(最后一组数据默认为次数)
         chartData.addYAxis("消费","元");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("消费(元)");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("消费","元");
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         //总的值
@@ -873,8 +871,9 @@ public class BuyRecordController extends BaseController {
         if (sf.getDateGroupType() == DateGroupType.DAY) {
             return callback(createChartCalandarMultiData(sf));
         }
+        String unit = sf.getGroupType().getUnit();
         ChartData chartData = initYoyCharData(sf, "消费统计同期对比", null);
-        chartData.setUnit(sf.getGroupType().getUnit());
+        chartData.setUnit(unit);
         String[] legendData = new String[sf.getYears().size()];
         for (int i = 0; i < sf.getYears().size(); i++) {
             legendData[i] = sf.getYears().get(i).toString();
@@ -882,6 +881,7 @@ public class BuyRecordController extends BaseController {
             BuyRecordDateStatSearch dateSearch = generateSearch(sf.getYears().get(i), sf);
             ChartYData yData = new ChartYData();
             yData.setName(sf.getYears().get(i).toString());
+            yData.setUnit(unit);
             List<BuyRecordDateStat> list = buyRecordService.statBuyRecordByDate(dateSearch);
             //临时内容，作为补全用
             ChartData temp = new ChartData();
@@ -964,14 +964,12 @@ public class BuyRecordController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("关键字统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"消费(元)","次数"});
+        chartData.setLegendData(new String[]{"消费","次数"});
         //混合图形下使用
         chartData.addYAxis("消费","元");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("消费(元)");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("消费","元");
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         //总的值
@@ -1002,8 +1000,9 @@ public class BuyRecordController extends BaseController {
         List<BuyRecordRealTimeStat> list = buyRecordService.getAnalyseStat(basf);
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("[" + basf.getKeywords() + "]的消费分析");
+        chartPieData.setUnit("元");
         ChartPieSerieData serieData = new ChartPieSerieData();
-        serieData.setName("费用(元)");
+        serieData.setName("费用");
         //总的值
         double totalValue = 0;
         for (BuyRecordRealTimeStat bean : list) {

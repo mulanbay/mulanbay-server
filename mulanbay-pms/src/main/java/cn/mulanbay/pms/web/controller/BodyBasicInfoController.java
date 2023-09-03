@@ -144,12 +144,9 @@ public class BodyBasicInfoController extends BaseController {
         //混合图形下使用
         chartData.addYAxis("身高/体重","");
         chartData.addYAxis("BMI指数","");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("身高");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("体重");
-        ChartYData yData3 = new ChartYData();
-        yData3.setName("BMI");
+        ChartYData yData1 = new ChartYData("身高","cm");
+        ChartYData yData2 = new ChartYData("体重","kg");
+        ChartYData yData3 = new ChartYData("BMI","kg/m2");
         for (BodyBasicInfoDateStat bean : list) {
             chartData.addXData(bean, sf.getDateGroupType());
             yData1.getData().add(NumberUtil.getAverageValue(bean.getTotalHeight().doubleValue(), bean.getTotalCount().intValue(), 0));
@@ -170,6 +167,17 @@ public class BodyBasicInfoController extends BaseController {
      */
     @RequestMapping(value = "/yoyStat")
     public ResultBean yoyStat(@Valid BodyBasicInfoYoyStatSearch sf) {
+        GroupType groupType = sf.getGroupType();
+        String unit = null;
+        if (groupType == GroupType.COUNT) {
+            unit= "次";
+        } else if (groupType == GroupType.WEIGHT) {
+            unit= "kg";
+        } else if (groupType == GroupType.HEIGHT) {
+            unit= "cm";
+        } else if (groupType == GroupType.BMI) {
+            unit= "kg/m2";
+        }
         ChartData chartData = initYoyCharData(sf, "身体基本情况同期对比", null);
         String[] legendData = new String[sf.getYears().size()];
         for (int i = 0; i < sf.getYears().size(); i++) {
@@ -180,8 +188,7 @@ public class BodyBasicInfoController extends BaseController {
             dateSearch.setStartDate(DateUtil.getDate(sf.getYears().get(i) + "-01-01", DateUtil.FormatDay1));
             dateSearch.setEndDate(DateUtil.getDate(sf.getYears().get(i) + "-12-31", DateUtil.FormatDay1));
             dateSearch.setUserId(sf.getUserId());
-            ChartYData yData = new ChartYData();
-            yData.setName(sf.getYears().get(i).toString());
+            ChartYData yData = new ChartYData(sf.getYears().get(i).toString(),unit);
             List<BodyBasicInfoDateStat> list = treatService.statDateBodyBasicInfo(dateSearch);
             //临时内容，作为补全用
             ChartData temp = new ChartData();
@@ -194,13 +201,13 @@ public class BodyBasicInfoController extends BaseController {
                 } else {
                     temp.getXdata().add(bean.getDateIndexValue().toString());
                 }
-                if (sf.getGroupType() == GroupType.COUNT) {
+                if (groupType == GroupType.COUNT) {
                     yData.getData().add(bean.getTotalCount());
-                } else if (sf.getGroupType() == GroupType.WEIGHT) {
+                } else if (groupType == GroupType.WEIGHT) {
                     yData.getData().add(NumberUtil.getAverageValue(bean.getTotalWeight().doubleValue(), bean.getTotalCount().intValue(), 1));
-                } else if (sf.getGroupType() == GroupType.HEIGHT) {
+                } else if (groupType == GroupType.HEIGHT) {
                     yData.getData().add(NumberUtil.getAverageValue(bean.getTotalHeight().doubleValue(), bean.getTotalCount().intValue(), 1));
-                } else if (sf.getGroupType() == GroupType.BMI) {
+                } else if (groupType == GroupType.BMI) {
                     yData.getData().add(NumberUtil.getAverageValue(bean.getTotalBmi().doubleValue(), bean.getTotalCount().intValue(), 1));
                 }
             }

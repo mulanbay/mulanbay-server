@@ -263,10 +263,18 @@ public class TreatRecordController extends BaseController {
      * @return
      */
     private ChartPieData createAnalyseStatPieData(List<TreatRecordAnalyseStat> list, TreatRecordAnalyseStatSearch sf) {
+        String unit;
+        if (sf.getGroupType() == GroupType.COUNT) {
+            unit = "次";
+        } else {
+            unit = "元";
+        }
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("看病记录分析");
+        chartPieData.setUnit(unit);
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName(sf.getGroupType().getName());
+        serieData.setUnit(unit);
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         //总的值
@@ -301,10 +309,8 @@ public class TreatRecordController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("看病记录分析");
         chartData.setLegendData(new String[]{"费用","次数"});
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("费用");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("次数");
+        ChartYData yData1 = new ChartYData("费用","元");
+        ChartYData yData2 = new ChartYData("次数","次");
         //混合图形下使用
         chartData.addYAxis("费用","元");
         chartData.addYAxis("次数","次");
@@ -354,10 +360,8 @@ public class TreatRecordController extends BaseController {
         //混合图形下使用
         chartData.addYAxis("费用","元");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("费用");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("费用","元");
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         //总的值
@@ -413,14 +417,19 @@ public class TreatRecordController extends BaseController {
         if (sf.getDateGroupType() == DateGroupType.DAY) {
             return callback(createChartCalandarMultiData(sf));
         }
+        String unit;
+        if (sf.getGroupType() == GroupType.COUNT) {
+            unit = "次";
+        } else {
+            unit = sf.getGroupType().getUnit();
+        }
         ChartData chartData = initYoyCharData(sf, "看病记录同期对比", null);
-        chartData.setUnit(sf.getGroupType().getUnit());
+        chartData.setUnit(unit);
         String[] legendData = new String[sf.getYears().size()];
         for (int i = 0; i < sf.getYears().size(); i++) {
             legendData[i] = sf.getYears().get(i).toString();
             TreatRecordDateStatSearch monthStatSearch = this.generateSearch(sf.getYears().get(i), sf);
-            ChartYData yData = new ChartYData();
-            yData.setName(sf.getYears().get(i).toString());
+            ChartYData yData = new ChartYData(sf.getYears().get(i).toString(),unit);
             List<TreatRecordDateStat> list = treatService.statDateTreatRecord(monthStatSearch);
             //临时内容，作为补全用
             ChartData temp = new ChartData();

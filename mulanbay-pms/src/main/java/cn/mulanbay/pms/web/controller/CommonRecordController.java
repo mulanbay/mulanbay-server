@@ -186,6 +186,7 @@ public class CommonRecordController extends BaseController {
         chartPieData.setUnit(sf.getValueType().getName());
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("类型");
+        serieData.setUnit(sf.getValueType().getName());
         ValueType valueType = sf.getValueType();
         for (CommonRecordAnalyseStat bean : list) {
             chartPieData.getXdata().add(bean.getName());
@@ -219,10 +220,8 @@ public class CommonRecordController extends BaseController {
         chartData.addYAxis("时长","分钟");
         chartData.addYAxis("天数","天");
         chartData.setLegendData(new String[]{"时长","距离上次"});
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("时长");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("距离上次");
+        ChartYData yData1 = new ChartYData("时长","分钟");
+        ChartYData yData2 = new ChartYData("距离上次","天");
         CommonRecordSearch crs = new CommonRecordSearch();
         crs.setCommonRecordTypeId(sf.getCommonRecordTypeId());
         crs.setUserId(sf.getUserId());
@@ -306,8 +305,7 @@ public class CommonRecordController extends BaseController {
         chartData.setTitle(crt.getName() + "统计");
         chartData.setSubTitle(this.getDateTitle(sf));
         chartData.setLegendData(new String[]{"次数"});
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
+        ChartYData yData1 = new ChartYData("次数","次");
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
         for (String key : map.keySet()) {
@@ -335,14 +333,12 @@ public class CommonRecordController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle(crt.getName() + "统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{crt.getUnit(),"次数"});
+        chartData.setLegendData(new String[]{"时长","次数"});
         //混合图形下使用
-        chartData.addYAxis("值",crt.getUnit());
+        chartData.addYAxis("时长",crt.getUnit());
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName(crt.getUnit());
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("时长",crt.getUnit());
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
         for (CommonRecordDateStat bean : list) {

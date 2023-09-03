@@ -151,8 +151,7 @@ public class MusicPracticeTuneController extends BaseController {
         chartData.setTitle(musicPracticeService.getMusicInstrumentName(sf.getMusicInstrumentId()) + "练习曲子统计");
         chartData.setUnit("次");
         chartData.setLegendData(new String[]{"次数"});
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
+        ChartYData yData1 = new ChartYData("次数","次");
         for (MusicPracticeTuneStat bean : list) {
             chartData.getXdata().add(bean.getName());
             yData1.getData().add(bean.getTotalTimes());

@@ -154,14 +154,12 @@ public class IncomeController extends BaseController {
         List<IncomeDateStat> list = incomeService.statDateIncome(sf);
         ChartData chartData = new ChartData();
         chartData.setTitle(getChartTitle(sf.getAccountId(), sf.getUserId()));
-        chartData.setLegendData(new String[]{"收入(元)","次数"});
+        chartData.setLegendData(new String[]{"收入","次数"});
         //混合图形下使用
-        chartData.addYAxis("收入(元)","元");
+        chartData.addYAxis("收入","元");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("收入(元)");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("收入","元");
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
         BigDecimal totalValue = new BigDecimal(0);

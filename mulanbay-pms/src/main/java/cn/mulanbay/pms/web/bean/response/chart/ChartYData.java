@@ -28,9 +28,9 @@ public class ChartYData {
         this.name = name;
     }
 
-    public ChartYData(String name, String stack) {
+    public ChartYData(String name, String unit) {
         this.name = name;
-        this.stack = stack;
+        this.unit = unit;
     }
 
     public String getName() {

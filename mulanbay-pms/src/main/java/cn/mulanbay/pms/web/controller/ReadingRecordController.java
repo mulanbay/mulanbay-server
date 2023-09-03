@@ -288,8 +288,7 @@ public class ReadingRecordController extends BaseController {
         //chartData.setSubTitle(this.getDateTitle(sf));
         chartData.setUnit("本");
         chartData.setLegendData(new String[]{"本数"});
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("本数");
+        ChartYData yData1 = new ChartYData("本数","本");
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         for (ReadingRecordDateStat bean : list) {
@@ -406,6 +405,7 @@ public class ReadingRecordController extends BaseController {
         chartPieData.setUnit("本");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("本数");
+        serieData.setUnit("本");
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         for (ReadingRecordAnalyseStat bean : list) {

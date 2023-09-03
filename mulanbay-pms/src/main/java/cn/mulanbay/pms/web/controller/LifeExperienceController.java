@@ -652,10 +652,8 @@ public class LifeExperienceController extends BaseController {
         //混合图形下使用
         chartData.addYAxis("天数","天");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("天数");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("天数","天");
         for (LifeExperienceDateStat bean : list) {
             chartData.addXData(bean, sf.getDateGroupType());
             yData1.getData().add(bean.getTotalCount());
@@ -686,8 +684,7 @@ public class LifeExperienceController extends BaseController {
             dateSearch.setEndDate(DateUtil.getDate(sf.getYears().get(i) + "-12-31", DateUtil.FormatDay1));
             dateSearch.setUserId(sf.getUserId());
             dateSearch.setIntTypes(sf.getTypes());
-            ChartYData yData = new ChartYData();
-            yData.setName(sf.getYears().get(i).toString());
+            ChartYData yData = new ChartYData(sf.getYears().get(i).toString(),sf.getGroupType().getUnit());
             List<LifeExperienceDateStat> list = lifeExperienceService.statDateLifeExperience(dateSearch);
             //临时内容，作为补全用
             ChartData temp = new ChartData();

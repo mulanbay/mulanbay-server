@@ -13,6 +13,8 @@ public class ChartPieSerieData {
 
     private String name;
 
+    private String unit;
+
     private List<ChartPieSerieDetailData> data = new ArrayList<>();
 
     public String getName() {
@@ -21,6 +23,14 @@ public class ChartPieSerieData {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     /**

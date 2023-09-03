@@ -198,6 +198,7 @@ public class AccountController extends BaseController {
         }
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle(title);
+        chartPieData.setUnit("元");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("账户");
         //总的值

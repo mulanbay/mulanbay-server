@@ -445,10 +445,8 @@ public class BudgetController extends BaseController {
             predictData.setName(legends.get(2));
         }
         chartData.setLegendData(legends.toArray(new String[legends.size()]));
-        ChartYData cbData = new ChartYData();
-        cbData.setName(legends.get(0));
-        ChartYData timeData = new ChartYData();
-        timeData.setName(legends.get(1));
+        ChartYData cbData = new ChartYData(legends.get(0),chartData.getUnit());
+        ChartYData timeData = new ChartYData(legends.get(1),chartData.getUnit());
         if (list.isEmpty()) {
             return callback(chartData);
         }

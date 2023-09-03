@@ -263,6 +263,7 @@ public class DietController extends BaseController {
         ChartCalendarPieData pieData = new ChartCalendarPieData(UserBehaviorType.LIFE);
         String monthString = DateUtil.getFormatDate(startTime, "yyyyMM");
         pieData.setTitle(monthString + "饮食习惯分析");
+        pieData.setUnit("次");
         pieData.setStartDate(startTime);
         List<Diet> list = dietService.getDietList(startTime, endTime, sf.getUserId(), sf.getDietSource(), sf.getDietType(), sf.getFoodType());
         for (Diet stat : list) {
@@ -402,16 +403,13 @@ public class DietController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("饮食价格统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{"消费(元)","次数","消费预测"});
+        chartData.setLegendData(new String[]{"消费","次数","预测"});
         //混合图形下使用
         chartData.addYAxis("消费","元");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("消费(元)");
-        ChartYData yData3 = new ChartYData();
-        yData3.setName("消费预测(元)");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("消费","元");
+        ChartYData yData3 = new ChartYData("预测","元");
         //总的值
         BigDecimal totalValue = new BigDecimal(0);
         //总的值
@@ -683,8 +681,7 @@ public class DietController extends BaseController {
         chartData.setTitle("饮食分析");
         chartData.setUnit("次");
         chartData.setLegendData(new String[]{"食物"});
-        ChartYData yData = new ChartYData();
-        yData.setName("食物");
+        ChartYData yData = new ChartYData("食物","次");
         Map<String, DietAnalyseStat> map = this.getDietAnalyseStat(sf);
         // 将map.entrySet()转换成list
         List<Map.Entry<String, DietAnalyseStat>> list = new ArrayList<>(map.entrySet());

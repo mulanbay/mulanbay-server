@@ -78,8 +78,8 @@ public class AccountFlowController extends BaseController {
         //混合图形下使用
         chartData.addYAxis("余额","元");
         chartData.addYAxis("变化值","元");
-        ChartYData yData = new ChartYData("账户余额");
-        ChartYData y2Data = new ChartYData("账户变化值");
+        ChartYData yData = new ChartYData("账户余额","元");
+        ChartYData y2Data = new ChartYData("账户变化值","元");
         for (AccountFlow bean : qr.getBeanList()) {
             chartData.getXdata().add(DateUtil.getFormatDate(bean.getCreatedTime(), DateUtil.FormatDay1));
             yData.getData().add(PriceUtil.changeToString(0,bean.getAfterAmount()));

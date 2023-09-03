@@ -346,14 +346,14 @@ public class SportExerciseController extends BaseController {
         } else {
             chartData.setLegendData(new String[]{totalKey, "锻炼次数"});
         }
-        ChartYData kilometresData = new ChartYData(totalKey);
-        ChartYData averageKilometresData = new ChartYData(averKey);
-        ChartYData minutesData = new ChartYData("锻炼时间");
-        ChartYData speedData = new ChartYData("平均速度");
-        ChartYData paceData = new ChartYData("配速");
-        ChartYData maxHeartRateData = new ChartYData("最大心率");
-        ChartYData averageHeartRateData = new ChartYData("平均心率");
-        ChartYData countData = new ChartYData("锻炼次数");
+        ChartYData kilometresData = new ChartYData(totalKey,unit);
+        ChartYData averageKilometresData = new ChartYData(averKey,unit);
+        ChartYData minutesData = new ChartYData("锻炼时间","分钟");
+        ChartYData speedData = new ChartYData("平均速度","公里/小时");
+        ChartYData paceData = new ChartYData("配速","分钟/公里");
+        ChartYData maxHeartRateData = new ChartYData("最大心率","次/分钟");
+        ChartYData averageHeartRateData = new ChartYData("平均心率","次/分钟");
+        ChartYData countData = new ChartYData("锻炼次数","次");
         List<SportExerciseDateStat> list = sportExerciseService.statDateSportExercise(sf);
         for (SportExerciseDateStat bean : list) {
             chartData.addXData(bean, sf.getDateGroupType());
@@ -399,19 +399,20 @@ public class SportExerciseController extends BaseController {
         SportType sp =this.getUserEntity(SportType.class,sf.getSportTypeId(),sf.getUserId());
         String title = "["+sp.getName()+"]运动锻炼同期对比";
         ChartData chartData = initYoyCharData(sf, title, null);
+        String unit = sp.getUnit();
         if(sf.getGroupType()== GroupType.KILOMETRES){
-            chartData.setUnit(sp.getUnit());
+            unit = sp.getUnit();
         }else{
-            chartData.setUnit(sf.getGroupType().getUnit());
+            unit = sf.getGroupType().getUnit();
         }
+        chartData.setUnit(unit);
         String[] legendData = new String[sf.getYears().size()];
         //是否统计值（参数只对公里数、锻炼时间有效）
         boolean isSum = sf.getSumValue() == null ? true : sf.getSumValue();
         for (int i = 0; i < sf.getYears().size(); i++) {
             legendData[i] = sf.getYears().get(i).toString();
             //数据,为了代码复用及统一，统计还是按照日期的统计
-            ChartYData yData = new ChartYData();
-            yData.setName(sf.getYears().get(i).toString());
+            ChartYData yData = new ChartYData(sf.getYears().get(i).toString(),unit);
             SportExerciseDateStatSearch dateSearch = generateSearch(sf.getYears().get(i), sf);
             List<SportExerciseDateStat> list = sportExerciseService.statDateSportExercise(dateSearch);
             //临时内容，作为补全用

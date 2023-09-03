@@ -398,10 +398,8 @@ public class PlanReportController extends BaseController {
         //混合图形下使用
         chartData.addYAxis("数值",userPlan.getPlanConfig().getUnit());
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("值(" + userPlan.getPlanConfig().getUnit() + ")");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("值",userPlan.getPlanConfig().getUnit());
 
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
@@ -486,25 +484,24 @@ public class PlanReportController extends BaseController {
         chartData.setUnit("%");
         chartData.setSubTitle("计划次数:" + pr0.getPlanCountValue() + ",计划值:" + pr0.getPlanValue() + "(" + userPlan.getPlanConfig().getUnit() + ")");
         List<String> legends = new ArrayList<>();
-        legends.add("计划次数完成进度(%)");
-        legends.add("计划值完成进度(%)");
-        legends.add("时间进度(%)");
-        ChartYData countData = new ChartYData();
-        countData.setName("计划次数完成进度(%)");
-        ChartYData valueData = new ChartYData();
-        valueData.setName("计划值完成进度(%)");
-        ChartYData timeData = new ChartYData();
-        timeData.setName("时间进度(%)");
+        legends.add("计划次数完成进度");
+        legends.add("计划值完成进度");
+        legends.add("时间进度");
+        ChartYData countData = new ChartYData("计划次数完成进度","%");
+        ChartYData valueData = new ChartYData("计划值完成进度","%");
+        ChartYData timeData = new ChartYData("时间进度","%");
         boolean predict = sf.getPredict();
         Map<String, Integer> scoreMap = null;
         ChartYData predictCountData = new ChartYData();
         ChartYData predictValueData = new ChartYData();
         if(predict){
             scoreMap = userScoreHandler.getUserScoreMap(userId,pdb.getStartDate(),pdb.getEndDate(),period);
-            legends.add("次数预测值(%)");
-            predictCountData.setName("次数预测值(%)");
-            legends.add("值预测值(%)");
-            predictValueData.setName("值预测值(%)");
+            legends.add("次数预测值");
+            predictCountData.setName("次数预测值");
+            predictCountData.setUnit("%");
+            legends.add("值预测值");
+            predictValueData.setName("值预测值");
+            predictValueData.setUnit("%");
         }
         chartData.setLegendData(legends.toArray(new String[legends.size()]));
         //缓存计划报告

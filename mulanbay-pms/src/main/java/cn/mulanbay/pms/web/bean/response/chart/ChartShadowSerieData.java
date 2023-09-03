@@ -14,12 +14,15 @@ public class ChartShadowSerieData {
 
     private String name;
 
+    private String unit;
+
     private String stack;
 
     private List<String> data = new ArrayList<>();
 
-    public ChartShadowSerieData(String name, String stack) {
+    public ChartShadowSerieData(String name, String unit, String stack) {
         this.name = name;
+        this.unit = unit;
         this.stack = stack;
     }
 
@@ -33,6 +36,14 @@ public class ChartShadowSerieData {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getUnit() {
+        return unit;
+    }
+
+    public void setUnit(String unit) {
+        this.unit = unit;
     }
 
     public String getStack() {

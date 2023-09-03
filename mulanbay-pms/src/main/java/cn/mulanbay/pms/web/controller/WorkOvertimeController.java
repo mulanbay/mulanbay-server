@@ -163,16 +163,13 @@ public class WorkOvertimeController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("加班统计");
         chartData.setSubTitle(this.getDateTitle(sf));
-        chartData.setLegendData(new String[]{ "总时长(小时)", "平均每天加班(小时)","次数"});
+        chartData.setLegendData(new String[]{ "总时长", "平均每天加班","次数"});
         //混合图形下使用
         chartData.addYAxis("时长","小时");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("总时长(小时)");
-        ChartYData yData3 = new ChartYData();
-        yData3.setName("平均每天加班(小时)");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("总时长","小时");
+        ChartYData yData3 = new ChartYData("平均每天加班","小时");
         double monthWorkDays = systemConfigHandler.getDoubleConfig("work.days.of.month");
         double weekWorkDays = systemConfigHandler.getDoubleConfig("work.days.of.week");
         double yearWorkDays = systemConfigHandler.getDoubleConfig("work.days.of.year");

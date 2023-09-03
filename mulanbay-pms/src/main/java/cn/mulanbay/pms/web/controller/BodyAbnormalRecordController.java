@@ -224,7 +224,7 @@ public class BodyAbnormalRecordController extends BaseController {
         chartData.setTitle("身体不适统计");
         chartData.setUnit("次");
         chartData.setLegendData(new String[]{"次数"});
-        ChartYData yData = new ChartYData("次数");
+        ChartYData yData = new ChartYData("次数","次");
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
         for (BodyAbnormalRecordStat bean : list) {
@@ -256,10 +256,8 @@ public class BodyAbnormalRecordController extends BaseController {
         //混合图形下使用
         chartData.addYAxis("持续天数","天");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("持续天数");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("持续天数","天");
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
         for (BodyAbnormalRecordDateStat bean : list) {

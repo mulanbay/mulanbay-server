@@ -134,10 +134,10 @@ public class LifeExperienceSumController extends BaseController {
         chartShadowData.addLegend("旅行");
         chartShadowData.addLegend("工作");
         chartShadowData.addLegend("休息");
-        ChartShadowSerieData studySerie = new ChartShadowSerieData("学习", "总量");
-        ChartShadowSerieData travelSerie = new ChartShadowSerieData("旅行", "总量");
-        ChartShadowSerieData workSerie = new ChartShadowSerieData("工作", "总量");
-        ChartShadowSerieData restSerie = new ChartShadowSerieData("休息", "总量");
+        ChartShadowSerieData studySerie = new ChartShadowSerieData("学习", "天", "总量");
+        ChartShadowSerieData travelSerie = new ChartShadowSerieData("旅行", "天", "总量");
+        ChartShadowSerieData workSerie = new ChartShadowSerieData("工作", "天", "总量");
+        ChartShadowSerieData restSerie = new ChartShadowSerieData("休息", "天", "总量");
         int totalDays = 0;
         int totalStudyDays = 0;
         int totalWorkDays = 0;
@@ -163,6 +163,7 @@ public class LifeExperienceSumController extends BaseController {
 
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("总时间统计");
+        chartPieData.setUnit("天");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("天数");
         //学习

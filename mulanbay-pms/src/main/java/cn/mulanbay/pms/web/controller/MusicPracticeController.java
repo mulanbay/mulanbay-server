@@ -216,7 +216,6 @@ public class MusicPracticeController extends BaseController {
         }
         // 获取乐器的分析信息
         List<MusicPracticeInstrumentStat> list = musicPracticeService.musicPracticeInstrumentStat(sf);
-        //统计医保、个人的支付比例
         ChartPieData chartPieData = new ChartPieData();
         chartPieData.setTitle("音乐练习统计");
         chartPieData.setSubTitle(this.getDateTitle(sf));
@@ -269,18 +268,14 @@ public class MusicPracticeController extends BaseController {
         List<MusicPracticeDateStat> list = musicPracticeService.statDateMusicPractice(sf);
         ChartData chartData = new ChartData();
         chartData.setTitle(getChartTitle(sf.getMusicInstrumentId()));
-        chartData.setLegendData(new String[]{ "总时长(小时)","次数"});
+        chartData.setLegendData(new String[]{ "总时长","次数"});
         //混合图形下使用
         chartData.addYAxis("时长","小时");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("总时长(小时)");
-        ChartYData yData3 = new ChartYData();
-        yData3.setName("平均每天(小时)");
-        ChartYData yData4 = new ChartYData();
-        yData4.setName("平均每次(小时)");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("总时长","小时");
+        ChartYData yData3 = new ChartYData("平均每天","小时");
+        ChartYData yData4 = new ChartYData("平均每次","小时");
         //总的值
         BigDecimal totalCount = new BigDecimal(0);
         BigDecimal totalValue = new BigDecimal(0);
@@ -308,7 +303,7 @@ public class MusicPracticeController extends BaseController {
         chartData.getYdata().add(yData2);
         if (sf.getDateGroupType() == DateGroupType.WEEK || sf.getDateGroupType() == DateGroupType.MONTH || sf.getDateGroupType() == DateGroupType.YEAR) {
             //如果是周，计算每天锻炼值
-            chartData.setLegendData(new String[]{ "总时长(小时)", "平均每天(小时)", "平均每次(小时)","次数"});
+            chartData.setLegendData(new String[]{ "总时长", "平均每天", "平均每次","次数"});
             chartData.getYdata().add(yData3);
             chartData.getYdata().add(yData4);
         }
@@ -360,6 +355,11 @@ public class MusicPracticeController extends BaseController {
             dateSearch.setMusicInstrumentId(sf.getMusicInstrumentId());
             ChartYData yData = new ChartYData();
             yData.setName(sf.getYears().get(i).toString());
+            if (sf.getGroupType() == GroupType.COUNT) {
+                yData.setUnit("次");
+            } else {
+                yData.setUnit("小时");
+            }
             List<MusicPracticeDateStat> list = musicPracticeService.statDateMusicPractice(dateSearch);
             //临时内容，作为补全用
             ChartData temp = new ChartData();
