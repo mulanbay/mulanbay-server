@@ -175,10 +175,8 @@ public class UserScoreController extends BaseController {
         chartData.setTitle("用户评分统计分析");
         chartData.setUnit("分");
         chartData.setLegendData(new String[]{"分数","预测"});
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("分数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("预测");
+        ChartYData yData1 = new ChartYData("分数","分");
+        ChartYData yData2 = new ChartYData("预测","分");
         int totalScore = 0;
         int total = 0;
         int lastScore =0;
@@ -267,10 +265,8 @@ public class UserScoreController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("用户评分与积分比较");
         chartData.setLegendData(new String[]{"评分", "积分"});
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("评分");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("积分");
+        ChartYData yData1 = new ChartYData("评分","分");
+        ChartYData yData2 = new ChartYData("积分","分");
         int maxPoints = this.getMaxPoints(list);
         for (UserScorePointsCompareDto bean : list) {
             chartData.getXdata().add(bean.getDate().toString());

@@ -82,9 +82,8 @@ public class TaskLogController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("[" + tt.getName() + "]执行时间统计");
         chartData.setUnit("毫秒");
-        chartData.setLegendData(new String[]{"时长(毫秒)"});
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("时长(毫秒)");
+        chartData.setLegendData(new String[]{"时长"});
+        ChartYData yData1 = new ChartYData("时长","毫秒");
         List<TaskLog> list = qr.getBeanList();
         for (TaskLog bean : list) {
             //chartData.getIntXData().add(1);

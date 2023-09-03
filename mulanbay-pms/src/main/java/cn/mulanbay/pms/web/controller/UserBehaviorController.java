@@ -214,6 +214,7 @@ public class UserBehaviorController extends BaseController {
         chartPieData.setUnit("次");
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("次数");
+        serieData.setUnit("次");
         Map<String, Integer> map = new HashMap<>();
         for (UserBehaviorDataStat bean : list) {
             Integer n = map.get(bean.getName());
@@ -426,6 +427,7 @@ public class UserBehaviorController extends BaseController {
         Date[] dd = getStatDateRange(sf.getDateGroupType(), sf.getDate());
         //界面传过来的只有开始时间，需要转换为当月第一天及最后一天
         ChartCalendarPieData pieData = new ChartCalendarPieData(sf.getBehaviorType());
+        pieData.setUnit("次");
         String monthString = DateUtil.getFormatDate(dd[0], "yyyy年MM月");
         pieData.setTitle(monthString + "用户行为分析");
         //子标题

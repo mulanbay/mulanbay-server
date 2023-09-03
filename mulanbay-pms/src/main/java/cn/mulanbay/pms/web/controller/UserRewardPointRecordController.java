@@ -219,8 +219,9 @@ public class UserRewardPointRecordController extends BaseController {
         } else {
             chartData.setTitle("用户积分统计");
         }
+        chartData.setUnit("分");
         chartData.setLegendData(new String[]{"积分"});
-        ChartYData yData = new ChartYData("积分");
+        ChartYData yData = new ChartYData("积分","分");
         String timeFormat = "yyyy-MM-dd HH:mm";
         int startYear = DateUtil.getYear(urpr.getStartDate());
         int endYear = DateUtil.getYear(urpr.getEndDate());
@@ -251,12 +252,9 @@ public class UserRewardPointRecordController extends BaseController {
         //混合图形下使用
         chartData.addYAxis("积分值","分");
         chartData.addYAxis("次数","次");
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
-        ChartYData yData2 = new ChartYData();
-        yData2.setName("总积分");
-        ChartYData yData3 = new ChartYData();
-        yData3.setName("平均积分");
+        ChartYData yData1 = new ChartYData("次数","次");
+        ChartYData yData2 = new ChartYData("总积分","分");
+        ChartYData yData3 = new ChartYData("平均积分","分");
         for (UserPointsDateStat bean : list) {
             chartData.getXdata().add(bean.getDateIndexValue().toString());
             yData1.getData().add(bean.getTotalCount().longValue());

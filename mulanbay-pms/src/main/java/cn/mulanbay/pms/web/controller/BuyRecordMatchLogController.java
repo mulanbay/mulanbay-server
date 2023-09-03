@@ -184,10 +184,8 @@ public class BuyRecordMatchLogController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("商品自动匹配分析");
         chartData.setLegendData(new String[]{"AI匹配度", "实际匹配度"});
-        ChartYData yData = new ChartYData();
-        yData.setName("AI匹配度");
-        ChartYData y2Data = new ChartYData();
-        y2Data.setName("实际匹配度");
+        ChartYData yData = new ChartYData("AI匹配度","");
+        ChartYData y2Data = new ChartYData("实际匹配度","");
         for (BuyRecordMatchLog bean : list) {
             chartData.getXdata().add(DateUtil.getFormatDate(bean.getCreatedTime(),DateUtil.Format24Datetime));
             yData.getData().add(NumberUtil.getDoubleValue(bean.getAiMatch(),2));

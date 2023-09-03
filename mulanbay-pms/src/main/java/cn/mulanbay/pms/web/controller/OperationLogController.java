@@ -361,8 +361,7 @@ public class OperationLogController extends BaseController {
         ChartData chartData = new ChartData();
         chartData.setTitle("操作日志统计");
         chartData.setLegendData(new String[]{"次数"});
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("次数");
+        ChartYData yData1 = new ChartYData("次数","次");
         for (OperationLogStat bean : list) {
             chartData.getXdata().add(bean.getName());
             yData1.getData().add(bean.getTotalCount());
