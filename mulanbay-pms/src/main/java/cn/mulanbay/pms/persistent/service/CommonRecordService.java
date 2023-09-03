@@ -5,12 +5,15 @@ import cn.mulanbay.common.exception.PersistentException;
 import cn.mulanbay.persistent.common.BaseException;
 import cn.mulanbay.persistent.dao.BaseHibernateDao;
 import cn.mulanbay.persistent.query.PageRequest;
+import cn.mulanbay.pms.persistent.domain.CommonRecord;
 import cn.mulanbay.pms.persistent.domain.CommonRecordType;
 import cn.mulanbay.pms.persistent.dto.CommonRecordAnalyseStat;
 import cn.mulanbay.pms.persistent.dto.CommonRecordStat;
+import cn.mulanbay.pms.persistent.enums.NearestType;
 import cn.mulanbay.pms.web.bean.request.buy.BuyRecordKeywordsSearch;
 import cn.mulanbay.pms.web.bean.request.commonrecord.CommonRecordAnalyseSearch;
 import cn.mulanbay.pms.web.bean.request.commonrecord.CommonRecordNameTreeSearch;
+import cn.mulanbay.pms.web.bean.request.commonrecord.CommonRecordNearestSearch;
 import cn.mulanbay.pms.web.bean.request.commonrecord.CommonRecordStatSearch;
 import org.springframework.stereotype.Service;
 
@@ -104,6 +107,33 @@ public class CommonRecordService extends BaseHibernateDao {
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "获取名称列表异常", e);
+        }
+    }
+
+    /**
+     * 获取最近一条记录
+     *
+     * @return
+     */
+    public CommonRecord getNearest(CommonRecordNearestSearch sf) {
+        try {
+            NearestType nearestType = sf.getNearestType();
+            PageRequest pr = sf.buildQuery();
+            String hql = "from CommonRecord ";
+            hql += pr.getParameterString();
+            if(nearestType==NearestType.MIN_TIME){
+                hql+= " order by occurTime asc";
+            }else if(nearestType==NearestType.MAX_TIME){
+                hql+= " order by occurTime desc";
+            }else if(nearestType==NearestType.MIN_VALUE){
+                hql+= " order by value asc";
+            }else if(nearestType==NearestType.MAX_VALUE){
+                hql+= " order by value desc";
+            }
+            return (CommonRecord) this.getEntityForOne(hql, pr.getParameterValue());
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_ERROR,
+                    "获取最近一条记录异常", e);
         }
     }
 }

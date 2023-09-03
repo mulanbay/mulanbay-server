@@ -2,23 +2,34 @@ package cn.mulanbay.pms.web.bean.request.commonrecord;
 
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.common.aop.FullEndDateTime;
+import cn.mulanbay.persistent.query.Parameter;
+import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.persistent.query.QueryBuilder;
+import cn.mulanbay.pms.persistent.enums.LogCompareType;
+import cn.mulanbay.pms.persistent.enums.NearestType;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-public class CommonRecordLatestSearch extends QueryBuilder implements BindUser, FullEndDateTime {
+public class CommonRecordNearestSearch extends QueryBuilder implements BindUser, FullEndDateTime {
 
     @NotNull(message = "{validate.commonRecord.commonRecordTypeId.NotNull}")
+    @Query(fieldName = "common_record_type_id", op = Parameter.Operator.EQ)
     private Integer commonRecordTypeId;
 
+    @Query(fieldName = "name", op = Parameter.Operator.EQ)
     private String name;
 
+    @Query(fieldName = "occur_time", op = Parameter.Operator.GTE)
     private Date startDate;
 
+    @Query(fieldName = "occur_time", op = Parameter.Operator.LTE)
     private Date endDate;
 
+    @Query(fieldName = "user_id", op = Parameter.Operator.EQ)
     public Long userId;
+
+    private NearestType nearestType;
 
     public Integer getCommonRecordTypeId() {
         return commonRecordTypeId;
@@ -64,4 +75,11 @@ public class CommonRecordLatestSearch extends QueryBuilder implements BindUser, 
         this.userId = userId;
     }
 
+    public NearestType getNearestType() {
+        return nearestType;
+    }
+
+    public void setNearestType(NearestType nearestType) {
+        this.nearestType = nearestType;
+    }
 }

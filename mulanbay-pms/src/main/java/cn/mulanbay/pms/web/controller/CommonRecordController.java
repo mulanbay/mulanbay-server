@@ -4,7 +4,6 @@ import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.DateUtil;
-import cn.mulanbay.common.util.NumberUtil;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
@@ -14,7 +13,7 @@ import cn.mulanbay.pms.persistent.domain.CommonRecordType;
 import cn.mulanbay.pms.persistent.dto.CommonRecordAnalyseStat;
 import cn.mulanbay.pms.persistent.dto.CommonRecordDateStat;
 import cn.mulanbay.pms.persistent.dto.CommonRecordStat;
-import cn.mulanbay.pms.persistent.enums.CommonStatus;
+import cn.mulanbay.pms.persistent.enums.LogCompareType;
 import cn.mulanbay.pms.persistent.enums.RewardSource;
 import cn.mulanbay.pms.persistent.enums.ValueType;
 import cn.mulanbay.pms.persistent.service.CommonRecordService;
@@ -143,22 +142,10 @@ public class CommonRecordController extends BaseController {
      *
      * @return
      */
-    @RequestMapping(value = "/getLatest", method = RequestMethod.GET)
-    public ResultBean getLatest(@Valid CommonRecordLatestSearch ls) {
-        CommonRecordSearch sf = new CommonRecordSearch();
-        BeanCopy.copyProperties(ls,sf);
-        PageRequest pr = sf.buildQuery();
-        pr.setBeanClass(beanClass);
-        Sort sort = new Sort("occurTime", Sort.DESC);
-        pr.addSort(sort);
-        pr.setPage(1);
-        pr.setPageSize(1);
-        List<CommonRecord> list = baseService.getBeanList(pr);
-        if(list.isEmpty()){
-            return callback(null);
-        }else{
-            return callback(list.get(0));
-        }
+    @RequestMapping(value = "/getNearest", method = RequestMethod.GET)
+    public ResultBean getNearest(@Valid CommonRecordNearestSearch ls) {
+        CommonRecord bean = commonRecordService.getNearest(ls);
+        return callback(bean);
     }
 
     /**
