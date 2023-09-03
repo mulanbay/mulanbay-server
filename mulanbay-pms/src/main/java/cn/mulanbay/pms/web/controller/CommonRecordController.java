@@ -1,5 +1,7 @@
 package cn.mulanbay.pms.web.controller;
 
+import cn.mulanbay.common.exception.ApplicationException;
+import cn.mulanbay.common.exception.ErrorCode;
 import cn.mulanbay.common.util.BeanCopy;
 import cn.mulanbay.common.util.DateUtil;
 import cn.mulanbay.common.util.NumberUtil;
@@ -12,16 +14,20 @@ import cn.mulanbay.pms.persistent.domain.CommonRecordType;
 import cn.mulanbay.pms.persistent.dto.CommonRecordAnalyseStat;
 import cn.mulanbay.pms.persistent.dto.CommonRecordDateStat;
 import cn.mulanbay.pms.persistent.dto.CommonRecordStat;
+import cn.mulanbay.pms.persistent.enums.CommonStatus;
 import cn.mulanbay.pms.persistent.enums.RewardSource;
 import cn.mulanbay.pms.persistent.enums.ValueType;
 import cn.mulanbay.pms.persistent.service.CommonRecordService;
 import cn.mulanbay.pms.persistent.service.DataService;
 import cn.mulanbay.pms.persistent.service.TreatService;
 import cn.mulanbay.pms.util.ChartUtil;
+import cn.mulanbay.pms.util.TreeBeanUtil;
 import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.commonrecord.*;
+import cn.mulanbay.pms.web.bean.response.TreeBean;
 import cn.mulanbay.pms.web.bean.response.chart.*;
+import cn.mulanbay.pms.web.bean.response.common.CommonRecordStatVo;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -31,10 +37,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 通用记录
@@ -73,6 +76,31 @@ public class CommonRecordController extends BaseController {
         pr.addSort(sort);
         PageResult<CommonRecord> qr = baseService.getBeanResult(pr);
         return callbackDataGrid(qr);
+    }
+
+    /**
+     * 获取类型树
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getNameTree")
+    public ResultBean getNameTree(CommonRecordNameTreeSearch ts) {
+        try {
+            ts.setPage(PageRequest.NO_PAGE);
+            ts.setEndDate(new Date());
+            List<TreeBean> list = new ArrayList<TreeBean>();
+            List<String> gtList = commonRecordService.getNameList(ts);
+            for (String s : gtList) {
+                TreeBean tb = new TreeBean();
+                tb.setId(s);
+                tb.setText(s);
+                list.add(tb);
+            }
+            return callback(TreeBeanUtil.addRoot(list, ts.getNeedRoot()));
+        } catch (Exception e) {
+            throw new ApplicationException(ErrorCode.SYSTEM_ERROR, "通用记录类型异常",
+                    e);
+        }
     }
 
     /**
@@ -141,7 +169,14 @@ public class CommonRecordController extends BaseController {
     @RequestMapping(value = "/stat", method = RequestMethod.GET)
     public ResultBean stat(@Valid CommonRecordStatSearch ls) {
         CommonRecordStat stat = commonRecordService.statCommonRecord(ls);
-        return callback(stat);
+        CommonRecordStatVo vo = new CommonRecordStatVo();
+        vo.setMinDate(stat.getMinDate());
+        vo.setMaxDate(stat.getMaxDate());
+        vo.setTotalCount(stat.getTotalCount().longValue());
+        vo.setTotalValue(stat.getTotalValue().longValue());
+        CommonRecordType bean = this.getUserEntity(CommonRecordType.class, ls.getCommonRecordTypeId(), ls.getUserId());
+        vo.setUnit(bean.getUnit());
+        return callback(vo);
     }
 
     /**
@@ -186,8 +221,12 @@ public class CommonRecordController extends BaseController {
         chartPieData.setUnit(sf.getValueType().getName());
         ChartPieSerieData serieData = new ChartPieSerieData();
         serieData.setName("类型");
-        serieData.setUnit(sf.getValueType().getName());
         ValueType valueType = sf.getValueType();
+        if(valueType==ValueType.TIMES){
+            serieData.setUnit("次");
+        }else if(valueType==ValueType.MINUTE){
+            serieData.setUnit(crt.getUnit());
+        }
         for (CommonRecordAnalyseStat bean : list) {
             chartPieData.getXdata().add(bean.getName());
             ChartPieSerieDetailData dataDetail = new ChartPieSerieDetailData();
@@ -196,8 +235,6 @@ public class CommonRecordController extends BaseController {
                 dataDetail.setValue(bean.getTotalCount());
             }else if(valueType==ValueType.MINUTE){
                 dataDetail.setValue(bean.getTotalValue());
-            }else if(valueType==ValueType.HOUR){
-                dataDetail.setValue(NumberUtil.getDoubleValue(bean.getTotalValue().doubleValue()/60,2));
             }
             serieData.getData().add(dataDetail);
         }
@@ -225,6 +262,7 @@ public class CommonRecordController extends BaseController {
         CommonRecordSearch crs = new CommonRecordSearch();
         crs.setCommonRecordTypeId(sf.getCommonRecordTypeId());
         crs.setUserId(sf.getUserId());
+        crs.setName(sf.getName());
         crs.setStartDate(sf.getStartDate());
         crs.setEndDate(sf.getEndDate());
         PageRequest pr = crs.buildQuery();

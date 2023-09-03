@@ -18,6 +18,9 @@ public class CommonRecordAnalyseSearch extends QueryBuilder implements BindUser,
     @Query(fieldName = "common_record_type_id", op = Parameter.Operator.EQ)
     private Integer commonRecordTypeId;
 
+    @Query(fieldName = "name", op = Parameter.Operator.EQ)
+    private String name;
+
     @Query(fieldName = "occur_time", op = Parameter.Operator.GTE)
     private Date startDate;
 
@@ -37,6 +40,14 @@ public class CommonRecordAnalyseSearch extends QueryBuilder implements BindUser,
 
     public void setCommonRecordTypeId(Integer commonRecordTypeId) {
         this.commonRecordTypeId = commonRecordTypeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getStartDate() {

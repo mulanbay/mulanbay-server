@@ -2,23 +2,27 @@ package cn.mulanbay.pms.web.bean.request.commonrecord;
 
 import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.common.aop.FullEndDateTime;
-import cn.mulanbay.persistent.query.QueryBuilder;
+import cn.mulanbay.persistent.query.Parameter;
+import cn.mulanbay.persistent.query.Query;
+import cn.mulanbay.web.bean.request.PageSearch;
 
-import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-public class CommonRecordTimelineSearch extends QueryBuilder implements BindUser, FullEndDateTime {
+public class CommonRecordNameTreeSearch extends PageSearch implements BindUser, FullEndDateTime {
 
-    @NotNull(message = "{validate.commonRecord.commonRecordTypeId.NotNull}")
+    @Query(fieldName = "common_record_type_id", op = Parameter.Operator.EQ)
     private Integer commonRecordTypeId;
 
-    private String name;
-
+    @Query(fieldName = "occur_time", op = Parameter.Operator.GTE)
     private Date startDate;
 
+    @Query(fieldName = "occur_time", op = Parameter.Operator.LTE)
     private Date endDate;
 
-    public Long userId;
+    @Query(fieldName = "user_id", op = Parameter.Operator.EQ)
+    private Long userId;
+
+    private Boolean needRoot;
 
     public Integer getCommonRecordTypeId() {
         return commonRecordTypeId;
@@ -26,14 +30,6 @@ public class CommonRecordTimelineSearch extends QueryBuilder implements BindUser
 
     public void setCommonRecordTypeId(Integer commonRecordTypeId) {
         this.commonRecordTypeId = commonRecordTypeId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public Date getStartDate() {
@@ -64,4 +60,11 @@ public class CommonRecordTimelineSearch extends QueryBuilder implements BindUser
         this.userId = userId;
     }
 
+    public Boolean getNeedRoot() {
+        return needRoot;
+    }
+
+    public void setNeedRoot(Boolean needRoot) {
+        this.needRoot = needRoot;
+    }
 }

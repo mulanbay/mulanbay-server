@@ -8,7 +8,9 @@ import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.pms.persistent.domain.CommonRecordType;
 import cn.mulanbay.pms.persistent.dto.CommonRecordAnalyseStat;
 import cn.mulanbay.pms.persistent.dto.CommonRecordStat;
+import cn.mulanbay.pms.web.bean.request.buy.BuyRecordKeywordsSearch;
 import cn.mulanbay.pms.web.bean.request.commonrecord.CommonRecordAnalyseSearch;
+import cn.mulanbay.pms.web.bean.request.commonrecord.CommonRecordNameTreeSearch;
 import cn.mulanbay.pms.web.bean.request.commonrecord.CommonRecordStatSearch;
 import org.springframework.stereotype.Service;
 
@@ -85,6 +87,23 @@ public class CommonRecordService extends BaseHibernateDao {
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "统计异常", e);
+        }
+    }
+
+    /**
+     * 获取名称列表
+     *
+     * @return
+     */
+    public List<String> getNameList(CommonRecordNameTreeSearch sf) {
+        try {
+            PageRequest pr = sf.buildQuery();
+            String sql = "select distinct name from common_record ";
+            sql += pr.getParameterString();
+            return this.getEntityListNoPageSQL(sql, pr.getParameterValue());
+        } catch (BaseException e) {
+            throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
+                    "获取名称列表异常", e);
         }
     }
 }

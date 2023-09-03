@@ -12,6 +12,8 @@ public class CommonRecordLatestSearch extends QueryBuilder implements BindUser, 
     @NotNull(message = "{validate.commonRecord.commonRecordTypeId.NotNull}")
     private Integer commonRecordTypeId;
 
+    private String name;
+
     private Date startDate;
 
     private Date endDate;
@@ -24,6 +26,14 @@ public class CommonRecordLatestSearch extends QueryBuilder implements BindUser, 
 
     public void setCommonRecordTypeId(Integer commonRecordTypeId) {
         this.commonRecordTypeId = commonRecordTypeId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getStartDate() {
