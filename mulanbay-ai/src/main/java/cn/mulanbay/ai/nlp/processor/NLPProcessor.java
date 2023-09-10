@@ -22,7 +22,7 @@ public class NLPProcessor extends BaseHandler {
 
     private static final Logger logger = LoggerFactory.getLogger(NLPProcessor.class);
 
-    @Value("${system.word2Vector.model.init:false}")
+    @Value("${system.word2Vector.model.init}")
     boolean modelInit;
 
     @Value("${system.wordCloud.picPath:}")
@@ -34,9 +34,15 @@ public class NLPProcessor extends BaseHandler {
 
     @Override
     public void init() {
+        logger.info("word2Vector模型是否需要初始化:{}",modelInit);
         if (modelInit) {
             initWord2VectorModel();
         }
+    }
+
+    @Override
+    public void reload() {
+        this.initWord2VectorModel();
     }
 
     /**
@@ -45,10 +51,17 @@ public class NLPProcessor extends BaseHandler {
     private void initWord2VectorModel() {
         Thread thread = new Thread(() -> {
             logger.info("开始初始化 Word2Vector model...");
-            sentenceSimilarity("test", "test");
+            try {
+                //第一次会自动初始化
+                float f = sentenceSimilarity("test", "test");
+                logger.info("initWord2VectorModel 测试匹配度:{}",f);
+            } catch (Exception e) {
+                logger.error("initWord2VectorModel error",e);
+            }
             logger.info("初始化 Word2Vector model成功");
         });
         thread.start();
+        logger.info("启动初始化 Word2Vector线程");
     }
 
     /**
