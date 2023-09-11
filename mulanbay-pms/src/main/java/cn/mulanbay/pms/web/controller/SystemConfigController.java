@@ -11,15 +11,21 @@ import cn.mulanbay.pms.web.bean.request.CommonBeanDeleteRequest;
 import cn.mulanbay.pms.web.bean.request.CommonBeanGetRequest;
 import cn.mulanbay.pms.web.bean.request.system.SystemConfigFormRequest;
 import cn.mulanbay.pms.web.bean.request.system.SystemConfigSearch;
+import cn.mulanbay.pms.web.bean.response.system.PropertyVo;
 import cn.mulanbay.web.bean.response.ResultBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.*;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.validation.Valid;
-import java.util.Date;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * 系统配置
@@ -35,6 +41,9 @@ public class SystemConfigController extends BaseController {
 
     @Autowired
     SystemConfigHandler systemConfigHandler;
+
+    @Autowired
+    private Environment environment;
 
     /**
      * 获取列表数据
@@ -76,6 +85,34 @@ public class SystemConfigController extends BaseController {
         SystemConfig bean = baseService.getObject(beanClass, getRequest.getId());
         return callback(bean);
     }
+
+    /**
+     * 获取配置
+     *
+     * @return
+     */
+    @RequestMapping(value = "/getProperties", method = RequestMethod.GET)
+    public ResultBean getProperties() {
+        List<PropertyVo> list = new ArrayList<>();
+        for (PropertySource<?> propertySource : ((AbstractEnvironment) environment).getPropertySources()) {
+            if (propertySource instanceof EnumerablePropertySource) {
+                for (String name : ((EnumerablePropertySource) propertySource).getPropertyNames()) {
+                    if (name != null) {
+                        PropertyVo vo = new PropertyVo();
+                        vo.setKey(name);
+                        vo.setValue(environment.getProperty(name));
+                        vo.setSource(propertySource.getName());
+                        list.add(vo);
+                    }
+                }
+            }
+        }
+
+        //使用List接口的方法排序
+        list.sort((o1, o2) -> o1.getKey().compareTo(o2.getKey()));
+        return callback(list);
+    }
+
 
     /**
      * 修改

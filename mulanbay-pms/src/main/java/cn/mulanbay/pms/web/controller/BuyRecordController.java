@@ -381,7 +381,8 @@ public class BuyRecordController extends BaseController {
         }else{
             cc = buyRecordService.getChildrenTotalCost(tcr.getId());
         }
-        vo.setChildrens(cc.getTotalCount().longValue());
+        Long childrens = cc.getTotalCount()==null ? null: cc.getTotalCount().longValue();
+        vo.setChildrens(childrens);
         if(cc.getSoldPrice()!=null){
             vo.setChildrenSoldPrice(NumberUtil.getDoubleValue(cc.getSoldPrice().doubleValue(),2));
         }
