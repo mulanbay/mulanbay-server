@@ -232,17 +232,16 @@ public class TreatTestController extends BaseController {
      * @return
      */
     private ChartData createStatBarData(List<TreatTest> list, String name) {
+        TreatTest t1 = list.get(0);
         ChartData chartData = new ChartData();
         chartData.setTitle("[" + name + "]的检查报告");
         chartData.setLegendData(new String[]{"值"});
-        ChartYData yData1 = new ChartYData();
-        yData1.setName("值");
+        ChartYData yData1 = new ChartYData("值",t1.getUnit());
         for (TreatTest bean : list) {
             chartData.getXdata().add(DateUtil.getFormatDate(bean.getTestDate(), DateUtil.FormatDay1));
             yData1.getData().add(bean.getValue());
         }
         chartData.getYdata().add(yData1);
-        TreatTest t1 = list.get(0);
         if (t1.getMinValue() != null && t1.getMaxValue() != null) {
             String subTitle = "参考值范围:" + t1.getMinValue() + "~" + t1.getMaxValue();
             chartData.setSubTitle(subTitle);

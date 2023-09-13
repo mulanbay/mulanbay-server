@@ -2,6 +2,7 @@ package cn.mulanbay.pms.persistent.dto;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.Date;
 
 public class TreatOperationStat {
 
@@ -10,6 +11,10 @@ public class TreatOperationStat {
     private BigInteger totalCount;
 
     private BigDecimal totalFee;
+
+    private Date minDate;
+
+    private Date maxDate;
 
     public String getName() {
         return name;
@@ -33,5 +38,21 @@ public class TreatOperationStat {
 
     public void setTotalFee(BigDecimal totalFee) {
         this.totalFee = totalFee;
+    }
+
+    public Date getMinDate() {
+        return minDate;
+    }
+
+    public void setMinDate(Date minDate) {
+        this.minDate = minDate;
+    }
+
+    public Date getMaxDate() {
+        return maxDate;
+    }
+
+    public void setMaxDate(Date maxDate) {
+        this.maxDate = maxDate;
     }
 }

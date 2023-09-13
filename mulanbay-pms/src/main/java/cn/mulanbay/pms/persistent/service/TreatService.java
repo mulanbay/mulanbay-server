@@ -212,8 +212,8 @@ public class TreatService extends BaseHibernateDao {
             pr.setNeedWhere(false);
             StringBuffer sb = new StringBuffer();
             String field = sf.getGroupField();
-            sb.append("select name,count(0) as totalCount,sum(total_fee) as totalFee from (");
-            sb.append("select treatOperation." + field + " as name,treatRecord.total_fee from treat_operation treatOperation,treat_record treatRecord ");
+            sb.append("select name,min(date) as minDate,max(date) as maxDate,count(0) as totalCount,sum(total_fee) as totalFee from (");
+            sb.append("select treatOperation." + field + " as name,treatOperation.treat_date as date,treatRecord.total_fee from treat_operation treatOperation,treat_record treatRecord ");
             sb.append("where treatOperation.treat_record_id= treatRecord.id ");
             sb.append(pr.getParameterString());
             sb.append(") as aa");
