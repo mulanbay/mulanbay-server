@@ -216,6 +216,9 @@ public class TreatTestController extends BaseController {
                 //柱状图
                 res.put("chartType", ChartType.LINE);
                 res.put("chartData", createStatBarData(list, sf.getName()));
+                TreatTest t1 = list.get(0);
+                res.put("minValue",t1.getMinValue());
+                res.put("maxValue",t1.getMaxValue());
             } else {
                 //饼图
                 res.put("chartType", ChartType.PIE);
@@ -243,7 +246,7 @@ public class TreatTestController extends BaseController {
         }
         chartData.getYdata().add(yData1);
         if (t1.getMinValue() != null && t1.getMaxValue() != null) {
-            String subTitle = "参考值范围:" + t1.getMinValue() + "~" + t1.getMaxValue();
+            String subTitle = "参考值范围:" + t1.getMinValue() + "~" + t1.getMaxValue()+",单位:"+t1.getUnit();
             chartData.setSubTitle(subTitle);
         }
         return chartData;
