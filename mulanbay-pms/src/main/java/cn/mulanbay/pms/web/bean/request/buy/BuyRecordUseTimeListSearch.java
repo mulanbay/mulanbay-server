@@ -4,6 +4,7 @@ import cn.mulanbay.common.aop.BindUser;
 import cn.mulanbay.common.aop.FullEndDateTime;
 import cn.mulanbay.persistent.query.CrossType;
 import cn.mulanbay.persistent.query.NullType;
+import cn.mulanbay.persistent.query.Parameter;
 import cn.mulanbay.persistent.query.Parameter.Operator;
 import cn.mulanbay.persistent.query.Query;
 import cn.mulanbay.pms.persistent.enums.DateGroupType;
@@ -12,9 +13,10 @@ import cn.mulanbay.web.bean.request.PageSearch;
 
 import java.util.Date;
 
-public class BuyRecordUseTimeStatSearch extends PageSearch implements DateStatSearch, BindUser, FullEndDateTime {
+public class BuyRecordUseTimeListSearch extends PageSearch implements DateStatSearch, BindUser, FullEndDateTime {
 
-    private String groupField;
+    @Query(fieldName = "goods_name,keywords,shop_name,remark", op = Operator.LIKE, crossType = CrossType.OR)
+    private String name;
 
     @Query(fieldName = "buy_date", op = Operator.GTE)
     private Date startDate;
@@ -40,15 +42,19 @@ public class BuyRecordUseTimeStatSearch extends PageSearch implements DateStatSe
     /**
      * 非空表示设置过作废日期
      */
-    @Query(fieldName = "delete_date", op = Operator.NULL_NOTNULL)
+    @Query(fieldName = "deleteDate", op = Parameter.Operator.NULL_NOTNULL)
     private NullType deleteDateType;
 
-    public String getGroupField() {
-        return groupField;
+    private String sortField;
+
+    private String sortType;
+
+    public String getName() {
+        return name;
     }
 
-    public void setGroupField(String groupField) {
-        this.groupField = groupField;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
@@ -120,6 +126,22 @@ public class BuyRecordUseTimeStatSearch extends PageSearch implements DateStatSe
 
     public void setSecondhand(Boolean secondhand) {
         this.secondhand = secondhand;
+    }
+
+    public String getSortField() {
+        return sortField;
+    }
+
+    public void setSortField(String sortField) {
+        this.sortField = sortField;
+    }
+
+    public String getSortType() {
+        return sortType;
+    }
+
+    public void setSortType(String sortType) {
+        this.sortType = sortType;
     }
 
     public NullType getDeleteDateType() {

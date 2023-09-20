@@ -1,41 +1,35 @@
 package cn.mulanbay.pms.persistent.dto;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
 public class BuyRecordUseTimeStat {
 
-    private long id;
-    private String name;
-    private int days;
-    private int counts;
+    private Object name;
+    private BigDecimal totalUseTime;
+    private BigInteger totalCount;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
+    public Object getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(Object name) {
         this.name = name;
     }
 
-    public int getDays() {
-        return days;
+    public BigDecimal getTotalUseTime() {
+        return totalUseTime;
     }
 
-    public void setDays(int days) {
-        this.days = days;
+    public void setTotalUseTime(BigDecimal totalUseTime) {
+        this.totalUseTime = totalUseTime;
     }
 
-    public int getCounts() {
-        return counts;
+    public BigInteger getTotalCount() {
+        return totalCount;
     }
 
-    public void setCounts(int counts) {
-        this.counts = counts;
+    public void setTotalCount(BigInteger totalCount) {
+        this.totalCount = totalCount;
     }
 }

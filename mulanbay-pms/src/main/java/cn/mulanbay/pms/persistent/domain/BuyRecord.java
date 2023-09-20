@@ -51,6 +51,8 @@ public class BuyRecord implements java.io.Serializable {
     private Date deleteDate;
     // 预期作废日期
     private Date expectDeleteDate;
+    //使用时长(毫秒)
+    private Long useTime;
     // 状态
     private Status status;
     //关键字，统计使用
@@ -245,6 +247,15 @@ public class BuyRecord implements java.io.Serializable {
 
     public void setExpectDeleteDate(Date expectDeleteDate) {
         this.expectDeleteDate = expectDeleteDate;
+    }
+
+    @Column(name = "use_time")
+    public Long getUseTime() {
+        return useTime;
+    }
+
+    public void setUseTime(Long useTime) {
+        this.useTime = useTime;
     }
 
     @Column(name = "status", nullable = false)

@@ -111,3 +111,7 @@ ALTER TABLE `reading_record` DROP COLUMN `nation`;
 ALTER TABLE `life_experience_detail` ADD COLUMN `country_id` INT NULL AFTER `life_experience_id`;
 ALTER TABLE `life_experience_detail` DROP COLUMN `country`;
 
+#消费记录增加使用时长
+ALTER TABLE `buy_record` ADD COLUMN `use_time` BIGINT(20) NULL AFTER `expect_delete_date`;
+update buy_record set use_time = ( unix_timestamp(delete_date) -unix_timestamp(buy_date))*1000 where delete_date is not null and id>0;
+

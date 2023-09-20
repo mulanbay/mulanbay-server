@@ -232,26 +232,6 @@ public class BuyRecordService extends BaseHibernateDao {
     }
 
     /**
-     * 获取使用时间的最大记录数
-     *
-     * @param sf
-     * @return
-     */
-    public long getMaxRowOfUseTime(BuyRecordUseTimeStatSearch sf) {
-        try {
-            PageRequest pr = sf.buildQuery();
-            pr.setNeedWhere(false);
-            String sql = "select count(0) FROM buy_record where delete_date is not null ";
-            sql += pr.getParameterString();
-            long n = this.getCountSQL(sql, pr.getParameterValue());
-            return n;
-        } catch (BaseException e) {
-            throw new PersistentException(ErrorCode.OBJECT_GET_ERROR,
-                    "获取使用时间的最大记录数异常", e);
-        }
-    }
-
-    /**
      * 使用时间统计
      *
      * @param sf
@@ -260,50 +240,34 @@ public class BuyRecordService extends BaseHibernateDao {
     public List<BuyRecordUseTimeStat> getUseTimeStat(BuyRecordUseTimeStatSearch sf) {
         try {
             PageRequest pr = sf.buildQuery();
-            pr.setNeedWhere(false);
             String groupField = sf.getGroupField();
             StringBuffer sql = new StringBuffer();
-            if ("goods_name".equals(groupField)) {
-                sql.append("select goods_name,datediff(delete_date,buy_date) as days,1,id FROM buy_record where delete_date is not null ");
-                sql.append(pr.getParameterString());
-                sql.append("order by days desc ");
-            } else {
-                sql.append("select " + groupField + ",sum(days) as days,count(0) as c from ( ");
-                sql.append("select " + groupField + ",datediff(delete_date,buy_date) as days FROM buy_record where delete_date is not null ");
-                sql.append(pr.getParameterString());
-                sql.append(") as aa ");
-                sql.append("group by " + groupField + " order by days desc ");
-            }
-            List<Object[]> list = this.getEntityListSQL(sql.toString(), sf.getPage(), sf.getPageSize(), pr.getParameterValue());
-            List<BuyRecordUseTimeStat> result = new ArrayList();
-            for (Object[] oo : list) {
-                BuyRecordUseTimeStat bb = new BuyRecordUseTimeStat();
-                Object nameFiled = oo[0];
-                if (nameFiled == null) {
-                    bb.setName("未知");
-                } else {
-                    if ("goods_name".equals(groupField)) {
-                        bb.setName(oo[0].toString());
-                    } else {
-                        Object serierIdObj = oo[0];
-                        if (serierIdObj == null) {
-                            //防止为NULL
-                            serierIdObj = "0";
-                        }
-                        String name = getSerierName(serierIdObj.toString(), groupField);
-                        bb.setName(name);
+            sql.append("select " + groupField + " as name,sum(use_time) as totalUseTime,count(0) as totalCount from buy_record ");
+            sql.append(pr.getParameterString());
+            //sql.append(" and "+groupField+" is not null");
+            sql.append(" group by " +groupField);
+            List<BuyRecordUseTimeStat> list = this.getEntityListWithClassSQL(sql.toString(),pr.getPage(),pr.getPageSize(),BuyRecordUseTimeStat.class,pr.getParameterValue());
+            for (BuyRecordUseTimeStat bean : list) {
+                if(bean.getName()==null){
+                    bean.setName("未知");
+                    continue;
+                }
+                String name = bean.getName().toString();
+                if(groupField.equals("goods_type_id")||groupField.equals("sub_goods_type_id")){
+                    GoodsType gt = (GoodsType) this.getEntityById(GoodsType.class,Integer.valueOf(name));
+                    bean.setName(gt.getName());
+                }else if(groupField.equals("buy_type_id")){
+                    BuyType bt = (BuyType) this.getEntityById(BuyType.class,Integer.valueOf(name));
+                    bean.setName(bt.getName());
+                }else if(groupField.equals("secondhand")){
+                    if(name.equals("1")){
+                        bean.setName("二手");
+                    }else{
+                        bean.setName("非二手");
                     }
                 }
-                int days = Integer.valueOf(oo[1].toString());
-                bb.setDays(days);
-                int counts = Integer.valueOf(oo[2].toString());
-                bb.setCounts(counts);
-                if ("goods_name".equals(groupField)) {
-                    bb.setId(Long.valueOf(oo[3].toString()));
-                }
-                result.add(bb);
             }
-            return result;
+            return list;
         } catch (BaseException e) {
             throw new PersistentException(ErrorCode.OBJECT_GET_LIST_ERROR,
                     "使用时间统计异常", e);

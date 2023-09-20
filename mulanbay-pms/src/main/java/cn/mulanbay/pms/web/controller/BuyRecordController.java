@@ -3,6 +3,7 @@ package cn.mulanbay.pms.web.controller;
 import cn.mulanbay.ai.nlp.processor.NLPProcessor;
 import cn.mulanbay.common.exception.ApplicationException;
 import cn.mulanbay.common.util.*;
+import cn.mulanbay.persistent.query.NullType;
 import cn.mulanbay.persistent.query.PageRequest;
 import cn.mulanbay.persistent.query.PageResult;
 import cn.mulanbay.persistent.query.Sort;
@@ -216,6 +217,11 @@ public class BuyRecordController extends BaseController {
         totalPrice = totalPrice.add(new BigDecimal(formRequest.getPrice()).multiply(new BigDecimal(formRequest.getAmount())));
         totalPrice = totalPrice.add(new BigDecimal(formRequest.getShipment()));
         buyRecord.setTotalPrice(totalPrice.doubleValue());
+        //设置使用时长
+        if(buyRecord.getDeleteDate()!=null){
+            long usedTime = buyRecord.getDeleteDate().getTime()-buyRecord.getBuyDate().getTime();
+            buyRecord.setUseTime(usedTime);
+        }
     }
 
     /**
@@ -471,49 +477,53 @@ public class BuyRecordController extends BaseController {
      *
      * @return
      */
-    @RequestMapping(value = "/useTimeStat")
-    public ResultBean useTimeStat(BuyRecordUseTimeStatSearch sf) {
-        List<BuyRecordUseTimeStat> list = buyRecordService.getUseTimeStat(sf);
-        if (sf.getDataType() == BuyRecordUseTimeStatSearch.DataType.CHART) {
-            return callback(createUseTimeChart(list, sf));
-        } else {
-            BuyRecordSearch brs = new BuyRecordSearch();
-            BeanCopy.copyProperties(sf, brs);
-            PageRequest req = brs.buildQuery();
-            req.setBeanClass(beanClass);
+    @RequestMapping(value = "/useTimeList")
+    public ResultBean useTimeList(BuyRecordUseTimeListSearch sf) {
+        sf.setDeleteDateType(NullType.NOT_NULL);
+        PageRequest req = sf.buildQuery();
+        req.setBeanClass(beanClass);
+        if (StringUtil.isEmpty(sf.getSortField())) {
             req.addSort(new Sort("deleteDate", Sort.DESC));
-            PageResult<BuyRecord> res = baseService.getBeanResult(req);
-            return callbackDataGrid(res);
+        } else {
+            req.addSort(new Sort(sf.getSortField(), sf.getSortType()));
         }
-
+        PageResult<BuyRecord> res = baseService.getBeanResult(req);
+        return callbackDataGrid(res);
     }
 
     /**
-     * 使用寿命图表统计
-     * @param list
-     * @param sf
+     * 商品使用寿命
+     *
      * @return
      */
-    private ChartData createUseTimeChart(List<BuyRecordUseTimeStat> list, BuyRecordUseTimeStatSearch sf) {
+    @RequestMapping(value = "/useTimeStat")
+    public ResultBean useTimeStat(BuyRecordUseTimeStatSearch sf) {
+        sf.setDeleteDateType(NullType.NOT_NULL);
+        List<BuyRecordUseTimeStat> list = buyRecordService.getUseTimeStat(sf);
+        Collections.sort(list, (o1, o2) -> {
+            //按照平均使用时间排序
+            Long t1 = o1.getTotalUseTime().longValue()/o1.getTotalCount().longValue();
+            Long t2 = o2.getTotalUseTime().longValue()/o2.getTotalCount().longValue();
+            return t2.compareTo(t1);
+        });
+
         ChartData chartData = new ChartData();
         chartData.setTitle("商品使用时间分析");
-        chartData.setLegendData(new String[]{"总寿命(天)", "平均寿命(天)"});
-        ChartYData yData = new ChartYData();
-        yData.setName("总寿命(天)");
-        ChartYData y2Data = new ChartYData();
-        y2Data.setName("平均寿命(天)");
-        BigDecimal totalValue = new BigDecimal(0);
+        //混合图形下使用
+        chartData.addYAxis("天数","天");
+        chartData.addYAxis("次数","次");
+        chartData.setLegendData(new String[]{"平均寿命","次数"});
+        ChartYData yData1 = new ChartYData("平均寿命","天");
+        ChartYData yData2 = new ChartYData("次数","次");
         for (BuyRecordUseTimeStat bean : list) {
-            chartData.getXdata().add(bean.getName());
-            yData.getData().add(bean.getDays());
-            y2Data.getData().add(NumberUtil.getAverageValue(bean.getDays(), bean.getCounts(), 1));
-            totalValue = totalValue.add(new BigDecimal(bean.getDays()));
+            chartData.getXdata().add(bean.getName().toString());
+            long days = bean.getTotalUseTime().longValue()/bean.getTotalCount().longValue()/(24*3600*1000);
+            yData1.getData().add(days);
+            yData2.getData().add(bean.getTotalCount().longValue());
         }
-        String subTitle = this.getDateTitle(sf, totalValue.toString() + "天");
-        chartData.setSubTitle(subTitle);
-        chartData.getYdata().add(yData);
-        chartData.getYdata().add(y2Data);
-        return chartData;
+        chartData.getYdata().add(yData1);
+        chartData.getYdata().add(yData2);
+        return callback(chartData);
     }
 
     /**
@@ -870,7 +880,7 @@ public class BuyRecordController extends BaseController {
     @RequestMapping(value = "/yoyStat")
     public ResultBean yoyStat(@Valid BuyRecordYoyStatSearch sf) {
         if (sf.getDateGroupType() == DateGroupType.DAY) {
-            return callback(createChartCalandarMultiData(sf));
+            return callback(createChartCalendarMultiData(sf));
         }
         String unit = sf.getGroupType().getUnit();
         ChartData chartData = initYoyCharData(sf, "消费统计同期对比", null);
@@ -912,7 +922,7 @@ public class BuyRecordController extends BaseController {
      * @param sf
      * @return
      */
-    private ChartCalendarMultiData createChartCalandarMultiData(BuyRecordYoyStatSearch sf) {
+    private ChartCalendarMultiData createChartCalendarMultiData(BuyRecordYoyStatSearch sf) {
         ChartCalendarMultiData data = new ChartCalendarMultiData();
         data.setTitle("消费统计同期对比");
         if (sf.getGroupType() == GroupType.COUNT) {
