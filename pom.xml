@@ -49,7 +49,7 @@
         <slf4j-api.version>1.7.30</slf4j-api.version>
         <javax.servlet.version>4.0.1</javax.servlet.version>
         <javax.mail.version>1.5.2</javax.mail.version>
-        <jedis.version>3.3.0</jedis.version>
+        <jedis.version>3.10.0</jedis.version>
         <fst.version>1.58</fst.version>
         <kryo-shaded.version>3.0.0</kryo-shaded.version>
         <slf4j-jdk14.version>1.6.6</slf4j-jdk14.version>
