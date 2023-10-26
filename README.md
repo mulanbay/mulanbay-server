@@ -143,7 +143,7 @@ source /xx/xx/xx/mulanbay_config_update.sql
 mulanbay用户默认情况下是没有任何业务数据的，可以在"权限管理/用户管理"里对mulanbay用户进行"初始化数据"，系统可以显示mulanbay用户基础的配置数据。
 
 # Step 5：机器学习模型文件pmml导入
-如果想要使用数据预测功能，需要从mulanbay-sklearn项目中module文件夹下拷贝模型文件到服务器目录，服务器目录配置项为ml.pmml.modulePath。
+如果想要使用数据预测功能，需要从mulanbay-sklearn项目中model文件夹下拷贝模型文件到服务器目录，服务器目录配置项为ml.pmml.modelPath。
 模型文件也可以通过VUE版本的PC端页面进行上传。
 
 
