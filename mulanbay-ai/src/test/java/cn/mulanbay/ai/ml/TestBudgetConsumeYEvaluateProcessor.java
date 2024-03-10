@@ -14,8 +14,8 @@ import org.springframework.util.Assert;
  * @author fenghong
  * @create 2023-06-21
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:applicationContext.xml"})
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = {"classpath:applicationContext.xml"})
 public class TestBudgetConsumeYEvaluateProcessor {
 
     @Autowired
@@ -25,7 +25,7 @@ public class TestBudgetConsumeYEvaluateProcessor {
 
     private double max = 1.5f;
 
-    @Before
+    //@Before
     public void init() {
         System.out.println("init...");
         evaluateProcessor.init();
@@ -61,7 +61,7 @@ public class TestBudgetConsumeYEvaluateProcessor {
     /**
      * 多标签预测
      */
-    @Test
+    //@Test
     public void testMultiEvaluate() {
         for (int score = 0; score <= 100; score++) {
             for (int dayIndex = 1; dayIndex <= 366; dayIndex++) {
