@@ -26,7 +26,7 @@ public class TestBudgetConsumeMEvaluateProcessor {
 
     private double max = 1.5f;
 
-    @Before
+    //@Before
     public void init(){
         System.out.println("init...");
         evaluateProcessor.init();
