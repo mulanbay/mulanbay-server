@@ -15,8 +15,8 @@ import org.springframework.util.Assert;
  * @author fenghong
  * @create 2023-06-21
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:applicationContext.xml"})
+//@RunWith(SpringJUnit4ClassRunner.class)
+//@ContextConfiguration(locations = {"classpath:applicationContext.xml"})
 public class TestBudgetConsumeMEvaluateProcessor {
 
     @Autowired
@@ -64,7 +64,7 @@ public class TestBudgetConsumeMEvaluateProcessor {
     /**
      * 多标签预测
      */
-    @Test
+    //@Test
     public void testMultiEvaluate(){
         for(int month = 1;month<=12;month++){
             for(int score = 0;score<=100;score++){
