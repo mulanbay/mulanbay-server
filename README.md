@@ -69,6 +69,9 @@ mulanbay-server
 ```
 
 ### 项目运行与部署
+
+#### 本地运行
+
 ``` 
 # Step 1：初始化数据库
 
@@ -97,11 +100,84 @@ mulanbay-server
   * 进入到mulanbay-server目录，运行mvn clean package
   * 运行mulanbay-pms/target下的mulanbay-pms-3.0.jar文件
 
+    `nohup java -jar mulanbay-pms/target/mulanbay-pms-3.0.jar &`
+
 后端项目默认的端口是：8080
 
 ```
 
+#### docker-compose运行
+
+```
+docker-compose up -d
+```
+
+### 环境变量
+
+| 变量名 | 默认值 | 说明 |
+| ----- | ----- | -----|
+| PYTHON_PATH | /usr/bin/python3 |  |
+| AHANLP_PATH | /AHANLP_base-1.3 | |
+| AHANLP_WORD2VECTOR_MODEL | /AHANLP_base-1.3/data/model/Google_word2vec_zhwiki1710_300d.bin | |
+| PICTURE_BASEURL | http://localhost:99/avatar | 图片地址前缀 |
+| SYS_MOBILE_BASEURL | http://localhost:94 | 移动端基础路径 |
+| SYS_WORDCLOUD_PIC_PATH | /uploads/wordcloud | 词云的图片目录 |
+| SCHEDULE_ENABLE | true | 调度配置是否启动 |
+| SCHEDULE_SUPPORT_DISTRI | false | 调度配置是否支持分布式任务 |
+| SYS_BUYRECORD_STAT_USESTATE | true | 购买记录统计中是否启用商品类型里的可统计字段（如果启用了，则增加消费记录统计的复杂度） |
+| SYS_PAGESEARCH_MAXPAGESIZE | 100 | 分页每页最大数 |
+| REWORD_CREATE_BY_TEMPLATE_PERPOINTS | 10 | 根据模板新增的增加积分数（单个） |
+| MYSQL_HOST | 127.0.0.1 |  |
+| MYSQL_DATABASE | mulanbay |  |
+| MYSQL_PORT | 3306 |  |
+| MYSQL_USER | root |  |
+| MYSQL_PWD | root |  |
+| SECURITY_LOGIN_MAXFAIL | 5 | 最大登录失败次数 |
+| SECURITY_PWD_SALT | abc123456 | MD5密码的盐值 |
+| SECURITY_TOKEN_SECRET | abcdefghijklmnopqrstuvwxyz | 令牌密钥 |
+| SECURITY_TOKEN_EXPIRE_TIME | 1800 | 令牌有效期（默认30分钟） |
+| SECURITY_TOKEN_VERIFY_TIME | 1200 | 验证令牌有效期（默认20分钟） |
+| MAIL_USERNAME |  | 邮件发件地址 |
+| MAIL_PWD |  | qq邮箱采用授权码发送，非邮箱密码 |
+| MAIL_SERVER_HOST |  |  |
+| MAIL_SERVER_PORT |  |  |
+| REDIS_SERVER_IP | 127.0.0.1 |  |
+| REDIS_SERVER_PORT | 6379 |  |
+| REDIS_SERVER_DB | 10 |  |
+| REDIS_SERVER_PWD | | |
+| REDIS_DEFAULT_EXPIRATION | 300 |  |
+| WX_APPID |  |  |
+| WX_SECRET |  |  |
+| WX_TOKEN |  |  |
+| WX_USER_MESSAGE_TEMPLATE_ID |  | 微信消息发送模板编号 |
+| WX_ACCESS_AUTH_REDIRECT_URL |  |  |
+| WX_OAURL |  | 公众号地址 |
+| WX_OA_QRURL | /uploads/wechatqr.jpg | 公众号二维码本地地址 |
+| NOTIFY_MESSAGE_EXPECT_SEND_TIME | 09:00 | 默认的消息提醒发送时间 |
+| NOTIFY_VALIDATE_ERROR | false | 是否要通知表单验证类的消息提醒 |
+| NOTIFY_MESSAGE_SEND_MAXFAIL | 3 | 消息最大发送失败次数 |
+| NOTIFY_MESSAGE_SEND_LOCK | false | 消息发送是否需要锁定 |
+| SHARES_WITH_CACHE | true | 股票相关 |
+| SHARES_CACHE_SECONDS | 5 | 股票相关 |
+| SHARES_MONITOR_TASKTRIGGERID | 30 | 股票价格监控的调度ID（根据实际来写） |
+| SHARES_STAT_TASKTRIGGERID | 31 | 股票统计的调度ID（根据实际来写） |
+| DATE_FORMAT | yyyy-MM-dd HH:mm:ss | 时间的json格式 |
+| TIMEZONE | GMT+8 | 解决spring json解析相差8个小时的时区问题（针对POST方法，且时间为yyyy-MM-dd模式） |
+
+### 挂载目录
+
+/AHANLP_base-1.3
+
+/AHANLP_base-1.3/data/model/Google_word2vec_zhwiki1710_300d.bin
+
+/uploads/avatar
+
+/uploads/wordcloud
+
+/uploads/wechatqr.jpg
+
 ### 软件要求
+
 | 软件                    | 版本          |
 | ---------------------- | ------------- |
 | JDK                    | 1.8+          |

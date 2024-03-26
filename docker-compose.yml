@@ -1,0 +1,93 @@
+version: '3'
+services:
+  mulanbay:
+    build:
+      context: .
+    container_name: mulanbay
+    hostname: mulanbay
+    ipc: private
+    networks:
+      - mulanbay
+    ports:
+      - 8080:8080/tcp
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    external_links:
+      - mysql:mysql
+      - redis:redis
+    volumes:
+      - /mulanbay/AHANLP_base-1.3:/AHANLP_base-1.3
+      - /mulanbay/avatar:/uploads/avatar
+      - /mulanbay/wordcloud:/uploads/wordcloud
+      - /mulanbay/wechatqr.jpg:/uploads/wechatqr.jpg
+    environment:
+      PYTHON_PATH: "/usr/bin/python"
+      AHANLP_PATH: "/AHANLP_base-1.3"
+      AHANLP_WORD2VECTOR_MODEL: "/AHANLP_base-1.3/data/model/Google_word2vec_zhwiki1710_300d.bin"
+
+      # 系统
+      PICTURE_BASEURL: "http://localhost:99/avatar"
+      SYS_MOBILE_BASEURL: "http://localhost:94"
+      SYS_WORDCLOUD_PIC_PATH: "/uploads/wordcloud"
+      SYS_BUYRECORD_STAT_USESTATE: true
+      SYS_PAGESEARCH_MAXPAGESIZE: 100
+      SCHEDULE_ENABLE: true
+      SCHEDULE_SUPPORT_DISTRI: false
+      REWORD_CREATE_BY_TEMPLATE_PERPOINTS: 10
+
+      # 数据库
+      MYSQL_HOST: "mysql"
+      MYSQL_PORT: 3306
+      MYSQL_DATABASE: mulanbay
+      MYSQL_USER: "root"
+      MYSQL_PWD: "root"
+
+      # 安全
+      SECURITY_LOGIN_MAXFAIL: 5
+      SECURITY_PWD_SALT: "abc123456"
+      SECURITY_TOKEN_SECRET: "abcdefghijklmnopqrstuvwxyz"
+      SECURITY_TOKEN_EXPIRE_TIME: 1800
+      SECURITY_TOKEN_VERIFY_TIME: 1200
+
+      # 邮箱
+      MAIL_USERNAME: ""
+      MAIL_PWD: 
+      MAIL_SERVER_HOST: ""
+      MAIL_SERVER_PORT: ""
+
+      # Redis
+      REDIS_SERVER_IP: "redis"
+      REDIS_SERVER_PORT: 6379
+      REDIS_SERVER_DB: 10
+      REDIS_SERVER_PWD: 
+      REDIS_DEFAULT_EXPIRATION: 300
+
+      # 微信公众号相关
+      WX_APPID: ""
+      WX_SECRET: ""
+      WX_TOKEN: ""
+      WX_USER_MESSAGE_TEMPLATE_ID: ""
+      WX_ACCESS_AUTH_REDIRECT_URL: ""
+      WX_OAURL: ""
+      WX_OA_QRURL: "/uploads/wechatqr.jpg"
+
+      # 消息提醒
+      NOTIFY_MESSAGE_EXPECT_SEND_TIME: "09:00"
+      NOTIFY_VALIDATE_ERROR: false
+      NOTIFY_MESSAGE_SEND_MAXFAIL: 3
+      NOTIFY_MESSAGE_SEND_LOCK: false
+
+      # 股票相关
+      SHARES_WITH_CACHE: true
+      SHARES_CACHE_SECONDS: 5
+      SHARES_MONITOR_TASKTRIGGERID: 30
+      SHARES_STAT_TASKTRIGGERID: 31
+
+      # 日期格式
+      DATE_FORMAT: "yyyy-MM-dd HH:mm:ss"
+      TIMEZONE: "GMT+8"
+
+networks:
+   mulanbay: 
+      external: true

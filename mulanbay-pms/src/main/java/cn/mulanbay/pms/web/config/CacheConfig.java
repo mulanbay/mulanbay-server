@@ -80,7 +80,9 @@ public class CacheConfig {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration();
         config.setHostName(hostName);
         config.setPort(port);
-        config.setPassword(password);
+        if (password != null && !password.equals("")) {
+            config.setPassword(password);
+        }
         config.setDatabase(db);
         JedisConnectionFactory jcf = new JedisConnectionFactory(config);
         return jcf;

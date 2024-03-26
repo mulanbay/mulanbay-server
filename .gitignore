@@ -1,8 +1,10 @@
 *.iml
 *.idea
+.vscode
 *.log
 *.class
-#*.jar
+# *.jar
 target
 # 本地配置文件不提交
-application-local.properties
+# application-local.properties
+my.env
