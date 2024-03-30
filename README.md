@@ -12,13 +12,14 @@
 * 我是怎么样的人？（用户画像）
 * 我将会怎么样？ （机器学习）
 
- **粗体** 基于SpringBoot3和Vue3新版的项目地址：
+ **基于SpringBoot3和Vue3新版的项目地址：** 
 后端项目：
 * 服务器端[mulanbay-server3](https://gitee.com/mulanbay/mulanbay-server3),发行版:[releases](https://gitee.com/mulanbay/mulanbay-server3/releases)
 
 前端项目：
 * PC端[mulanbay-ui-vue3](https://gitee.com/mulanbay/mulanbay-ui-vue3),发行版:[releases](https://gitee.com/mulanbay/mulanbay-ui-vue3/releases)
 
+ **该项目基于SpringBoot2和Vue2** 
 该系统是前后端分离的项目，当前项目mulanbay-server为后端API项目，只提供系统的api接口，整个系统必须要同时运行前端才能完整访问。
 
 木兰湾算法端项目：
