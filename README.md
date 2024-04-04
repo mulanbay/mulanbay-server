@@ -281,3 +281,10 @@ mulanbay用户默认情况下是没有任何业务数据的，可以在"权限�
     </tr>
 
 </table>
+
+### 鸣谢
+谢谢JetBrains公司一直以来对木兰湾项目的支持，提供了全系列产品的免费license。
+
+<img src="https://foruda.gitee.com/images/1712229322943756523/d28d99c2_352331.png" width="100px" height="100px">
+
+JetBrains开源支持计划：https://jb.gg/OpenSourceSupport.
