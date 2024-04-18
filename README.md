@@ -129,7 +129,7 @@ source /xx/xx/xx/mulanbay_config_update.sql
   * ahanlp.properties文件中需要设置里面的各个配置项
   * 词云模块需要使用Python的wordcloud插件（3.0版本及以后不需要，词云修改为echarts实现），安装命令：
     pip3 install wordcloud -i https://pypi.tuna.tsinghua.edu.cn/simple
-  * NLP所需要的ahanlpData文件包，请到百度网盘下载：（链接：https://pan.baidu.com/share/init?surl=zECO4re43orEOwdZrO7rUg 提取码：w86y ）
+  * NLP所需要的ahanlpData文件包，请到百度网盘下载：（链接: https://pan.baidu.com/s/1demdX1GjhMiJqM58bJzriQ 提取码: gqcs ）
     或者直接去原作者项目处下载：https://github.com/jsksxs360/AHANLP/blob/master/github/w2v.md
     说明：
     【模型】Google_word2vec_zhwiki210720_300d.bin
