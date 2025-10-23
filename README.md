@@ -12,6 +12,8 @@
 * 我是怎么样的人？（用户画像）
 * 我将会怎么样？ （机器学习）
 
+---------------------------------------
+（ <font color="red">目前已经基于SpringBoot3进行重构，新版在系统上进行了多项优化，推荐使用新版项目</font>）
  **基于SpringBoot3和Vue3新版的项目地址：** 
 
 后端项目：
@@ -19,8 +21,10 @@
 
 前端项目：
 * PC端[mulanbay-ui-vue3](https://gitee.com/mulanbay/mulanbay-ui-vue3),发行版:[releases](https://gitee.com/mulanbay/mulanbay-ui-vue3/releases)
+---------------------------------------
 
  **该项目基于SpringBoot2和Vue2** 
+（ <font color="red">目前该版本已停止更新</font>）
 
 该系统是前后端分离的项目，当前项目mulanbay-server为后端API项目，只提供系统的api接口，整个系统必须要同时运行前端才能完整访问。
 
